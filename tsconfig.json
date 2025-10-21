@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "lib": ["DOM", "ESNext"],
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "strict": true,
+      "esModuleInterop": true, // import 구문 사용
+      "forceConsistentCasingInFileNames": true,
+      "skipLibCheck": true, // .d.ts 검사 생략
+      // "sourceMap": true, //  디버깅용 매핑 파일 생성, webpack에서 생성해주므로 생략
+      "jsx": "react-jsx",
+      "baseUrl": "./src",
+      "paths": {
+        "@/*": ["*"]
+      },
+      "outDir": "./dist" // 참고용, webpack 대신 빌드
+    },
+    "include": ["src"],
+  "exclude": ["node_modules", "release", "dist"]
+  }
+  
