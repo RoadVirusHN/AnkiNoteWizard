@@ -1,4 +1,7 @@
 const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
 
 module.exports = {
   entry: {
@@ -37,6 +40,10 @@ module.exports = {
           }
         },
       },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   plugins: [    
@@ -50,6 +57,7 @@ module.exports = {
       patterns: [
         { from: path.resolve(__dirname, 'src/manifest.json'), to: 'manifest.json' },
         { from: path.resolve(__dirname, 'src/icons'), to: 'icons' },
+        { from: path.resolve(__dirname, 'src/popup/popup.css'), to: 'popup.css'}
         // { from: path.resolve(__dirname, 'src/popup/popup.html'), to: 'popup.html' }, // 위 html webpack plugin이 알아서 처리
       ]
     })

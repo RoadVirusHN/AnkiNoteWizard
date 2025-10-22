@@ -1,0 +1,15 @@
+body {
+  font-family: sans-serif;
+  margin: 10px;
+  background: #fafafa;
+}
+
+.popup {
+  text-align: center;
+  width: 200px;
+}
+
+button {
+  margin-top: 5px;
+  padding: 4px 8px;
+}
