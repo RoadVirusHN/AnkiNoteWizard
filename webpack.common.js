@@ -44,6 +44,17 @@ module.exports = {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
+      {
+        test: /\.svg$/,
+        use : ['@svgr/webpack'],
+      },
+      {
+        test: /\.(png|jpe?g|gif|webp)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'public/[name][hash][ext][query]',
+        },
+      },
     ],
   },
   plugins: [    

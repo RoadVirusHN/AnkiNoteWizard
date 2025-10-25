@@ -5,6 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:dev": "webpack --config webpack.dev.js",
+    "watch:dev": "webpack --config webpack.dev.js --watch",
     "build:prod": "webpack --config webpack.prod.js"
   },
   "repository": {
@@ -24,6 +25,7 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
     "@types/chrome": "^0.1.24",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
