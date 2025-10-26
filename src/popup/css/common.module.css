@@ -9,34 +9,12 @@ body {
   width: 200px;
 }
 
-.btn.reset-btn:hover{
-  cursor: pointer;
-}
-
 .no-select {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
 }
 
-.spinning{
-  animation-play-state: running;
-  animation: spin-animation 3s ease-in forwards,
-              spin-animation 1.5s linear infinite;
-}
-
-.anki-logo{
-  animation-play-state: paused;
-}
-
-@keyframes spin-animation {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 /* Tooltip container */
 .tooltip {
   position: relative;

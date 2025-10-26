@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import './popup.css';
-import AnkiStatus from './AnkiStatus';
+import commonStyle from '@/popup/css/common.module.css';
+import AnkiStatus from '@/popup/AnkiStatus';
 
 const Popup: React.FC = () => {
  
   return (
-    <div className="popup">
+    <div className={commonStyle.popup}>
       <h3>Popup Test</h3>
       <AnkiStatus/>
     </div>

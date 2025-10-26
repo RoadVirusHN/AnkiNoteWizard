@@ -1,0 +1,23 @@
+
+.btn.reset-btn:hover{
+  cursor: pointer;
+}
+
+.spinning{
+  animation-play-state: running;
+  animation: spin-animation 3s ease-in forwards,
+              spin-animation 1.5s linear infinite;
+}
+
+.anki-logo{
+  animation-play-state: paused;
+}
+
+@keyframes spin-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

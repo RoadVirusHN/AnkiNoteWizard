@@ -1,0 +1,1 @@
+1. set Workspace typescript version to node_modules/(workspace) version, instead of dev container version.
