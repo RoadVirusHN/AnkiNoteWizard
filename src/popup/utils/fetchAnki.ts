@@ -3,7 +3,7 @@ interface fetAnkiRequestBody {
   params?: Record<string, unknown>;
 }
 // TODO : change the type of result to a generic type T
-interface fetchAnkiResponseBody<T= unknown> {
+interface fetchAnkiResponseBody<T = unknown> {
   result: T;
   error: string | null;
 }

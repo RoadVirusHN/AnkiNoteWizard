@@ -23,6 +23,7 @@ const AnkiStatus = ({}) => {
         });
       });
     };
+  // TODO : retry connection every X seconds when disconnected
   useEffect(()=>{checkConnection()},[]);
   return (
     <ToolTipWrapper 
