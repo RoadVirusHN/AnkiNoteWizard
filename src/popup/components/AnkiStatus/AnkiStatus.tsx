@@ -14,7 +14,7 @@ const AnkiStatus = ({}) => {
       if (isPending) return;
       setIsConnected(false);
       startTransition(async ()=>{
-        await fetchAnki({action:'deckNames'}).then((data)=>{
+        await fetchAnki<{result: string[], error: string | null}>({action:'deckNames'}).then((data)=>{
           console.log(data);
           setIsConnected(data?.error === null);
         }).catch((err)=>{
