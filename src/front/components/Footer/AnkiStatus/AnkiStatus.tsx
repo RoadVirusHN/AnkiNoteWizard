@@ -4,27 +4,19 @@ import ResetSvg from "@/public/Reset-Vector.svg";
 import commonStyle from "@/front/common.module.css";
 import ankiStatusStyle from "./ankiStatus.module.css";
 import ToolTipWrapper from "@/front/components/TooltipWrapper/ToolTipWrapper";
-import fetchAnki from "@/front/utils/fetchAnki";
+import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
 
-const AnkiStatus = ({}) => { 
-    const [isConnected, setIsConnected] = useState(false);
-    const [isPending, startTransition] = useTransition();
-    //TODO : delay && prevent checkConnection to preventing user spamming the anki connection check before the previous one is finished.
-    const checkConnection = async () => { //TODO : check out the "useCallback" hook to optimize this function
-      if (isPending) return;
-      setIsConnected(false);
-      startTransition(async ()=>{
-        await fetchAnki<{result: string[], error: string | null}>({action:'deckNames'}).then((data)=>{
-          console.log(data);
-          setIsConnected(data?.error === null);
-        }).catch((err)=>{
-          console.log(err);
-          setIsConnected(false);
-        });
-      });
-    };
-  // TODO : retry connection every X seconds when disconnected
-  useEffect(()=>{checkConnection()},[]);
+
+const AnkiStatus = () => { 
+  const {isConnected, isPending, checkConnection} = useAnkiConnectionStore();
+
+  useEffect(()=>{
+    if (isConnected) return;
+    checkConnection();
+    const id = setInterval(()=> checkConnection(), 5000);
+    return ()=> clearInterval(id); // cleanup on unmount
+  }, [isConnected,checkConnection]);
+
   return (
     <ToolTipWrapper 
       text={`Anki ${isConnected ? 'connected' : 'disconnected'}`} 
@@ -34,6 +26,6 @@ const AnkiStatus = ({}) => {
         <span style={{color:isPending ? 'gray' : (isConnected ? 'greenyellow' : 'red')}}>●</span>
         <ResetSvg className={`${ankiStatusStyle["reset-btn"]} ${ankiStatusStyle.btn}`} onClick={()=>checkConnection()} width={20} height={20}/>
     </ToolTipWrapper>
-);
+  );
 };
 export default AnkiStatus;
