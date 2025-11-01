@@ -10,7 +10,6 @@ const Popup: React.FC = () => {
       <SideBar/>
       <div className={commonStyle["main-content"]}>
         <Outlet/>
-        <Footer/>
       </div>
     </div>
   );

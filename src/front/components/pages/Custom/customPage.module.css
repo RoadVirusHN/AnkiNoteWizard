@@ -21,17 +21,22 @@
   background-color: var(--color-dark);
   border-radius: 12px;
 }
+.detail {
+  width : 67%;
+}
 .detail h2,h3,h4,p,pre,ul{
   margin: 0;
 }
+
 .detail pre{
-  height: 50%;
+  height: 70%;
   background-color: var(--color-dark);
   padding: 5px;
   border-radius: 5px;
   overflow-x: auto;
   overflow-y: auto;
   margin-left: 3px;
+  text-align: left;
 }
 .detail .cardDetail{
   display: flex !important;

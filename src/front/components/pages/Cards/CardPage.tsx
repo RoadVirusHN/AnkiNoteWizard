@@ -2,6 +2,7 @@ import commonStyle from '@/front/common.module.css';
 import useAnkiConnectionStore from '@/front/utils/useAnkiConnectionStore';
 import useGlobalVarStore from '@/front/utils/useGlobalVarStore';
 import { useRef } from 'react';
+import Footer from '../../Footer/Footer';
 
 const CardPage: React.FC = () => {
   const frontRef = useRef<HTMLTextAreaElement>(null);
@@ -41,6 +42,7 @@ const CardPage: React.FC = () => {
       <textarea ref={frontRef} placeholder="Front"/>
       <textarea ref={backRef} placeholder="Back"/>
       <button onClick={()=>addToAnki()}>add</button>
+      <Footer/>
     </div>
   );
 };
