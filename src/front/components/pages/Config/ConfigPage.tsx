@@ -4,7 +4,7 @@ const ConfigPage: React.FC = () => {
  
   return (
     <div>
-      ConfigPage
+      ConfigPage Coming soon!
     </div>
   );
 };

@@ -1,0 +1,14 @@
+.simple-btn{
+  width: 45px;
+  height: 25px;
+  border: none;
+  background-color: var(--color-dark);
+  color: var(--color-primary);
+  cursor: pointer;
+  filter: drop-shadow(2px 2px 2px var(--color-primary));
+  border-radius: 9px;
+  margin: 3px;
+}
+.simple-btn:active{
+  filter: none;
+}

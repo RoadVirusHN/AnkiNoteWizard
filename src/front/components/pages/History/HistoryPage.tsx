@@ -4,7 +4,7 @@ const HistoryPage: React.FC = () => {
  
   return (
     <div>
-      HistoryPage
+      HistoryPage coming soon!
     </div>
   );
 };

@@ -6,7 +6,7 @@
     align-items: center;
     vertical-align: bottom;
     position: absolute;
-    bottom: 0px;   
+    bottom: 3px;   
     height: 30px;
 }
 
@@ -19,6 +19,7 @@
 .addAnkiCardButton svg{
     width: 36px;
     height: 36px;
+    bottom: 3px;
     filter: drop-shadow(3px 3px 2px #333);
 }
 .addAnkiCardButton.clicked svg{

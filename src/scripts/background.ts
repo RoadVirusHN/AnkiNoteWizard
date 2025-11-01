@@ -3,8 +3,25 @@ const STORAGE_KEY = 'anki-card-wizard-global-var-store';
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Extension installed!');
 });
+let popupWindowId : number | null = null;
+
 chrome.action.onClicked.addListener(async (tab) => {
   console.log(tab);
+  console.log(popupWindowId); 
+  if (popupWindowId !== null) {
+    try {
+      const existingWindow = await chrome.windows.get(popupWindowId);
+      console.log(existingWindow);
+      if (existingWindow) {
+        chrome.windows.update(popupWindowId, { focused: true });
+        return;
+      }
+    } catch (e) {
+      // 창이 없으면 오류가 발생하므로 무시
+      console.log('Previous popup window not found, opening a new one.' + e);
+      popupWindowId = null;
+    }
+  }
   try {
     const data = await chrome.storage.local.get(STORAGE_KEY);
     const raw = data[STORAGE_KEY];
@@ -29,10 +46,17 @@ chrome.action.onClicked.addListener(async (tab) => {
     else if (initialTab === 'CUSTOM') route = 'custom';
     else if (initialTab === 'CONFIG') route = 'config';
     const url = chrome.runtime.getURL(`index.html#/${route}`);
-    chrome.windows.create({ url, type: 'popup', width: 480, height: 320 });
+    const newWindow = await chrome.windows.create({ url, type: 'popup', width: 480, height: 320 });
+    popupWindowId = newWindow?.id ?? null;
   } catch (err) {
     console.error('Failed to open window with saved route, opening default', err);
     const url = chrome.runtime.getURL('index.html');
     chrome.windows.create({ url, type: 'popup', width: 480, height: 320 });
+  }
+});
+
+chrome.windows.onRemoved.addListener((windowId) => {
+  if (windowId === popupWindowId) {
+    popupWindowId = null;
   }
 });
