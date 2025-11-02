@@ -10,7 +10,7 @@ export interface Extracted{
   Back : Record<string, string>;
 }
 export interface IdxedExtracted{
-  customCardIndex: number,
+  cardName: string,
   extracted: Extracted
 };
 
@@ -30,6 +30,7 @@ const CardPage: React.FC = () => {
       console.warn('No active tab found');
       return;
     }
+    console.log(customCards)
     chrome.tabs.sendMessage(tab.id, {
       type: 'REQUEST_DETECTED_CARDS',
       customCards,
@@ -61,10 +62,11 @@ const CardPage: React.FC = () => {
 
       <div className={cardPageStyles.cardsWrapper}>
         {extracteds && extracteds.length > 0 ? (
-          extracteds.map(({ customCardIndex, extracted }, idx) => (
+          extracteds.map(({ cardName, extracted }, idx) => (
+            customCards.find(card=>card.cardName===cardName) &&
             <DetectedCard 
               key={idx}
-              customCard={customCards[customCardIndex]}
+              customCard={customCards.find(card=>card.cardName===cardName)!}
               extracted={extracted}
             />
           ))

@@ -38,7 +38,7 @@ const getExtractedFromPage = (customCards: CustomCard[]): IdxedExtracted[] => {
         return true;
       }
     })
-    .map((card, customCardIndex) => {
+    .map((card) => {
       const extracted: Extracted = {
         Front: {},
         Back: {},
@@ -109,7 +109,7 @@ const getExtractedFromPage = (customCards: CustomCard[]): IdxedExtracted[] => {
           console.warn(`Failed to extract back field ${field.name}`, e);
         }
       });
-      return { customCardIndex, extracted };
+      return { cardName: card.cardName, extracted };
     });
   return res;
 };

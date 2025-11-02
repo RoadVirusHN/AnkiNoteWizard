@@ -27,22 +27,26 @@ const CustomPage: React.FC = () => {
         <div key={index} className={`${index === curIdx ? customPageStyles.selected : ''}`} onClick={()=>selectCustomCard(index)}>
           <span style={{cursor: "pointer"}} onClick={()=>modifyCustomCard(index)}> ↺ </span>
           {card.cardName} 
-          <span style={{cursor: "pointer"}} onClick={()=>removeCustomCard(index)}> -</span>
+          <span style={{cursor: "pointer"}} onClick={()=>{
+            if (confirm(`정말 "${card.cardName}" 카드를 삭제하시겠습니까?`)){
+              removeCustomCard(index)
+            }
+          }}> -</span>
         </div>)}
         <div onClick={openAddCustomCardModal} style={{cursor: 'pointer'}}>⨁</div>
       </div>
         <div className={customPageStyles.detail}>
           {curIdx!==null && customCards[curIdx] && 
             <>
-              <h2>{customCards[curIdx].cardName}</h2>
+              <h2 style={{margin: '0px'}}>{customCards[curIdx].cardName}</h2>
               <p>{customCards[curIdx].description}</p>
               <div className={customPageStyles.cardDetail}>
                   {
                     isFront ? 
                       <div style={{width: '100%'}}>
-                        <h3>Front HTML</h3>
-                        <pre>{customCards[curIdx].Front.html}</pre>
-                        <h4>Front Fields</h4>
+                        <h3 style={{margin: '0px'}}>Front HTML</h3>
+                        <pre className={customPageStyles.codeBlock}>{customCards[curIdx].Front.html}</pre>
+                        <h4 style={{margin: '0px'}}>Front Fields</h4>
                         <ul>
                           {customCards[curIdx].Front.fields.map((field, i) => 
                             <li key={i}>{field.name} ({field.selectorType}, {field.dataType})</li>
@@ -50,9 +54,9 @@ const CustomPage: React.FC = () => {
                         </ul>
                       </div> :
                       <div style={{width: '100%'}}>
-                        <h3>Back HTML</h3>
-                        <pre>{customCards[curIdx].Back.html}</pre>
-                        <h4>Back Fields</h4>
+                        <h3 style={{margin: '0px'}}>Back HTML</h3>
+                        <pre className={customPageStyles.codeBlock}>{customCards[curIdx].Back.html}</pre>
+                        <h4 style={{margin: '0px'}}>Back Fields</h4>
                         <ul>
                           {customCards[curIdx].Back.fields.map((field, i) => 
                             <li key={i}>{field.name} ({field.selectorType}, {field.dataType})</li>

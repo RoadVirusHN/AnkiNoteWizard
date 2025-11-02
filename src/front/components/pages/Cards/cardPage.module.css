@@ -90,8 +90,9 @@
 .detectedCardContent p,
 .detectedCardContent span {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   color: var(--color-secondary);
+  word-wrap: break-word;
 }
 
 .detectedCardContent .detectedCardFields {
