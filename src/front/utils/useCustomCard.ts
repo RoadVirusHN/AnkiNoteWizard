@@ -1,26 +1,30 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-enum CardFieldDataType {
+export enum CardFieldDataType {
   TEXT = 'text',
   AUDIO = 'audio',
   IMAGE = 'image',
 }
-enum CardFieldSelectorType {
+
+export enum CardFieldSelectorType {
   LITERAL = 'literal',
   CSSSelector = 'cssSelector',
   URL = 'url',
 }
+
 export interface CardField {
   name: string;
   content: string;
   selectorType: CardFieldSelectorType;
   dataType: CardFieldDataType;
 }
+
 export interface CustomCard {
   cardName: string;
   description: string;
   modelName: string;
+  urlPatterns: string[];
   Front: {
     html: string;
     fields: CardField[];

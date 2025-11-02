@@ -63,7 +63,7 @@ chrome.runtime.onMessage.addListener(async (message) => {
       const url = chrome.runtime.getURL(
         'index.html#/modify-custom-card' + (message.index !== undefined ? '/' + message.index : '')
       );
-      const opened = await chrome.windows.create({ url, type: 'popup', width: 480, height: 320 });
+      const opened = await chrome.windows.create({ url, type: 'popup', width: 800, height: 600 });
       popupModalWindowId = opened?.id ?? null;
       break;
     case 'CLOSE_MODIFY_CUSTOM_CARD_MODAL':

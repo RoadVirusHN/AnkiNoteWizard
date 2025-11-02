@@ -1,66 +1,110 @@
+/* 전체 컨테이너: 내부에서만 스크롤 가능 */
 .container {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 11px;
-  color: var(--color-primary);
+  gap: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2px;
+  background: transparent;
+  max-height: 100%;
+  overflow: hidden;
 }
 
+/* 각 필드 행: 줄바꿈 허용, 내부에서 스크롤 생기면 행 내부로 스크롤되지 않게 설정 */
 .fieldRow {
   display: flex;
+  gap: 2px;
   align-items: center;
-  gap: 4px;
-  background-color: var(--color-dark);
-  border-radius: 4px;
-  padding: 3px;
+  flex-wrap: nowrap; /* 한 줄에 정렬하되 너무 작아지면 내용이 잘림 대신 내부 입력이 줄바꿈됨 */
 }
 
+/* name/content 공통 input */
 .input {
-  flex: 1;
-  min-width: 0;
-  font-size: 11px;
-  background-color: var(--color-dark);
+  background: var(--color-dark);
   color: var(--color-secondary);
-  border: none;
-  border-radius: 3px;
-  padding: 2px 4px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 1px 2px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
   word-wrap: break-word;
 }
-.input[name="name"]{
-  width: 20%;
-}
-.input[name="content"]{
-  width: 30%;
+
+/* 비율 조절: name 짧게 content 넓게 */
+.name {
+  flex: 0 0 22%; /* 고정 비율(약 22%) */
+  min-width: 45px;
 }
 
+.content {
+  flex: 1 1 46%; /* 유연히 늘어남(약 46%) */
+  min-width: 110px;
+}
+
+/* select들 */
 .select {
-  font-size: 11px;
-  background-color: var(--color-dark);
+  background: var(--color-dark);
   color: var(--color-secondary);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 1px 2px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.selector {
+  flex: 0 0 16%;
+  min-width: 55px;
+}
+
+.datatype {
+  flex: 0 0 12%;
+  min-width: 55px;
+}
+
+/* 삭제 버튼 */
+.removeBtn {
+  background: var(--color-danger);
+  color: white;
   border: none;
-  border-radius: 3px;
-  padding: 2px;
+  border-radius: 6px;
+  padding: 1px 2px;
+  cursor: pointer;
+  font-weight: bold;
+  flex: 0 0 auto;
+}
+
+.removeBtn:hover {
+  opacity: 0.9;
+}
+
+/* 잠금 표시 (삭제 불가일 때) */
+.lockBadge {
+  flex: 0 0 30px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* 하단 컨트롤(추가 버튼 등) */
+.controls {
+  display: flex;
+  justify-content: flex-start;
+  gap: 4px;
 }
 
 .addBtn {
-  background: none;
+  background: var(--color-warning);
+  color: var(--color-secondary);
   border: none;
-  color: var(--color-primary);
+  border-radius: 6px;
+  padding: 1px 2px;
   cursor: pointer;
-  font-size: 11px;
-  text-align: left;
+  font-weight: 600;
 }
 
 .addBtn:hover {
-  color: var(--color-hyperlink);
-}
-
-.removeBtn {
-  background: none;
-  border: none;
-  color: var(--color-danger );
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 12px;
-  padding: 0 2px;
+  opacity: 0.95;
 }
