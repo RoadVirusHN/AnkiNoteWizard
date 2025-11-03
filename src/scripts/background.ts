@@ -3,7 +3,7 @@ console.log('✅ Background script loaded');
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Extension installed!');
 });
-
+// TODO : change window -> side panel app
 //let popupWindowId: number | null = null;
 chrome.action.onClicked.addListener(async () => {
   
