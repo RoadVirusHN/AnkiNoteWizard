@@ -12,7 +12,7 @@ const DeckInput = ({}) => {
   return (
     <div className={statusBarStyle.deckSelector}>
       <label htmlFor="deck-select">
-        <DecksSvg width={18} height={18}/>
+        {/* <DecksSvg width={18} height={18}/> */}
       </label>
       <select id="deck-select" name="deck-select" style={{height: '20px', width: '180px'}} onChange={(e)=>{onChangeDeck(e.currentTarget.value)}} value={currentDeck??''}>
         {decks.length>0? decks.map((deck) => <option key={deck} value={deck}>{deck}</option>) : <option value=''>Check Anki Connection!</option>}
