@@ -1,6 +1,6 @@
 import cardPageStyles from '@/front/components/pages/Cards/cardPage.module.css';
 import { useEffect, useRef, useState } from 'react';
-import Footer from '../../Footer/Footer';
+import Footer from '../../StatusBar/StatusBar';
 import useCustomCard from '@/front/utils/useCustomCard';
 import DetectedCard from './DetectedCard/DetectedCard';
 //TODO : Apply SCSS for css.

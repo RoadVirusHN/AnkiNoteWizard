@@ -3,13 +3,13 @@ import CardPage from "../components/pages/Cards/CardPage";
 import HistoryPage from "../components/pages/History/HistoryPage";
 import ConfigPage from "../components/pages/Config/ConfigPage";
 import CustomPage from "../components/pages/Custom/CustomPage";
-import Popup from "../components/pages/Popup/Popup";
 import ModifyCustomCard from "../components/pages/ModifyCustomCard/ModifyCustomCard";
+import Main from "../pages/Main/Main";
 
 const router = createHashRouter([
   {
     path: '/',
-    element: <Popup/>,
+    element: <Main/>,
     children: [
       {
         index: true,

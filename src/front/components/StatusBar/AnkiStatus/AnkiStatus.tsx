@@ -1,4 +1,4 @@
-import { useEffect, useState, useTransition } from "react";
+import { useEffect } from "react";
 import AnkiPng from "@/public/Anki-Png.png";
 import ResetSvg from "@/public/Reset-Vector.svg";
 import commonStyle from "@/front/common.module.css";

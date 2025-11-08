@@ -1,6 +1,6 @@
 import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
 import DecksSvg from "@/public/Decks-Svg.svg";
-import footerStyle from "../footer.module.css";
+import statusBarStyle from "../statusBar.module.css";
 import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
 const DeckInput = ({}) => {
   const {decks} = useAnkiConnectionStore();
@@ -10,7 +10,7 @@ const DeckInput = ({}) => {
     setCurrentDeck(deck);
   }
   return (
-    <div className={footerStyle.deckSelector}>
+    <div className={statusBarStyle.deckSelector}>
       <label htmlFor="deck-select">
         <DecksSvg width={18} height={18}/>
       </label>

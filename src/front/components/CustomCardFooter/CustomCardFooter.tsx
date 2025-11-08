@@ -1,4 +1,3 @@
-import footerStyles from "@/front/components/Footer/footer.module.css";
 import SimpleButton from "@/front/components/SimpleButton/SimpleButton";
 import FlipSvg from "@/public/Flip-Vector.svg"
 interface CustomCardFooterProps {
@@ -6,7 +5,7 @@ interface CustomCardFooterProps {
 }
 const CustomCardFooter = ({onFlip}:CustomCardFooterProps) => {
   return (
-  <footer className={footerStyles.footer}>
+  <footer >
     <div style={{position: 'absolute', display: 'flex', gap: '10px', alignItems: 'end', flexDirection: 'row', right: '10px'}}>
       <SimpleButton text="Flip" onClick={onFlip} svg={FlipSvg} />
       <SimpleButton text="Test" />
