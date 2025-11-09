@@ -86,7 +86,4 @@
   display:flex !important;
   flex-direction: column;
   align-items: center;
-  position: absolute !important;
-  right: 10px;
-  top: 10px;
 }

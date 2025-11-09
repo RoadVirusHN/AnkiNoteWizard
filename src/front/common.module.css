@@ -38,3 +38,13 @@ body > .root {
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
 }
+
+.badge {
+  border-radius: 18px;
+  background-color: var(--color-hyperlink);
+  font-size: x-small;
+  padding-left: 2px;
+  padding-right: 2px;
+  word-wrap: normal;
+  color: var(--color-light)
+}

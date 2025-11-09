@@ -61,9 +61,6 @@ const CardPage: React.FC = () => {
           <span className={cardPageStyles.redetectCard} onClick={requestExtracteds}>↺ 다시 감지</span>
         </div>
       </div>
-      <TooltipWrapper text='sdf' >
-          "asdfsadf"
-      </TooltipWrapper>
 
       <div className={cardPageStyles.cardsWrapper}>
         {extracteds && extracteds.length > 0 ? (

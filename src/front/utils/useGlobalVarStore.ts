@@ -12,8 +12,10 @@ interface GlobalVarState {
   currentTab: Tab;
   currentDeck: string;
   isAddingCard: boolean;
+  currentDetected: number;
   setCurrentTab: (tab: Tab) => void;
   setCurrentDeck: (deck: string) => void;
+  setCurrentDetected: (cnt: number) => void;
   setIsAddingCard: (isAdding: boolean) => void;
 }
 
@@ -23,8 +25,10 @@ const useGlobalVarStore = create<GlobalVarState>()(
       currentTab: Tab.CARD,
       currentDeck: '',
       isAddingCard: false,
+      currentDetected: 0,
       setCurrentTab: (tab: Tab) => set({ currentTab: tab }),
       setCurrentDeck: (deck: string) => set({ currentDeck: deck }),
+      setCurrentDetected: (cnt: number) => set({ currentDetected: cnt }),
       setIsAddingCard: (isAdding: boolean) => set({ isAddingCard: isAdding }),
     }),
     {
