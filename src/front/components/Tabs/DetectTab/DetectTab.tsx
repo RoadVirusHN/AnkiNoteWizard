@@ -4,7 +4,7 @@ import useGlobalVarStore, { Tab } from "@/front/utils/useGlobalVarStore";
 import AnkiIcon from '@/public/Icon/Icon-Anki.svg';
 import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
 import { useEffect } from "react";
-import TooltipWrapper from "../../TooltipWrapper/TooltipWrapper";
+import TooltipWrapper, { TooltipDirection } from "../../TooltipWrapper/TooltipWrapper";
 
 const DetectTab = ({}) => {
   const {currentTab} = useGlobalVarStore();
@@ -18,14 +18,16 @@ const DetectTab = ({}) => {
 
   return (
   <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.CARD? tabsStyle.selected : ''}`} to={'/card'}>
-      <AnkiIcon className={(isPending ? `${tabsStyle.spinning}`:'')}/>
-      <p>Detect</p>
       <TooltipWrapper 
       classes={[tabsStyle.tooltip]}
-      text={`Anki ${isConnected ? 'connected' : 'disconnected'}`} 
+      text={`Anki ${isPending ? 'connecting..':(isConnected ? 'connected' : 'disconnected')}`} 
+      tooltipDirection={TooltipDirection.BOTTOM_LEFT}
+      styles={{top: '40px', left: '35px'}}
       >
         <span style={{color:isPending ? 'gray' : (isConnected ? 'greenyellow' : 'red')}}>●</span>
       </TooltipWrapper>
+      <AnkiIcon className={`${tabsStyle["anki-logo"]} ` + (isPending ? `${tabsStyle.spinning}`:'')}/>
+      <p>Detect</p>
   </NavLink>);
 };
 export default DetectTab;

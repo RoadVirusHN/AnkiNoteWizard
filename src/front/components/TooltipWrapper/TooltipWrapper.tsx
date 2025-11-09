@@ -2,14 +2,14 @@ import {ReactNode} from 'react';
 import tooltipStyle from './tooltip.module.css';
 import commonStyle from "@/front/common.module.css";
 export enum TooltipDirection{
-  UP = 'tooltip-top',
-  DOWN = 'tooltip-down',
+  TOP = 'tooltip-top',
+  BOTTOM  = 'tooltip-bottom',
   LEFT = 'tooltip-left',
   RIGHT = 'tooltip-right',
   UP_LEFT = 'tooltip-up-left',
   UP_RIGHT = 'tooltip-up-right',
-  DOWN_LEFT = 'tooltip-down-left',
-  DOWN_RIGHT = 'tooltip-down-right',
+  BOTTOM_LEFT = 'tooltip-bottom-left',
+  BOTTOM_RIGHT = 'tooltip-bottom-right',
 }
 
 interface TooltipWrapperProps {
@@ -17,20 +17,38 @@ interface TooltipWrapperProps {
   classes?:string[],
   text:string,
   styles?:React.CSSProperties,
-  tooltipDirection?: TooltipDirection
+  tooltipDirection?: TooltipDirection,
 }
 
 const TooltipWrapper = (
-  {children, classes, text, styles, tooltipDirection=TooltipDirection.UP}:TooltipWrapperProps
+  {children, classes, text, styles, tooltipDirection=TooltipDirection.TOP}:TooltipWrapperProps
 ) => {
     // TODO: use clsx later.
     let classNames = `${tooltipStyle.tooltip} ${commonStyle['no-select']}`;
     for (const className of classes || []) { //와.... || [] 이거 똑똑하네
       classNames += ` ${className}`;
     }
+    let directionStyle;
+    switch (tooltipDirection) {
+      case TooltipDirection.BOTTOM:
+        directionStyle = tooltipStyle['tooltip-bottom'];
+        break;
+      case TooltipDirection.LEFT:
+        directionStyle = tooltipStyle['tooltip-left'];
+        break;
+      case TooltipDirection.RIGHT:
+        directionStyle = tooltipStyle['tooltip-right'];
+        break;
+      case TooltipDirection.BOTTOM_LEFT:
+        directionStyle = tooltipStyle['tooltip-bottom-left'];
+        break;
+      default:
+        directionStyle = tooltipStyle['tooltip-top'];
+        break;
+    }
   return (
-    <div className={classNames} style={styles} role='tooltip' aria-label={text}>
-      <span className={`${tooltipStyle.tooltiptext}`}>{text}</span>
+    <div className={classNames} role='tooltip' aria-label={text}>
+      <span className={`${tooltipStyle.tooltiptext} ${directionStyle}`} style={styles}>{text}</span>
       {children}
     </div>
   );

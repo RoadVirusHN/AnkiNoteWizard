@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Footer from '../../StatusBar/StatusBar';
 import useCustomCard from '@/front/utils/useCustomCard';
 import DetectedCard from './DetectedCard/DetectedCard';
+import TooltipWrapper from '../../TooltipWrapper/TooltipWrapper';
 //TODO : Apply SCSS for css.
 //TODO : MAKE Interfaces&Types FILE
 export interface Extracted{
@@ -53,12 +54,16 @@ const CardPage: React.FC = () => {
   },[customCards])
   return (
     <div className={cardPageStyles.pageContainer}>
+
       <div className={cardPageStyles.header}>
         <span className={cardPageStyles.url}>{url}</span>
         <div className={cardPageStyles.headerButtons}>
           <span className={cardPageStyles.redetectCard} onClick={requestExtracteds}>↺ 다시 감지</span>
         </div>
       </div>
+      <TooltipWrapper text='sdf' >
+          "asdfsadf"
+      </TooltipWrapper>
 
       <div className={cardPageStyles.cardsWrapper}>
         {extracteds && extracteds.length > 0 ? (

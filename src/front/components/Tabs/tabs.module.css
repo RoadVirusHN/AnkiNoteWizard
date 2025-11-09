@@ -64,7 +64,7 @@
   color: var(--color-primary);
 }
 .spinning{
-  animation-play-state: running;
+  animation-play-state: running !important;
   animation: spin-animation 3s ease-in forwards,
               spin-animation 1.5s linear infinite;
 }
