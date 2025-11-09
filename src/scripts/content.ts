@@ -1,4 +1,4 @@
-import { Extracted, IdxedExtracted } from '@/front/components/pages/Cards/CardPage';
+import { Extracted, IdxedExtracted } from '@/front/pages/Detect/DetectPage';
 import { CardFieldDataType, CardFieldSelectorType, CustomCard } from '@/front/utils/useCustomCard';
 
 //TODO : Make Message Types Constant Enum

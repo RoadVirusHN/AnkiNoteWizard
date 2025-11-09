@@ -1,8 +1,8 @@
 import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
 import { CardFieldDataType, CustomCard } from "@/front/utils/useCustomCard";
 import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
-import cardPageStyles from "@/front/components/pages/Cards/cardPage.module.css";
-import { Extracted } from "../CardPage";
+import detectPageStyle from "@/front/pages/Detect/detectPage.module.css";
+import { Extracted } from "../DetectPage";
 
 const DetectedCard = ({customCard, extracted}:{customCard: CustomCard, extracted: Extracted}) => {
   const {fetchAnki} = useAnkiConnectionStore();
@@ -78,15 +78,15 @@ const DetectedCard = ({customCard, extracted}:{customCard: CustomCard, extracted
   }
 
   return (  
-    <div className={cardPageStyles.detectedCardContainer}>
-      <div className={cardPageStyles.detectedCardContent}>
+    <div className={detectPageStyle.detectedCardContainer}>
+      <div className={detectPageStyle.detectedCardContent}>
         <div>{customCard.cardName}</div>
-        <div className={cardPageStyles.detectedCardFields}>
+        <div className={detectPageStyle.detectedCardFields}>
           <span><b>Front:</b>  {extracted.Front['front']}</span>
           <span><b>Back:</b>  {extracted.Back['back']}</span>
         </div>
       </div>
-      <div className={cardPageStyles.addCardButton} onClick={addToAnki}>⨁</div>
+      <div className={detectPageStyle.addCardButton} onClick={addToAnki}>⨁</div>
     </div>);
 };
 export default DetectedCard;

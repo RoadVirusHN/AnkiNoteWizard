@@ -1,10 +1,10 @@
 import { createHashRouter } from "react-router";
-import CardPage from "../components/pages/Cards/CardPage";
 import HistoryPage from "../components/pages/History/HistoryPage";
 import ConfigPage from "../components/pages/Config/ConfigPage";
 import CustomPage from "../components/pages/Custom/CustomPage";
 import ModifyCustomCard from "../components/pages/ModifyCustomCard/ModifyCustomCard";
 import Main from "../pages/Main/Main";
+import DetectPage from "../pages/Detect/DetectPage";
 
 const router = createHashRouter([
   {
@@ -13,11 +13,11 @@ const router = createHashRouter([
     children: [
       {
         index: true,
-        element: <CardPage/>
+        element: <DetectPage/>
       },
       {
         path: "card",
-        element: <CardPage/>
+        element: <DetectPage/>
       },
       {
         path: "history",

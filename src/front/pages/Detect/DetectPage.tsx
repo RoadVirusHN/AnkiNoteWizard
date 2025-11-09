@@ -1,9 +1,7 @@
-import cardPageStyles from '@/front/components/pages/Cards/cardPage.module.css';
-import { useEffect, useRef, useState } from 'react';
-import Footer from '../../StatusBar/StatusBar';
+import detectPageStyle from '@/front/pages/Detect/detectPage.module.css';
+import { useEffect, useState } from 'react';
 import useCustomCard from '@/front/utils/useCustomCard';
 import DetectedCard from './DetectedCard/DetectedCard';
-import TooltipWrapper from '../../TooltipWrapper/TooltipWrapper';
 //TODO : Apply SCSS for css.
 //TODO : MAKE Interfaces&Types FILE
 export interface Extracted{
@@ -20,7 +18,7 @@ export interface IdxedExtracted{
 // SEND_DETECTED_CARDS : content script에서 감지된 카드 데이터를 CardPage로 전송
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
 
-const CardPage: React.FC = () => {
+const DetectPage: React.FC = () => {
   const {customCards} = useCustomCard();
   const [extracteds, setExtracteds] = useState<IdxedExtracted[]>([]);
   const [url, setUrl] = useState<string>(''); 
@@ -51,18 +49,18 @@ const CardPage: React.FC = () => {
     if (customCards.length > 0) {
       requestExtracteds();
     }
-  },[customCards])
+  },[customCards]);
   return (
-    <div className={cardPageStyles.pageContainer}>
+    <div className={detectPageStyle.pageContainer}>
 
-      <div className={cardPageStyles.header}>
-        <span className={cardPageStyles.url}>{url}</span>
-        <div className={cardPageStyles.headerButtons}>
-          <span className={cardPageStyles.redetectCard} onClick={requestExtracteds}>↺ 다시 감지</span>
+      <div className={detectPageStyle.header}>
+        <span className={detectPageStyle.url}>{url}</span>
+        <div className={detectPageStyle.headerButtons}>
+          <span className={detectPageStyle.redetectCard} onClick={requestExtracteds}>↺ 다시 감지</span>
         </div>
       </div>
 
-      <div className={cardPageStyles.cardsWrapper}>
+      <div className={detectPageStyle.cardsWrapper}>
         {extracteds && extracteds.length > 0 ? (
           extracteds.map(({ cardName, extracted }, idx) => (
             customCards.find(card=>card.cardName===cardName) &&
@@ -73,13 +71,11 @@ const CardPage: React.FC = () => {
             />
           ))
         ) : (
-          <div className={cardPageStyles.noCard}>감지된 카드가 없습니다.</div>
+          <div className={detectPageStyle.noCard}>감지된 카드가 없습니다.</div>
         )}
       </div>
-
-      <Footer />
     </div>
   );
 };
 
-export default CardPage;
+export default DetectPage;
