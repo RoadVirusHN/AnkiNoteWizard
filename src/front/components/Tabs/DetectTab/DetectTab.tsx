@@ -20,11 +20,11 @@ const DetectTab = ({}) => {
   <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.CARD? tabsStyle.selected : ''}`} to={'/card'}>
       <TooltipWrapper 
       classes={[tabsStyle.tooltip]}
-      text={`Anki ${isPending ? 'connecting..':(isConnected ? 'connected' : 'disconnected')}`} 
+      text={`${isPending ? 'connecting..':(isConnected ? 'refresh?' : 'Anki disconnected')}`} 
       tooltipDirection={TooltipDirection.BOTTOM_LEFT}
       styles={{top: '40px', left: '35px'}}
       >
-        <span style={{color:isPending ? 'gray' : (isConnected ? 'greenyellow' : 'red')}}>●</span>
+        <span onClick={checkConnection} style={{cursor: 'pointer', color:isPending ? 'gray' : (isConnected ? 'greenyellow' : 'red')}}>●</span>
       </TooltipWrapper>
       <AnkiIcon className={`${tabsStyle["anki-logo"]} ` + (isPending ? `${tabsStyle.spinning}`:'')}/>
       <p>Detect</p>
