@@ -14,6 +14,9 @@ const Tabs = ({}) => {
   const {currentTab, setCurrentTab} = useGlobalVarStore();
   useEffect(() => {
     switch (location.pathname) {
+      case '/add':
+        if (currentTab !== Tab.ADD) setCurrentTab(Tab.ADD);
+        break;
       case '/history':
         if (currentTab !== Tab.HISTORY) setCurrentTab(Tab.HISTORY);
         break;
@@ -24,14 +27,14 @@ const Tabs = ({}) => {
         if (currentTab !== Tab.CONFIG) setCurrentTab(Tab.CONFIG);
         break;
       default:
-        if (currentTab !== Tab.CARD) setCurrentTab(Tab.CARD);
+        if (currentTab !== Tab.DETECT) setCurrentTab(Tab.DETECT);
         break;
     }
   }, [location]);
   return (
   <nav className={`${tabsStyle.tabs} ${commonStyle["no-select"]}`}>
     <DetectTab/>
-    <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.HISTORY? tabsStyle.selected : ''}`} to={'/AddCard'}>
+    <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.ADD? tabsStyle.selected : ''}`} to={'/add'}>
       <AddCardIcon/>
       <p>Add</p>
     </NavLink>

@@ -18,7 +18,7 @@ const DetectTab = ({}) => {
     }, [isConnected,checkConnection]);
 
   return (
-  <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.CARD? tabsStyle.selected : ''}`} to={'/card'}>
+  <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.DETECT ? tabsStyle.selected : ''}`} to={'/detect'}>
       <div style={{display:'flex', alignItems: 'end', gap: '5px'}}>
         <span className={commonStyle.badge}>{currentDetected}</span>
         <AnkiIcon className={`${tabsStyle["anki-logo"]} ` + (isPending ? `${tabsStyle.spinning}`:'')}/>

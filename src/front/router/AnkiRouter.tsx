@@ -5,6 +5,7 @@ import CustomPage from "../components/pages/Custom/CustomPage";
 import ModifyCustomCard from "../components/pages/ModifyCustomCard/ModifyCustomCard";
 import Main from "../pages/Main/Main";
 import DetectPage from "../pages/Detect/DetectPage";
+import AddPage from "../pages/Add/AddPage";
 
 const router = createHashRouter([
   {
@@ -16,8 +17,12 @@ const router = createHashRouter([
         element: <DetectPage/>
       },
       {
-        path: "card",
+        path: "detect",
         element: <DetectPage/>
+      },
+      {
+        path: "add",
+        element: <AddPage/>
       },
       {
         path: "history",

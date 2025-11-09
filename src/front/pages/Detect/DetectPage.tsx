@@ -2,6 +2,7 @@ import detectPageStyle from '@/front/pages/Detect/detectPage.module.css';
 import { useEffect, useState } from 'react';
 import useCustomCard from '@/front/utils/useCustomCard';
 import DetectedCard from './DetectedCard/DetectedCard';
+import DeckInput from '@/front/components/StatusBar/DeckInput/DeckInput';
 //TODO : Apply SCSS for css.
 //TODO : MAKE Interfaces&Types FILE
 export interface Extracted{
@@ -54,7 +55,7 @@ const DetectPage: React.FC = () => {
     <div className={detectPageStyle.pageContainer}>
 
       <div className={detectPageStyle.header}>
-        <span className={detectPageStyle.url}>{url}</span>
+        <DeckInput/> 
         <div className={detectPageStyle.headerButtons}>
           <span className={detectPageStyle.redetectCard} onClick={requestExtracteds}>↺ 다시 감지</span>
         </div>

@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export enum Tab {
-  CARD = 'CARD',
+  DETECT = 'DETECT',
+  ADD = 'ADD',
   HISTORY = 'HISTORY',
   CUSTOM = 'CUSTOM',
   CONFIG = 'CONFIG',
@@ -22,7 +23,7 @@ interface GlobalVarState {
 const useGlobalVarStore = create<GlobalVarState>()(
   persist(
     (set) => ({
-      currentTab: Tab.CARD,
+      currentTab: Tab.DETECT,
       currentDeck: '',
       isAddingCard: false,
       currentDetected: 0,

@@ -1,5 +1,5 @@
 import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
-import DecksSvg from "@/public/Decks-Svg.svg";
+import DecksIcon from "@/public/Icon/Icon-Decks.svg";
 import statusBarStyle from "../statusBar.module.css";
 import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
 const DeckInput = ({}) => {
@@ -12,7 +12,7 @@ const DeckInput = ({}) => {
   return (
     <div className={statusBarStyle.deckSelector}>
       <label htmlFor="deck-select">
-        {/* <DecksSvg width={18} height={18}/> */}
+         <DecksIcon />
       </label>
       <select id="deck-select" name="deck-select" style={{height: '20px', width: '180px'}} onChange={(e)=>{onChangeDeck(e.currentTarget.value)}} value={currentDeck??''}>
         {decks.length>0? decks.map((deck) => <option key={deck} value={deck}>{deck}</option>) : <option value=''>Check Anki Connection!</option>}
