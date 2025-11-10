@@ -25,6 +25,7 @@ export interface CustomCard {
   description: string;
   modelName: string;
   urlPatterns: string[];
+  rootTags: string[];
   Front: {
     html: string;
     fields: CardField[];
