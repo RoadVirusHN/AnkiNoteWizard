@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import useCustomCard from '@/front/utils/useCustomCard';
 import DetectedCard from './DetectedCard/DetectedCard';
 import DeckInput from '@/front/components/StatusBar/DeckInput/DeckInput';
+import InfoIcon from '@/public/Icon/Icon-Info.svg';
+
 //TODO : Apply SCSS for css.
 //TODO : MAKE Interfaces&Types FILE
 export interface Extracted{
@@ -23,18 +25,24 @@ const DetectPage: React.FC = () => {
   const {customCards} = useCustomCard();
   const [extracteds, setExtracteds] = useState<IdxedExtracted[]>([]);
   const [url, setUrl] = useState<string>(''); 
+  const [isPending, setIsPending] = useState(false);
+  let pendingId : NodeJS.Timeout;
   const requestExtracteds = async () => {
     console.log('Requesting detected cards from content script');
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab.id) {
-      console.warn('No active tab found');
+      console.warn('No active tab found!');
       return;
     }
     console.log(customCards)
+    setIsPending(true);
     chrome.tabs.sendMessage(tab.id, {
       type: 'REQUEST_DETECTED_CARDS',
       customCards,
     });
+    pendingId = setInterval(()=>{
+      setIsPending(false);
+    },5000);
   };
   
   useEffect(()=>{
@@ -43,8 +51,11 @@ const DetectPage: React.FC = () => {
         console.log("Received detected cards from content script:", message.data);
         setExtracteds(message.data);
         setUrl(message.URL);
+        setIsPending(false);
+        clearInterval(pendingId);
       }
     });
+    return ()=>clearInterval(pendingId);
   },[]);
   useEffect(()=>{
     if (customCards.length > 0) {
@@ -57,8 +68,11 @@ const DetectPage: React.FC = () => {
       <div className={detectPageStyle.header}>
         <DeckInput/> 
         <div className={detectPageStyle.headerButtons}>
-          <span className={detectPageStyle.redetectCard} onClick={requestExtracteds}>↺ 다시 감지</span>
+          <button disabled={isPending} className={detectPageStyle.redetectCard} onClick={requestExtracteds}>
+            {isPending ? 'Scanning...': '↺ Rescan'}
+          </button>
         </div>
+        <InfoIcon/>
       </div>
 
       <div className={detectPageStyle.cardsWrapper}>
