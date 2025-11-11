@@ -43,6 +43,7 @@ const getExtractedFromPage = (customCards: CustomCard[]): IdxedExtracted[] => {
         Front: {},
         Back: {},
       };
+      
       // Front 필드 추출
       card.Front.fields.forEach((field) => {
         try {

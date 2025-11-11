@@ -67,7 +67,7 @@ const ModifyCustomCard = () => {
     const backHtml = (formData.get("BackHtml") as string) || "";
     const urlPatternsRaw = (formData.get("urlPatterns") as string) || "";
     const tagsRaw = (formData.get("tags") as string) || "";
-    const rootTagsRaw = (formData.get("rootTags") as string) || "";
+    const rootTag = (formData.get("rootTag") as string) || "";
 
     const frontFields = frontRef.current?.getFields() ?? [];
     const backFields = backRef.current?.getFields() ?? [];
@@ -81,12 +81,11 @@ const ModifyCustomCard = () => {
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
-    const rootTags = rootTagsRaw.split(",").map((s)=>s.trim()).filter(Boolean);
     const newCard = {
       cardName,
       description,
       modelName: "Basic",
-      rootTags,
+      rootTag,
       urlPatterns,
       Front: { html: frontHtml, fields: frontFields },
       Back: { html: backHtml, fields: backFields },
@@ -138,9 +137,9 @@ const ModifyCustomCard = () => {
             className={styles.inputSmall}
           />
           <input
-            name="rootTags"
+            name="rootTag"
             placeholder="root Css Selector (comma separated)"
-            defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.rootTags || []).join(", ") : ""}
+            defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.rootTag || "document") : "document"}
             className={styles.inputSmall}
           />
         </div>
