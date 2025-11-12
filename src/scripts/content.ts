@@ -22,16 +22,15 @@ window.onload = () => {
 };
 
 const checkUrlMatched = (customCard: CustomCard): boolean => {
-  customCard = customCard || ['*'];
+  customCard.urlPatterns = customCard.urlPatterns || ['body'];
   return (
     // use wildcard to match urlPattern
     customCard.urlPatterns.some((pattern) => {
-      pattern = '^' + pattern + '$';
       const regex = new RegExp(
-        pattern
+        '^' + pattern
           .split('*')
           .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-          .join('.*')
+          .join('.*') + '$'
       );
       return regex.test(window.location.href);
     })
