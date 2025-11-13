@@ -13,10 +13,11 @@ let customCards: CustomCard[] = [];
 window.onload = () => {
   chrome.runtime.sendMessage({ type: 'REQUEST_CUSTOM_CARDS_FROM_BACKGROUND' });
   console.log('Content script window.onload fired', customCards);
-  const res = getExtractedFromPage(customCards);
+  const [res, cnt] = getExtractedFromPage(customCards);
   console.log('Extracted data on window.onload:', res);
   chrome.runtime.sendMessage({
     type: 'SEND_DETECTED_CARDS',
+    cnt,
     data: res,
     URL: window.location.href,
   });
@@ -71,8 +72,9 @@ const extractFields = (root: Element, record: Record<string, string>) => (field:
 };
 
 //TODO : refactoring it!
-const getExtractedFromPage = (customCards: CustomCard[]): ExtractedMap => {
+const getExtractedFromPage = (customCards: CustomCard[]): [ExtractedMap, number] => {
   const res: ExtractedMap = {};
+  let cnt = 0;
   customCards.filter(checkUrlMatched).forEach((card, idx) => {
     const extracteds: Extracted[] = [];
     let roots = Array.from(document.querySelectorAll(card.rootTag));
@@ -88,10 +90,11 @@ const getExtractedFromPage = (customCards: CustomCard[]): ExtractedMap => {
       // Back 필드 추출
       card.Back.fields.forEach(extractFields(root, extracted.Back));
       extracteds.push(extracted);
+      cnt++;
     });
     res[idx] = extracteds;
   });
-  return res;
+  return [res, cnt];
 };
 chrome.runtime.onMessage.addListener((message) => {
   console.log('Message received from content.js :', message);
@@ -99,10 +102,11 @@ chrome.runtime.onMessage.addListener((message) => {
     console.log('Received EXTRACT_DATA_REQUEST message');
     // 여기서 데이터 추출 로직을 수행
     customCards = message.customCards;
-    const extractedData = getExtractedFromPage(customCards);
+    const [extractedData, cnt] = getExtractedFromPage(customCards);
     // 추출된 데이터를 백그라운드 스크립트로 전송
     chrome.runtime.sendMessage({
       type: 'SEND_DETECTED_CARDS',
+      cnt,
       data: extractedData,
       url: window.location.href,
     });

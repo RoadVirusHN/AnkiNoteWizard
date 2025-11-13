@@ -81,11 +81,12 @@ const ModifyCustomCard = () => {
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
+    // TODO : rootTag 기본값 Body 
     const newCard = {
       cardName,
       description,
       modelName: "Basic",
-      rootTag,
+      rootTag : "body",
       urlPatterns,
       Front: { html: frontHtml, fields: frontFields },
       Back: { html: backHtml, fields: backFields },
