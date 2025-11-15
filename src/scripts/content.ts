@@ -66,7 +66,6 @@ const extractFields = (root: Element, record: Record<string, string>) => (field:
   }
 };
 
-//TODO : refactoring it!
 const getExtractedFromPage = (customCards: CustomCard[]): [ExtractedMap, number] => {
   const res: ExtractedMap = {};
   let cnt = 0;

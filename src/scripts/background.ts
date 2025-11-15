@@ -31,7 +31,7 @@ chrome.runtime.onMessage.addListener(async (message) => {
     case 'REQUEST_CUSTOM_CARDS_FROM_BACKGROUND':
       {
         const response = await chrome.storage.local.get('anki-card-wizard-custom-cards');
-        const customCards = response['anki-card-wizard-custom-cards'] || [];
+        const customCards = response['anki-card-wizard-custom-cards'] || []; // TODO : WTF?
         chrome.runtime.sendMessage({
           type: 'RESPONSE_CUSTOM_CARDS_FROM_BACKGROUND',
           customCards,
