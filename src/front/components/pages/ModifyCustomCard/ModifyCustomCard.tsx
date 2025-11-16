@@ -73,12 +73,12 @@ const ModifyCustomCard = () => {
     const formData = new FormData(form.current!);
     const cardName = (formData.get("cardName") as string) || "";
     const description = (formData.get("description") as string) || "";
-    const frontHtml = (formData.get("FrontHtml") as string) || "";
-    const backHtml = (formData.get("BackHtml") as string) || "";
     const urlPatternsRaw = (formData.get("urlPatterns") as string) || "";
     const tagsRaw = (formData.get("tags") as string) || "";
     const rootTag = (formData.get("rootTag") as string) || "";
-
+    
+    const frontHtml = frontEditorRef.current?.getValue() || "<p>{{front}}</p>";
+    const backHtml = backEditorRef.current?.getValue() || "<p>{{back}}</p>";
     const frontFields = frontRef.current?.getFields() ?? [];
     const backFields = backRef.current?.getFields() ?? [];
 
