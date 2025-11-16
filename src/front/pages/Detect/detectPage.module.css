@@ -90,6 +90,8 @@
   display: flex;
   gap: 8px;
   justify-content: space-between;
+  align-items:start;
+  flex-direction: column;
 }
 /* ⨁ 추가 버튼 */
 .addCardButton {

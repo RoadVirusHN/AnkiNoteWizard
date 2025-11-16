@@ -8,41 +8,41 @@ const DetectedCard = ({customCard, extracted}:{customCard: CustomCard, extracted
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentDeck} = useGlobalVarStore();
   const addToAnki = () => {
-  const buildedFront = customCard.Front.html.replaceAll(/\{\{(.*?)\}\}/g, 
-    (_, fieldName) => {
-      const fieldInfo = customCard.Front.fields.find(f=>f.name === fieldName);
-      if (fieldInfo) {
-        switch (fieldInfo.dataType) {
-          case CardFieldDataType.IMAGE:
-            return `<img src="${extracted.Front[fieldName] || ''}" />`;
-          case CardFieldDataType.AUDIO:
-            return `[sound:${extracted.Front[fieldName] || ''}]`;
-          case CardFieldDataType.TEXT:
-            return extracted.Front[fieldName] || '';
-          default:
-            return extracted.Front[fieldName] || '';
+    const buildedFront = customCard.Front.html.replaceAll(/\{\{(.*?)\}\}/g, 
+      (_, fieldName) => {
+        const fieldInfo = customCard.Front.fields.find(f=>f.name === fieldName);
+        if (fieldInfo) {
+          switch (fieldInfo.dataType) {
+            case CardFieldDataType.IMAGE:
+              return `<img src="${extracted.Front[fieldName] || ''}" />`;
+            case CardFieldDataType.AUDIO:
+              return `[sound:${extracted.Front[fieldName] || ''}]`;
+            case CardFieldDataType.TEXT:
+              return extracted.Front[fieldName] || '';
+            default:
+              return extracted.Front[fieldName] || '';
+          }
         }
-      }
-      return ''; // Ensure a string is always returned
-    });
-  const buildedBack = customCard.Back.html.replaceAll(/\{\{(.*?)\}\}/g, 
-    (_, fieldName) => {
-      const fieldInfo = customCard.Back.fields.find(f=>f.name === fieldName);
-      if (fieldInfo) {
-        switch (fieldInfo.dataType) {
-          case CardFieldDataType.IMAGE:
-            return `<img src="${extracted.Back[fieldName] || ''}" />`;
-          case CardFieldDataType.AUDIO:
-            return `[sound:${extracted.Back[fieldName] || ''}]`;
-          case CardFieldDataType.TEXT:
-            return extracted.Back[fieldName] || '';
-          default:
-            return extracted.Back[fieldName] || '';
+        return ''; // Ensure a string is always returned
+      });
+    const buildedBack = customCard.Back.html.replaceAll(/\{\{(.*?)\}\}/g, 
+      (_, fieldName) => {
+        const fieldInfo = customCard.Back.fields.find(f=>f.name === fieldName);
+        if (fieldInfo) {
+          switch (fieldInfo.dataType) {
+            case CardFieldDataType.IMAGE:
+              return `<img src="${extracted.Back[fieldName] || ''}" />`;
+            case CardFieldDataType.AUDIO:
+              return `[sound:${extracted.Back[fieldName] || ''}]`;
+            case CardFieldDataType.TEXT:
+              return extracted.Back[fieldName] || '';
+            default:
+              return extracted.Back[fieldName] || '';
+          }
         }
+        return '';
       }
-      return '';
-    }
-  );
+    );
 
     fetchAnki<{noteIds: number[]}>({
       action: 'addNote',
@@ -73,9 +73,6 @@ const DetectedCard = ({customCard, extracted}:{customCard: CustomCard, extracted
       }
     });
   };  
-  const AddCard = () => {
-    addToAnki();
-  }
 
   return (  
     <div className={detectPageStyle.detectedCardContainer}>
