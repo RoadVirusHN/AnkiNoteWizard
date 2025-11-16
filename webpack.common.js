@@ -73,7 +73,8 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: path.resolve(__dirname, 'src/manifest.json'), to: 'manifest.json' },
-        { from: path.resolve(__dirname, 'src/icons'), to: 'icons' }
+        { from: path.resolve(__dirname, 'src/icons'), to: 'icons' },
+        { from: 'node_modules/monaco-editor/min/vs', to: 'vs' } 
       ]
     })
   ]

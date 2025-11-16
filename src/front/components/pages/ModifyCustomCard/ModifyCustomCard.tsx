@@ -5,6 +5,8 @@ import { useEffect, useRef } from "react";
 import CardFieldInput, { CardFieldInputRef } from "./CardFieldInput/CardFieldInput";
 import styles from "./modifyCustomCard.module.css";
 import type { CardField } from "@/front/utils/useCustomCard";
+import Editor, { OnMount, loader } from "@monaco-editor/react";
+import {editor} from 'monaco-editor';
 
 const ModifyCustomCard = () => {
   const { index } = useParams();
@@ -15,7 +17,15 @@ const ModifyCustomCard = () => {
   const form = useRef<HTMLFormElement>(null);
   const frontRef = useRef<CardFieldInputRef>(null);
   const backRef = useRef<CardFieldInputRef>(null);
+  const frontEditorRef = useRef<editor.IStandaloneCodeEditor>(null);
+  const backEditorRef = useRef<editor.IStandaloneCodeEditor>(null);
 
+  const handleBackEditorMount: OnMount = (editor, monaco)=>{
+    backEditorRef.current = editor;
+  }
+  const handleFrontEditorMount : OnMount = (editor, monaco)=>{
+    frontEditorRef.current = editor;
+  }
   // Add 모드일 때 기본 필드 자동 세팅 (삭제 불가)
   useEffect(() => {
     if (!isEditMode) {
@@ -86,7 +96,7 @@ const ModifyCustomCard = () => {
       cardName,
       description,
       modelName: "Basic",
-      rootTag : "body",
+      rootTag,
       urlPatterns,
       Front: { html: frontHtml, fields: frontFields },
       Back: { html: backHtml, fields: backFields },
@@ -140,7 +150,7 @@ const ModifyCustomCard = () => {
           <input
             name="rootTag"
             placeholder="root Css Selector (comma separated)"
-            defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.rootTag || "") : ""}
+            defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.rootTag || "body") : "body"}
             className={styles.inputSmall}
           />
         </div>
@@ -148,11 +158,13 @@ const ModifyCustomCard = () => {
         <div className={styles.cardArea}>
           <div className={styles.cardSide}>
             <h3 className={styles.sideTitle}>Front</h3>
-            <textarea
-              name="FrontHtml"
-              placeholder="Front HTML"
-              defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.Front.html : ""}
-              className={styles.textarea}
+            <Editor
+              defaultLanguage="html"
+              defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.Front.html : "<p>{{front}}</p>"}
+              height={80}
+              width={'100%'}
+              theme="light"
+              onMount={handleFrontEditorMount}
             />
             <div className={styles.scrollArea}>
               <CardFieldInput ref={frontRef} />
@@ -161,11 +173,13 @@ const ModifyCustomCard = () => {
 
           <div className={styles.cardSide}>
             <h3 className={styles.sideTitle}>Back</h3>
-            <textarea
-              name="BackHtml"
-              placeholder="Back HTML"
-              defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.Back.html : ""}
-              className={styles.textarea}
+            <Editor
+              defaultLanguage="html"
+              defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.Back.html : "<p>{{back}}</p>"}
+              height={80}
+              width={'100%'}
+              theme="light"
+              onMount={handleBackEditorMount}
             />
             <div className={styles.scrollArea}>
               <CardFieldInput ref={backRef} />

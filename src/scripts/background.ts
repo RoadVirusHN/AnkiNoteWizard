@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener(async (message) => {
     case 'OPEN_MODIFY_CUSTOM_CARD_MODAL':
       if (popupModalWindowId !== null) {
         chrome.windows.remove(popupModalWindowId);
-      } 
+      }
       const url = chrome.runtime.getURL(
         'index.html#/modify-custom-card' + (message.index !== undefined ? '/' + message.index : '')
       );

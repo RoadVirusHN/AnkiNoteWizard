@@ -92,15 +92,7 @@
 
 /* 작은 HTML 편집 박스(고정 높이) */
 .textarea {
-  border-radius: 6px;
-  padding: 8px;
-  resize: none;
-  border: none;
-  min-height: 80px;
-  background: var(--color-dark);
-  color: var(--color-secondary);
-  box-sizing: border-box;
-  margin-bottom: 8px;
+  
 }
 
 /* CardFieldInput 영역만 스크롤 허용 */

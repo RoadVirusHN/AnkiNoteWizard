@@ -21,6 +21,9 @@
   "homepage": "https://github.com/RoadVirusHN/AnkiCardWizard#readme",
   "description": "",
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
+    "monaco-editor": "^0.54.0",
+    "monaco-editor-webpack-plugin": "^7.1.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router": "^7.9.4",
