@@ -1,6 +1,6 @@
 import detectPageStyle from '@/front/pages/Detect/detectPage.module.css';
 import { JSX, useEffect, useState } from 'react';
-import useCustomCard from '@/front/utils/useCustomCard';
+import useCustomCard from '@/front/utils/useTemplates';
 import DetectedCard from './DetectedCard/DetectedCard';
 import DeckInput from '@/front/components/StatusBar/DeckInput/DeckInput';
 import InfoIcon from '@/public/Icon/Icon-Info.svg';

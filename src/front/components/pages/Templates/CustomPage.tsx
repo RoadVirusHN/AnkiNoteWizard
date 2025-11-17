@@ -1,4 +1,4 @@
-import useCustomCard from "@/front/utils/useCustomCard";
+import useCustomCard from "@/front/utils/useTemplates";
 import commonStyles from "@/front/common.module.css";
 import customPageStyles from "./customPage.module.css";
 import { useState } from "react";

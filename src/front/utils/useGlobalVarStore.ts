@@ -5,7 +5,7 @@ export enum Tab {
   DETECT = 'DETECT',
   ADD = 'ADD',
   HISTORY = 'HISTORY',
-  CUSTOM = 'CUSTOM',
+  TEMPLATES = 'TEMPLATES',
   CONFIG = 'CONFIG',
 }
 

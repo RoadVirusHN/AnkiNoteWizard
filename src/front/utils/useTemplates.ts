@@ -7,16 +7,16 @@ export enum CardFieldDataType {
   IMAGE = 'image',
 }
 
-export enum CardFieldSelectorType {
+export enum TemplateFieldSelectorType {
   LITERAL = 'literal',
   CSSSelector = 'cssSelector',
   URL = 'url',
 }
 
-export interface CardField {
+export interface TemplateField {
   name: string;
   content: string;
-  selectorType: CardFieldSelectorType;
+  selectorType: TemplateFieldSelectorType;
   dataType: CardFieldDataType;
 }
 
@@ -28,11 +28,11 @@ export interface CustomCard {
   rootTag: string;
   Front: {
     html: string;
-    fields: CardField[];
+    fields: TemplateField[];
   };
   Back: {
     html: string;
-    fields: CardField[];
+    fields: TemplateField[];
   };
   tags: string[];
   audio?: {

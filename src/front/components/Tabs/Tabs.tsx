@@ -20,8 +20,8 @@ const Tabs = ({}) => {
       case '/history':
         if (currentTab !== Tab.HISTORY) setCurrentTab(Tab.HISTORY);
         break;
-      case '/custom':
-        if (currentTab !== Tab.CUSTOM) setCurrentTab(Tab.CUSTOM);
+      case '/templates':
+        if (currentTab !== Tab.TEMPLATES) setCurrentTab(Tab.TEMPLATES);
         break;
       case '/config':
         if (currentTab !== Tab.CONFIG) setCurrentTab(Tab.CONFIG);
@@ -42,7 +42,7 @@ const Tabs = ({}) => {
       <HistoryIcon/>
       <p>History</p> 
     </NavLink>
-    <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.CUSTOM? tabsStyle.selected : ''}`} to={'/custom'}>
+    <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.TEMPLATES? tabsStyle.selected : ''}`} to={'/templates'}>
       <CardTypeIcon/>
       <p>Templates</p>
     </NavLink>

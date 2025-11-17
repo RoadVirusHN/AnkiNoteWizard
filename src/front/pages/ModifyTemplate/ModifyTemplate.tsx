@@ -1,14 +1,14 @@
 import commonStyles from "@/front/common.module.css";
-import useCustomCard from "@/front/utils/useCustomCard";
+import useCustomCard from "@/front/utils/useTemplates";
 import { Form, useParams } from "react-router";
 import { useEffect, useRef } from "react";
 import CardFieldInput, { CardFieldInputRef } from "./CardFieldInput/CardFieldInput";
-import styles from "./modifyCustomCard.module.css";
-import type { CardField } from "@/front/utils/useCustomCard";
+import modifyTemplateStyle from "./modifyTemplate.module.css";
+import type { TemplateField as TemplateField } from "@/front/utils/useTemplates";
 import Editor, { OnMount, loader } from "@monaco-editor/react";
 import {editor} from 'monaco-editor';
 
-const ModifyCustomCard = () => {
+const ModifyTemplate = () => {
   const { index } = useParams();
   const isEditMode = index !== undefined;
   const idx = isEditMode ? parseInt(index) : undefined;
@@ -37,7 +37,7 @@ const ModifyCustomCard = () => {
             selectorType: "cssSelector",
             dataType: "text",
             locked: true,
-          } as CardField & { locked?: boolean },
+          } as TemplateField & { locked?: boolean },
         ],
         true
       );
@@ -49,7 +49,7 @@ const ModifyCustomCard = () => {
             selectorType: "cssSelector",
             dataType: "text",
             locked: true,
-          } as CardField & { locked?: boolean },
+          } as TemplateField & { locked?: boolean },
         ],
         true
       );
@@ -57,11 +57,11 @@ const ModifyCustomCard = () => {
       // Edit 모드일 때는 기존 카드 필드로 채움
       if (isEditMode && idx !== undefined && customCards[idx]) {
         frontRef.current?.setDefaultFields(
-          customCards[idx].Front.fields as (CardField & { locked?: boolean })[],
+          customCards[idx].Front.fields as (TemplateField & { locked?: boolean })[],
           false
         );
         backRef.current?.setDefaultFields(
-          customCards[idx].Back.fields as (CardField & { locked?: boolean })[],
+          customCards[idx].Back.fields as (TemplateField & { locked?: boolean })[],
           false
         );
       }
@@ -112,52 +112,52 @@ const ModifyCustomCard = () => {
   };
   // TODO : BUG :  CardField가 Modify 할때마다 늘어남.
   return (
-    <div className={`${commonStyles.container} ${styles.wrapper}`}>
-      <div className={styles.header}>
+    <div className={`${commonStyles.container} ${modifyTemplateStyle.wrapper}`}>
+      <div className={modifyTemplateStyle.header}>
         {isEditMode ? `Modify Card #${idx}` : "Add Custom Card"}
       </div>
 
-      <Form ref={form} method="post" onSubmit={(e) => e.preventDefault()} className={styles.form}>
-        <div className={styles.basicRow}>
+      <Form ref={form} method="post" onSubmit={(e) => e.preventDefault()} className={modifyTemplateStyle.form}>
+        <div className={modifyTemplateStyle.basicRow}>
           <input
             name="cardName"
             placeholder="Card Name"
             defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.cardName : ""}
             required
-            className={styles.inputMain}
+            className={modifyTemplateStyle.inputMain}
           />
           <textarea
             name="description"
             placeholder="Description"
             defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.description : ""}
-            className={styles.textarea}
+            className={modifyTemplateStyle.textarea}
           />
         </div>
 
-        <div className={styles.metaRow}>
+        <div className={modifyTemplateStyle.metaRow}>
           <input
             name="urlPatterns"
             placeholder="URL patterns (comma separated)"
             defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.urlPatterns || []).join(", ") : ""}
-            className={styles.inputSmall}
+            className={modifyTemplateStyle.inputSmall}
           />
           <input
             name="tags"
             placeholder="tags (comma separated)"
             defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.tags || []).join(", ") : ""}
-            className={styles.inputSmall}
+            className={modifyTemplateStyle.inputSmall}
           />
           <input
             name="rootTag"
             placeholder="root Css Selector (comma separated)"
             defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.rootTag || "body") : "body"}
-            className={styles.inputSmall}
+            className={modifyTemplateStyle.inputSmall}
           />
         </div>
 
-        <div className={styles.cardArea}>
-          <div className={styles.cardSide}>
-            <h3 className={styles.sideTitle}>Front</h3>
+        <div className={modifyTemplateStyle.cardArea}>
+          <div className={modifyTemplateStyle.cardSide}>
+            <h3 className={modifyTemplateStyle.sideTitle}>Front</h3>
             <Editor
               defaultLanguage="html"
               defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.Front.html : "<p>{{front}}</p>"}
@@ -166,13 +166,13 @@ const ModifyCustomCard = () => {
               theme="light"
               onMount={handleFrontEditorMount}
             />
-            <div className={styles.scrollArea}>
+            <div className={modifyTemplateStyle.scrollArea}>
               <CardFieldInput ref={frontRef} />
             </div>
           </div>
 
-          <div className={styles.cardSide}>
-            <h3 className={styles.sideTitle}>Back</h3>
+          <div className={modifyTemplateStyle.cardSide}>
+            <h3 className={modifyTemplateStyle.sideTitle}>Back</h3>
             <Editor
               defaultLanguage="html"
               defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.Back.html : "<p>{{back}}</p>"}
@@ -181,14 +181,14 @@ const ModifyCustomCard = () => {
               theme="light"
               onMount={handleBackEditorMount}
             />
-            <div className={styles.scrollArea}>
+            <div className={modifyTemplateStyle.scrollArea}>
               <CardFieldInput ref={backRef} />
             </div>
           </div>
         </div>
 
-        <div className={styles.submitRow}>
-          <button type="button" onClick={submitHandler} className={styles.submitBtn}>
+        <div className={modifyTemplateStyle.submitRow}>
+          <button type="button" onClick={submitHandler} className={modifyTemplateStyle.submitBtn}>
             {isEditMode ? "Modify Card" : "Add Card"}
           </button>
         </div>
@@ -197,4 +197,4 @@ const ModifyCustomCard = () => {
   );
 };
 
-export default ModifyCustomCard;
+export default ModifyTemplate;

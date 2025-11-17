@@ -1,21 +1,21 @@
 import { useState, forwardRef, useImperativeHandle } from "react";
-import { CardFieldDataType, CardFieldSelectorType, type CardField } from "@/front/utils/useCustomCard";
+import { CardFieldDataType, TemplateFieldSelectorType, type TemplateField } from "@/front/utils/useTemplates";
 import styles from "./cardFieldInput.module.css";
 
 /**
  * 외부에 노출되는 ref 메서드들
  */
 export interface CardFieldInputRef {
-  getFields: () => CardField[]; // locked 속성 제거된 배열 반환
+  getFields: () => TemplateField[]; // locked 속성 제거된 배열 반환
   clearFields: () => void;
-  setDefaultFields: (fields: (CardField & { locked?: boolean })[], lock?: boolean) => void;
+  setDefaultFields: (fields: (TemplateField & { locked?: boolean })[], lock?: boolean) => void;
 }
 
 interface CardFieldInputProps {
-  defaultValue?: (CardField & { locked?: boolean })[];
+  defaultValue?: (TemplateField & { locked?: boolean })[];
 }
 
-type InternalField = CardField & { locked?: boolean };
+type InternalField = TemplateField & { locked?: boolean };
 
 const CardFieldInput = forwardRef<CardFieldInputRef, CardFieldInputProps>(
   ({ defaultValue = [] }, ref) => {
@@ -37,11 +37,11 @@ const CardFieldInput = forwardRef<CardFieldInputRef, CardFieldInputProps>(
     const addField = () => {
       setFields((prev) => [
         ...prev,
-        { name: "", content: "", selectorType: CardFieldSelectorType.CSSSelector, dataType: CardFieldDataType.TEXT, locked: false },
+        { name: "", content: "", selectorType: TemplateFieldSelectorType.CSSSelector, dataType: CardFieldDataType.TEXT, locked: false },
       ]);
     };
 
-    const updateField = (index: number, key: keyof CardField, value: string) => {
+    const updateField = (index: number, key: keyof TemplateField, value: string) => {
       setFields((prev) =>
         prev.map((f, i) => (i === index ? { ...f, [key]: value } : f))
       );

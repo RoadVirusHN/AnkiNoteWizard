@@ -1,5 +1,5 @@
 import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
-import { CardFieldDataType, CustomCard } from "@/front/utils/useCustomCard";
+import { CardFieldDataType, CustomCard } from "@/front/utils/useTemplates";
 import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
 import detectPageStyle from "@/front/pages/Detect/detectPage.module.css";
 import { Extracted } from "../DetectPage";

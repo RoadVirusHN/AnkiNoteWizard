@@ -1,10 +1,10 @@
 import { Extracted, ExtractedMap } from '@/front/pages/Detect/DetectPage';
 import {
-  CardField,
+  TemplateField,
   CardFieldDataType,
-  CardFieldSelectorType,
+  TemplateFieldSelectorType,
   CustomCard,
-} from '@/front/utils/useCustomCard';
+} from '@/front/utils/useTemplates';
 
 //TODO : Make Message Types Constant Enum
 //TODO : Delayed search for Delayed Content delivery
@@ -33,10 +33,10 @@ const checkUrlMatched = (customCard: CustomCard): boolean => {
     })
   );
 };
-const extractFields = (root: Element, record: Record<string, string>) => (field: CardField) => {
+const extractFields = (root: Element, record: Record<string, string>) => (field: TemplateField) => {
   try {
     let element: Element | null = null;
-    if (field.selectorType === CardFieldSelectorType.CSSSelector) {
+    if (field.selectorType === TemplateFieldSelectorType.CSSSelector) {
       element = root.querySelector(field.content);
     }
 
