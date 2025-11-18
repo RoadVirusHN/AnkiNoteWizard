@@ -21,7 +21,7 @@ const AnkiStatus = () => {
     <ToolTipWrapper 
       text={`Anki ${isConnected ? 'connected' : 'disconnected'}`} 
       classes={[commonStyle['no-select']]}
-      styles={{display:'flex', justifyContent: 'space-around', gap:'3px', width: '60px'}}>
+      textStyles={{display:'flex', justifyContent: 'space-around', gap:'3px', width: '60px'}}>
         <img className={(isPending ? `${ankiStatusStyle.spinning}`:'')} src={AnkiPng} width={20} height={20}/>
         <span style={{color:isPending ? 'gray' : (isConnected ? 'greenyellow' : 'red')}}>●</span>
         {/* <ResetSvg className={`${ankiStatusStyle["reset-btn"]} ${ankiStatusStyle.btn}`} onClick={()=>checkConnection()} width={20} height={20}/> */}

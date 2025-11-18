@@ -33,8 +33,8 @@ const DetectTab = ({}) => {
         <TooltipWrapper 
         classes={[tabsStyle.tooltip]}
         text={`${isPending ? 'connecting..':(isConnected ? 'refresh?' : 'Anki disconnected')}`} 
-        tooltipDirection={TooltipDirection.BOTTOM_LEFT}
-        styles={{top: '40px', left: '35px'}}
+        tooltipDirection={TooltipDirection.BOTTOM}
+        textStyles={{top: '45px'}}
         >
           <span onClick={checkConnection} style={{cursor: 'pointer', color:isPending ? 'gray' : (isConnected ? 'greenyellow' : 'red')}}>●</span>
         </TooltipWrapper>

@@ -18,7 +18,7 @@
 
   /* Position the tooltip text */
   position: absolute;
-  z-index: 1;
+  z-index: 9999;
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -68,12 +68,12 @@
 
 .tooltip-bottom-left {
   top: 135%;
-  left: 135%;
-  margin-left: -60px;
+  left: -70%;
+  margin-right: 60px;
 }
 .tooltip .tooltip-bottom-left.tooltiptext::after {
   bottom: 100%;
-  left: 20%;
+  right: 15%;
   border-color: transparent transparent var(--color-primary) transparent;
 }
 
@@ -85,8 +85,7 @@
   border-style: solid;
 }
 
-.tooltip:hover .tooltiptext,
-.tooltip:focus-within .tooltiptext {
+.tooltip:hover .tooltiptext {
   visibility: visible !important;
   opacity: 1 !important;
 }

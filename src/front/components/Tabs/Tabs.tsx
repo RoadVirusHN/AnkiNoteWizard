@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import useGlobalVarStore, { Tab } from "@/front/utils/useGlobalVarStore";
 import DetectTab from "./DetectTab/DetectTab";
 import commonStyle from "@/front/common.module.css";
+import TooltipWrapper, { TooltipDirection } from "../TooltipWrapper/TooltipWrapper";
 
 const Tabs = ({}) => {
   const location = useLocation();
@@ -34,22 +35,38 @@ const Tabs = ({}) => {
   return (
   <nav className={`${tabsStyle.tabs} ${commonStyle["no-select"]}`}>
     <DetectTab/>
-    <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.ADD? tabsStyle.selected : ''}`} to={'/add'}>
-      <AddCardIcon/>
+    <TooltipWrapper text="Comming soon!" tooltipDirection={TooltipDirection.BOTTOM} styles={{flex: '1'}}>
+      <NavLink 
+      onClick={(e)=>e.preventDefault()}
+      className={`${tabsStyle.tab} ${currentTab==Tab.ADD? tabsStyle.selected : ''}`} 
+      to={'/add'}>
+      <AddCardIcon style={{filter: "grayscale(100%)"}}/>
       <p>Add</p>
-    </NavLink>
-    <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.HISTORY? tabsStyle.selected : ''}`} to={'/history'}>
-      <HistoryIcon/>
-      <p>History</p> 
-    </NavLink>
+      </NavLink>
+    </TooltipWrapper>
+    <TooltipWrapper text="Comming soon!" tooltipDirection={TooltipDirection.BOTTOM} styles={{flex: '1'}}>
+      <NavLink 
+      onClick={(e)=>e.preventDefault()}
+      className={`${tabsStyle.tab} ${currentTab==Tab.HISTORY? tabsStyle.selected : ''}`} 
+      to={'/history'}
+      >
+        <HistoryIcon style={{fill: "gray"}}/>
+        <p>History</p> 
+      </NavLink>
+    </TooltipWrapper>
     <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.TEMPLATES? tabsStyle.selected : ''}`} to={'/templates'}>
       <CardTypeIcon/>
       <p>Templates</p>
-    </NavLink>
-    <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.CONFIG? tabsStyle.selected : ''}`} to={'/config'}>
-      <ConfigIcon/>
-      <p>Config</p>
-    </NavLink>
+    </NavLink>    
+    <TooltipWrapper text="Comming soon!" tooltipDirection={TooltipDirection.BOTTOM_LEFT} styles={{flex: '1'}}>
+      <NavLink 
+      onClick={(e)=>e.preventDefault()}
+      className={`${tabsStyle.tab} ${currentTab==Tab.CONFIG? tabsStyle.selected : ''}`} 
+      to={'/config'}>
+        <ConfigIcon style={{fill: "gray"}}/>
+        <p>Config</p>
+      </NavLink>
+    </TooltipWrapper>
   </nav>
   );
 };
