@@ -91,6 +91,10 @@ const ModifyTemplate = () => {
       .filter(Boolean);
     // TODO : rootTag 기본값 Body 
     const newCard = {
+      meta: {
+        author : 'user',
+        description
+      },
       templateName,
       description,
       modelName: "Basic",
@@ -127,7 +131,7 @@ const ModifyTemplate = () => {
           <textarea
             name="description"
             placeholder="Description"
-            defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.description : ""}
+            defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.meta.description : ""}
             className={modifyTemplateStyle.textarea}
           />
         </div>

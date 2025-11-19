@@ -13,9 +13,17 @@ export interface TemplateField {
   dataType: TemplateFieldDataType;
 }
 
+export interface TemplateMeta {
+  key?: string;
+  author?: string;
+  description?: string;
+  version?: string;
+  url?: string;
+}
+
 export interface Template {
+  meta: TemplateMeta;
   templateName: string;
-  description: string;
   modelName: string;
   urlPatterns: string[];
   rootTag: string;
@@ -58,7 +66,7 @@ const useTemplate = create<TemplateState>()(
         set((state) => ({
           templates: state.templates.map((c, i) => (i === index ? template : c)),
         }));
-      }
+      },
     }),
     {
       name: 'anki-card-wizard-global-var-store',

@@ -38,7 +38,7 @@ const CustomPage: React.FC = () => {
           {curIdx!==null && customCards[curIdx] && 
             <>
               <h2 style={{margin: '0px'}}>{customCards[curIdx].templateName}</h2>
-              <p>{customCards[curIdx].description}</p>
+              <p>{customCards[curIdx].meta.description}</p>
               <div className={customPageStyles.cardDetail}>
                   {
                     isFront ? 

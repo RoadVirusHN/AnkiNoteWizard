@@ -4,7 +4,7 @@ import DownSvg from "@/public/Icon/Icon-Down.svg"
 const TemplateDetail = ({template}:{template: Template}) => {
   return (<div className={templateDetailStyle.template}>
     <h2>{template.templateName}</h2>
-    {template.description}
+    {template.meta.description}
     <DownSvg/>
   </div>);
 };
