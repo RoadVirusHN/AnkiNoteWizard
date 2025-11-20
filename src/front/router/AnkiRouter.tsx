@@ -35,12 +35,12 @@ const router = createHashRouter([
       {
         path: "config",
         element: <ConfigPage/>
+      },
+      {
+        path: "modify",
+        element: <ModifyTemplate/>
       }
     ]
-  },
-  {
-    path: '/modify-custom-card/:index?',
-    element: <ModifyTemplate/>
   }
 ]);
 

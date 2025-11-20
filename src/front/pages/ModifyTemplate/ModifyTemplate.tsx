@@ -1,18 +1,21 @@
 import commonStyles from "@/front/common.module.css";
 import useTemplates from "@/front/utils/useTemplates";
-import { Form, useParams } from "react-router";
+import { Form, useNavigate, useParams } from "react-router";
 import { useEffect, useRef } from "react";
 import TemplateFieldInput, { TemplateFieldInputRef } from "./TemplateFieldInput/TemplateFieldInput";
 import modifyTemplateStyle from "./modifyTemplate.module.css";
 import type { TemplateField as TemplateField } from "@/front/utils/useTemplates";
 import Editor, { OnMount, loader } from "@monaco-editor/react";
 import {editor} from 'monaco-editor';
+import SimpleButton from "@/front/components/SimpleButton/SimpleButton";
+import ReturnIcon from "@/public/Icon/Icon-Return.svg";
 
 const ModifyTemplate = () => {
   const { index } = useParams();
   const isEditMode = index !== undefined;
   const idx = isEditMode ? parseInt(index) : undefined;
   const { templates: customCards, addTemplate: addCustomCard, modifyTemplate: modifyCustomCard } = useTemplates();
+  const navigate = useNavigate();
 
   const form = useRef<HTMLFormElement>(null);
   const frontRef = useRef<TemplateFieldInputRef>(null);
@@ -189,12 +192,14 @@ const ModifyTemplate = () => {
           </div>
         </div>
 
-        <div className={modifyTemplateStyle.submitRow}>
-          <button type="button" onClick={submitHandler} className={modifyTemplateStyle.submitBtn}>
-            {isEditMode ? "Modify Card" : "Add Card"}
-          </button>
-        </div>
       </Form>
+
+      <div className={modifyTemplateStyle.submitRow}>
+        <button type="button" onClick={submitHandler} className={modifyTemplateStyle.submitBtn}>
+          {isEditMode ? "Modify Card" : "Add Card"}
+        </button>
+        <SimpleButton svg={ReturnIcon} text="Cancle" onClick={()=>navigate('/templates')}/>
+      </div>
     </div>
   );
 };
