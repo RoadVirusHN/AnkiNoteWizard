@@ -1,18 +1,16 @@
 import { FunctionComponent, ReactNode, SVGAttributes, useState } from 'react';
 import simpleButtonStyles from './simpleButton.module.css';
 interface ButtonProps {
-  text: string;
+  text?: string;
   img?: string; 
-  svg?: FunctionComponent<SVGAttributes<SVGElement>>;
+  Svg?: FunctionComponent<SVGAttributes<SVGElement>>;
   onClick?: () => void;
   overridedStyle?: React.CSSProperties;
 }
-const SimpleButton = ({text, img,svg, onClick, overridedStyle}:ButtonProps) => {
+const SimpleButton = ({text, img,Svg, onClick, overridedStyle}:ButtonProps) => {
 
   return (<button className={`${simpleButtonStyles['simple-btn']}`} onClick={onClick} style={overridedStyle}>
-    {img && <img src={img}/>}
-    {svg && ((svg as unknown) as ReactNode)}
-    {text}
+    {img && <img src={img}/>}{Svg && <Svg/>} {text}
   </button>);
 };
 export default SimpleButton;
