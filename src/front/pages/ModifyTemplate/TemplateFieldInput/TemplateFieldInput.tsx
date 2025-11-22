@@ -37,11 +37,11 @@ const TemplateFieldInput = forwardRef<TemplateFieldInputRef, TemplateFieldInputP
     const addField = () => {
       setFields((prev) => [
         ...prev,
-        { name: "", content: "", dataType: TemplateFieldDataType.TEXT, locked: false },
+        { name: "", content: "", dataType: TemplateFieldDataType.TEXT, locked: false, isOptional: true},
       ]);
     };
 
-    const updateField = (index: number, key: keyof TemplateField, value: string) => {
+    const updateField = (index: number, key: keyof TemplateField, value: string|boolean) => {
       setFields((prev) =>
         prev.map((f, i) => (i === index ? { ...f, [key]: value } : f))
       );
@@ -78,6 +78,12 @@ const TemplateFieldInput = forwardRef<TemplateFieldInputRef, TemplateFieldInputP
               <option value="audio">Audio</option>
               <option value="image">Image</option>
             </select>
+
+            <input 
+            type="checkbox" 
+            checked={field.isOptional} 
+            onChange={(e)=>updateField(i,"isOptional", e.target.checked)}
+            />
 
             {/* 삭제 버튼은 locked일 때 숨김 */}
             {!field.locked && (

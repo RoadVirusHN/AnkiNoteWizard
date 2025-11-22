@@ -11,6 +11,7 @@ export interface TemplateField {
   name: string;
   content: string;
   dataType: TemplateFieldDataType;
+  isOptional: boolean;
 }
 
 export interface TemplateMeta {
@@ -20,7 +21,21 @@ export interface TemplateMeta {
   version?: string;
   url?: string;
 }
-
+export interface Note {
+  deckName: string;
+  modelName: string;
+  fields: {
+    Front: string;
+    Back: string;
+  };
+  tags: string[];
+  audio?: {
+    url: string;
+    filename: string;
+    skipHash: string;
+    fields: string | string[];
+  };
+}
 export interface Template {
   meta: TemplateMeta;
   templateName: string;

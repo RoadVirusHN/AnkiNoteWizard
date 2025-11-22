@@ -4,14 +4,15 @@ import {
   TemplateFieldDataType,
   Template,
 } from '@/front/utils/useTemplates';
+import { STORAGE_KEY } from '../background/constants';
 
 //TODO : Make Message Types Constant Enum
 //TODO : Delayed search for Delayed Content delivery
 console.log('✅ Content script loaded');
 let customCards: Template[] = [];
 window.onload = async () => {
-  const response = await chrome.storage.local.get('anki-card-wizard-custom-cards');
-  customCards = response['anki-card-wizard-custom-cards'] || [];
+  const response = await chrome.storage.local.get(STORAGE_KEY);
+  customCards = response['customCards'] || [];
   // chrome.runtime.sendMessage({ type: 'REQUEST_CUSTOM_CARDS_FROM_BACKGROUND' });
   console.log('Content script window.onload fired', customCards);
   sendDetectedCards(customCards);
@@ -56,7 +57,7 @@ const extractFields = (root: Element, record: Record<string, string>) => (field:
           record[field.name] = element.textContent || '';
       }
     } else {
-      record[field.name] = 'Content does not exist : ' + field.content;
+      record[field.name] = field.isOptional ? '' : 'Content does not exist : ' + field.name;
     }
   } catch (e) {
     console.warn(`Failed to extract field ${field.name}`, e);
