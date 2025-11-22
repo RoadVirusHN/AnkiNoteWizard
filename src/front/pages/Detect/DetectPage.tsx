@@ -7,6 +7,7 @@ import AddIcon from '@/public/Icon/Icon-Add.svg';
 import SimpleButton from '@/front/components/SimpleButton/SimpleButton';
 import useAnkiConnectionStore from '@/front/utils/useAnkiConnectionStore';
 import useGlobalVarStore from '@/front/utils/useGlobalVarStore';
+import useTemplate from '@/front/utils/useTemplates';
 
 const buildCard = (key: 'Front' | 'Back', customCard: Template, extracted: Extracted) =>
   customCard[key].html.replaceAll(/\{\{(.*?)\}\}/g, 
@@ -46,10 +47,10 @@ const DetectPage: React.FC = () => {
   const [extractedMaps, setExtractedMaps] = useState<ExtractedMap>({});
   const [url, setUrl] = useState<string>(''); 
   const [isPending, setIsPending] = useState(false);
-  const [notes, setNotes] = useState<{[idx:string]:Note}>({});
   const [selected, setSelected] = useState(new Set<string>());
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentDeck} = useGlobalVarStore();
+  const {notes, setNotes} = useTemplate();
 
   let pendingId : NodeJS.Timeout;
   const requestExtracteds = async () => {
@@ -161,17 +162,10 @@ const DetectPage: React.FC = () => {
               cards.push(
                 <DetectedCard 
                 key={id}
-                note={notes[id]}
+                idx={id}
                 extracted={extracted}
                 template={templates[numberKey]}
                 checkAdd={checkAdd(id)}
-                onChange={(newNote : Note)=>{
-                  const newNotes = {} as typeof notes;
-                  Object.keys(notes).forEach((key)=>{
-                    newNotes[key] = key === id? newNote : notes[key];
-                  });
-                  setNotes(newNotes);
-                }}
                 />
               );
             })

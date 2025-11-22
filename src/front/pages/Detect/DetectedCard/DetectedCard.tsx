@@ -3,19 +3,20 @@ import detectPageStyle from "@/front/pages/Detect/detectPage.module.css";
 import commonStyle from "@/front/common.module.css";
 import { Extracted } from "../DetectPage";
 import DelIcon from "@/public/Icon/Icon-Dump.svg";
+import { useNavigate } from "react-router";
 
 
 interface DetectedCardProps {
-  note: Note;
+  idx: string;
   extracted: Extracted;
   template: Template;
   checkAdd: (val:boolean)=>void;
-  onChange: (newNote: Note)=>void;
 };
 
-const DetectedCard = ({note, extracted, template, checkAdd, onChange}:DetectedCardProps) => {
+const DetectedCard = ({idx, extracted, template, checkAdd}:DetectedCardProps) => {
+   const navigate = useNavigate();
    return (  
-    <article className={detectPageStyle.detectedCardContainer}>
+    <article className={detectPageStyle.detectedCardContainer} onClick={()=>navigate(`previewCard/${idx}`)}>
       <input type="checkbox" onChange={e=>{checkAdd(e.target.checked)}}/>
       <div className={detectPageStyle.detectedCardContent}>
         <div className={commonStyle.badge} style={{paddingLeft: '2px', paddingRight: '2px'}}>{template.templateName}</div>

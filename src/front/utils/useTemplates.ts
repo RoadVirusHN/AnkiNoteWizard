@@ -67,6 +67,7 @@ interface TemplateState {
   addNote: (idx: string, note: Note) => void;
   removeNote: (idx: string) => void;
   updateNote: (idx: string, updates: { [key: string]: unknown }) => void;
+  setNotes: (newNotes: { [idx: string]: Note }) => void;
 }
 
 const useTemplate = create<TemplateState>()(
@@ -108,6 +109,11 @@ const useTemplate = create<TemplateState>()(
               ...updates,
             },
           },
+        }));
+      },
+      setNotes: (newNotes) => {
+        set(() => ({
+          notes: newNotes,
         }));
       },
     }),
