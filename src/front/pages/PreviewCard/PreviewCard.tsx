@@ -4,6 +4,8 @@ import commonStyle from "@/front/common.module.css";
 import { useNavigate, useParams } from "react-router";
 import ReturnIcon from "@/public/Icon/Icon-Return.svg";
 import PreviewIcon from "@/public/Icon/Icon-Preview.svg";
+import CancleIcon from "@/public/Icon/Icon-Reset.svg";
+import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import { useState } from "react";
 
@@ -22,6 +24,10 @@ const PreviewCard = ({}) => {
         <h2>{templates[templateIdx].templateName}</h2>
       </div>
       <div className={commonStyle.toggle}>
+        <div className={previewCardStyle.modBtns} style={{visibility: isChanged ? "visible" : "hidden"}}>
+          <CancleIcon/>
+          <SaveIcon/>
+        </div>
         <PreviewIcon />
         <label className={commonStyle.switch}>
           <input type="checkbox" onChange={(e)=>{
@@ -32,8 +38,30 @@ const PreviewCard = ({}) => {
         <CodeIcon />
       </div>
     </div>
-    {index}
-    {notes[idx].fields.Front}
+    {
+      isModifying ? 
+        (<div>
+
+        </div>) 
+        : (
+          <section className={previewCardStyle.previewPage}>
+            <h3>front preview</h3>
+            <div className={previewCardStyle.previewWrapper}>
+              <div 
+              style={{ transform: 'scale(0.85)', width: '100%' }}
+              dangerouslySetInnerHTML={{__html: notes[idx].fields.Front}} 
+              />
+            </div>            
+            <h3>back preview</h3>
+            <div className={previewCardStyle.previewWrapper}>
+              <div 
+              style={{ transform: 'scale(0.85)', width: '100%' }}
+              dangerouslySetInnerHTML={{__html: notes[idx].fields.Back}} 
+              />
+            </div>
+          </section>
+        )
+    }
   </div>);
 };
 export default PreviewCard;

@@ -10,3 +10,23 @@
 .header h2 {
   word-wrap: break-word;
 }
+.previewPage h3{
+  margin: 0;
+}
+.modBtns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.previewWrapper{
+  border-style: solid;
+  border-radius: 12px;
+  border-width: 1px;
+  border-color: var(--color-secondary);
+  width: fit-content;
+  min-width: 80%;
+  max-width: 100%;
+  height: fit-content;
+  margin: auto;
+}
