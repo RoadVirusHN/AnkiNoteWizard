@@ -41,7 +41,7 @@ export interface ExtractedMap{
 // - customCards : 사용자가 정의한 카드 템플릿들
 // SEND_DETECTED_CARDS : content script에서 감지된 카드 데이터를 CardPage로 전송
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
-
+// TODO : IT'S DIRTY!!!!!!!!!!!
 const DetectPage: React.FC = () => {
   const {templates} = useCustomCard();
   const [extractedMaps, setExtractedMaps] = useState<ExtractedMap>({});

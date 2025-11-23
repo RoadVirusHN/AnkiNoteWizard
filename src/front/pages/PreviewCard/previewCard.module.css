@@ -1,0 +1,12 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 1px 2px 6px -2px var(--color-secondary);
+  align-items: center;
+  width: var(100%-10px);
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.header h2 {
+  word-wrap: break-word;
+}

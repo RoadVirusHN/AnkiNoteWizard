@@ -8,6 +8,9 @@
   filter: drop-shadow(2px 2px 2px var(--color-primary));
   border-radius: 9px;
   margin: 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 .simple-btn:active{
   filter: none;

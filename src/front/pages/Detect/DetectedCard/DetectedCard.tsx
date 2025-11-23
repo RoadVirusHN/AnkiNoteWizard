@@ -16,8 +16,8 @@ interface DetectedCardProps {
 const DetectedCard = ({idx, extracted, template, checkAdd}:DetectedCardProps) => {
    const navigate = useNavigate();
    return (  
-    <article className={detectPageStyle.detectedCardContainer} onClick={()=>navigate(`previewCard/${idx}`)}>
-      <input type="checkbox" onChange={e=>{checkAdd(e.target.checked)}}/>
+    <article className={detectPageStyle.detectedCardContainer} onClick={()=>{navigate(`previewCard/${idx}`)}}>
+      <input type="checkbox" onChange={e=>{checkAdd(e.target.checked)}} onClick={e=>e.stopPropagation()}/>
       <div className={detectPageStyle.detectedCardContent}>
         <div className={commonStyle.badge} style={{paddingLeft: '2px', paddingRight: '2px'}}>{template.templateName}</div>
         <h3 className={detectPageStyle.front}>{extracted.Front['front']}</h3>
