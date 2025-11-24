@@ -1,0 +1,23 @@
+.tags{
+  margin: 5px;
+}
+.badges{
+}
+.tag{
+  border-radius: 8px;
+  padding: 2px 4px 2px 4px;
+  margin: 4px;
+  
+}
+
+.tagInput{
+  border-width: 1px;
+  border-radius: 8px;
+  min-width: 5em;
+  font-size: small;
+  max-width: 10em;
+  field-sizing: content;
+}
+.tagAdder{
+  
+}

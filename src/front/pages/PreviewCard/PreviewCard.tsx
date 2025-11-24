@@ -8,12 +8,13 @@ import CancleIcon from "@/public/Icon/Icon-Reset.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import { useState } from "react";
+import Tags from "@/front/components/Tags/Tags";
 
 const PreviewCard = ({}) => {
   const {index} = useParams();
   const [isModifying, setIsModifying] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
-  const {notes, templates} = useTemplate();
+  const {notes, templates, updateNote} = useTemplate();
   const idx = index ?? '0-0';
   const templateIdx = Number(idx.split('-')[0]);
   const navigate = useNavigate();
@@ -45,9 +46,13 @@ const PreviewCard = ({}) => {
         </div>) 
         : (
           <section className={previewCardStyle.previewPage}>
-            <div className={previewCardStyle.badges}>
-              {notes[idx].tags.map((tag)=><span className={commonStyle.badge}>{tag}</span>)}
-            </div>
+            <Tags givenTags={notes[idx].tags} isModifying={true} 
+            onAddTag={(tag)=>{
+              updateNote(idx, {tags: [...notes[idx].tags, tag]});
+            }} 
+            onRemoveTag={(tag)=>{
+              updateNote(idx, {tags: notes[idx].tags.filter(t=>t!==tag)});
+            }}/>
             <h3>front preview</h3>
             <div className={previewCardStyle.previewWrapper}>
               <div 
