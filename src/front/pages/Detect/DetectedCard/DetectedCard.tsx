@@ -5,6 +5,7 @@ import commonStyle from "@/front/common.module.css";
 import DelIcon from "@/public/Icon/Icon-Dump.svg";
 import { useNavigate } from "react-router";
 import { getComplementaryColor } from "@/front/utils/functions";
+import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
 
 
 interface DetectedCardProps {
@@ -17,6 +18,7 @@ interface DetectedCardProps {
 const DetectedCard = ({idx, extracted, template, checkAdd}:DetectedCardProps) => {
    const navigate = useNavigate();
    const {notes, tags, removeNote} = useTemplate();
+   const {setCurrentDetected, currentDetected} = useGlobalVarStore();
    return (  
     <article className={detectPageStyle.detectedCardContainer} onClick={()=>{navigate(`/previewCard/${idx}`)}}>
       <input type="checkbox" onChange={e=>{checkAdd(e.target.checked)}} onClick={e=>e.stopPropagation()}/>
@@ -25,7 +27,9 @@ const DetectedCard = ({idx, extracted, template, checkAdd}:DetectedCardProps) =>
           <span className={detectPageStyle.templateName} >{template.templateName}</span>
           {notes[idx].tags.map((tag)=><span className={commonStyle.badge} style={{backgroundColor: tags[tag].color, color: getComplementaryColor(tags[tag].color)}}>{tag}</span>)}
         </div>
-        <h3 className={detectPageStyle.front}>{extracted.Front['front']}</h3>
+        {/* TODO : change Front value when card front html value changed? */}
+        {/* TODO : Modifyied! flag when modifyied */}
+        <h3 className={detectPageStyle.front}>{extracted.Front['front']}</h3> 
         <p className={detectPageStyle.back}>{extracted.Back['back']}</p>
       </div>
       {/* TODO : Add Del function - make Hash of card and ban it. */}
@@ -33,6 +37,7 @@ const DetectedCard = ({idx, extracted, template, checkAdd}:DetectedCardProps) =>
         <DelIcon onClick={(e)=>{
           e.stopPropagation();
           removeNote(idx);
+          setCurrentDetected(currentDetected - 1); // TODO : make change when notes changed.
         }} style={{cursor: 'pointer'}}/>
       </div>
     </article>);

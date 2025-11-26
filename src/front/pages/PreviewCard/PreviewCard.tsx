@@ -9,6 +9,7 @@ import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import { useState } from "react";
 import Tags from "@/front/components/Tags/Tags";
+import { Editor } from "@monaco-editor/react";
 
 const PreviewCard = ({}) => {
   const {index} = useParams();
@@ -61,16 +62,38 @@ const PreviewCard = ({}) => {
           setIsChanged(true);
         }}/>
         <h3>front preview</h3>
-        <div className={previewCardStyle.previewWrapper}>
-          <div 
-          style={{ transform: 'scale(0.85)', width: '100%' }}
-          dangerouslySetInnerHTML={{__html: curNote.fields.Front}} 
-          />
-        </div>            
+        {
+          isModifying ?
+          (<Editor
+            defaultLanguage="html"
+            value={curNote.fields.Front}
+            width='100%'
+            height='200px'
+            onChange={(value)=>{
+              setCurNote({...curNote, fields: {...curNote.fields, Front: value || ''}}); 
+              setIsChanged(true);
+            }}
+            />) :
+          <div className={previewCardStyle.previewWrapper}>
+            <div 
+            style={{ transform: 'scale(0.85)', width: '100%' }}
+            dangerouslySetInnerHTML={{__html: curNote.fields.Front}} 
+            />
+          </div>            
+        }
         <h3>back preview</h3>
         {
           isModifying ? 
-          (<></>)
+          (<Editor
+            defaultLanguage="html"
+            value={curNote.fields.Back}
+            width='100%'
+            height='200px'
+            onChange={(value)=>{
+              setCurNote({...curNote, fields: {...curNote.fields, Back: value || ''}}); 
+              setIsChanged(true);
+            }}
+            />)
           :
           (<div className={previewCardStyle.previewWrapper}>
           <div 
