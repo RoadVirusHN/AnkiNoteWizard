@@ -16,7 +16,7 @@ interface DetectedCardProps {
 
 const DetectedCard = ({idx, extracted, template, checkAdd}:DetectedCardProps) => {
    const navigate = useNavigate();
-   const {notes, tags} = useTemplate();
+   const {notes, tags, removeNote} = useTemplate();
    return (  
     <article className={detectPageStyle.detectedCardContainer} onClick={()=>{navigate(`/previewCard/${idx}`)}}>
       <input type="checkbox" onChange={e=>{checkAdd(e.target.checked)}} onClick={e=>e.stopPropagation()}/>
@@ -29,8 +29,11 @@ const DetectedCard = ({idx, extracted, template, checkAdd}:DetectedCardProps) =>
         <p className={detectPageStyle.back}>{extracted.Back['back']}</p>
       </div>
       {/* TODO : Add Del function - make Hash of card and ban it. */}
-      <div className={detectPageStyle.delButton} title="Comming Soon!">
-        <DelIcon/>
+      <div className={detectPageStyle.delButton}>
+        <DelIcon onClick={(e)=>{
+          e.stopPropagation();
+          removeNote(idx);
+        }} style={{cursor: 'pointer'}}/>
       </div>
     </article>);
 };

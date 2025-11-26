@@ -150,6 +150,7 @@ const DetectPage: React.FC = () => {
             const cards :JSX.Element[] = [];
             cardInfos.forEach((extracted, idx)=>{
               const id = key + "-" + idx;
+              if (!notes[id]) return; // Skip if note doesn't exist
               cards.push(
                 <DetectedCard 
                 key={id}
