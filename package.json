@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:dev": "webpack --config webpack.dev.js",
+    "build:dev": "webpack --config webpack.dev.js && find dist -name '*basic-languages*.js' -not -name '*html*.js' -not -name '*css*.js' -not -name '*javascript*.js' -not -name '*typescript*.js' -delete",
     "watch:dev": "webpack --config webpack.dev.js --watch",
-    "build:prod": "webpack --config webpack.prod.js"
+    "build:prod": "webpack --config webpack.prod.js && find dist -name '*basic-languages*.js' -not -name '*html*.js' -not -name '*css*.js' -not -name '*javascript*.js' -not -name '*typescript*.js' -delete"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "@typescript-eslint/parser": "^8.46.2",
     "copy-webpack-plugin": "^13.0.1",
     "css-loader": "^5.0.0",
+    "del-webpack-plugin": "^2.1.0",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",

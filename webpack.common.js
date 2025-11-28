@@ -1,6 +1,9 @@
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+const DelWebpackPlugin = require('del-webpack-plugin');
+
 
 module.exports = {
   entry: {
@@ -39,16 +42,13 @@ module.exports = {
           }
         },
       },
+      // {
+      //   test: /\.module\.css$/i,
+      //   use: ['style-loader','css-loader' ],
+      // },
       {
-        test: /\.module\.css$/i,
-        use: ['style-loader', 
-          {
-            loader: 'css-loader',
-            options: {
-              modules: true
-            }
-          }
-        ],
+        test: /\.css$/,
+         use: ['style-loader','css-loader' ],
       },
       {
         test: /\.svg$/,
@@ -61,6 +61,10 @@ module.exports = {
           filename: 'public/[name][hash][ext][query]',
         },
       },
+      {
+        test: /\.ttf$/,
+        type: 'asset/resource'
+      }
     ],
   },
   plugins: [    
@@ -73,9 +77,23 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: path.resolve(__dirname, 'src/manifest.json'), to: 'manifest.json' },
-        { from: path.resolve(__dirname, 'src/icons'), to: 'icons' },
-        { from: 'node_modules/monaco-editor/min/vs', to: 'vs' } 
+        { from: path.resolve(__dirname, 'src/icons'), to: 'icons' }
       ]
-    })
-  ]
+    }),
+    new MonacoWebpackPlugin({
+      languages: ["css","html"],
+      inline: true
+    }),
+    // new DelWebpackPlugin({
+    //   patterns: [
+    //     '**/*basic-languages*/**/*.js', // 모든 basic-languages 파일을 기본적으로 포함
+    //     '!**/*basic-languages*/*html*.js', // html 관련 파일 제외
+    //     '!**/*basic-languages*/*css*.js',  // css 관련 파일 제외
+    //     '!**/*basic-languages*/*javascript*.js', // javascript 관련 파일 제외
+    //     '!**/*basic-languages*/*typescript*.js', // typescript 관련 파일 제외
+    //   ],
+    //   // dryRun: true // 삭제 로그
+    // })
+  ],
+
 };

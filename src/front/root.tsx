@@ -1,17 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Popup from "@/front/components/pages/Popup/Popup";
 import { RouterProvider } from "react-router";
 import router from "./router/AnkiRouter";
 
+import * as monaco from 'monaco-editor';
 import { loader } from '@monaco-editor/react';
 
-// Webpack이 복사한 로컬 경로(dist/vs)를 명시적으로 지정
-loader.config({
-  paths: {
-    vs: './vs', 
-  },
-});
+// // Webpack이 복사한 로컬 경로(dist/vs)를 명시적으로 지정
+loader.config({monaco});
 
 document.addEventListener("DOMContentLoaded", ()=>{
   //chrome.runtime.sendMessage({type: "INJECT_CONTENT_SCRIPT"});
