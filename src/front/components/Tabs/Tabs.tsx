@@ -40,7 +40,6 @@ const Tabs = ({}) => {
     <DetectTab/>
     <TooltipWrapper text="Comming soon!" tooltipDirection={TooltipDirection.BOTTOM} styles={{flex: '1'}}>
       <NavLink 
-      onClick={(e)=>e.preventDefault()}
       className={`${tabsStyle.tab} ${currentTab==Tab.ADD? tabsStyle.selected : ''}`} 
       to={'/add'}>
       <AddCardIcon style={{filter: "grayscale(100%)"}}/>

@@ -15,7 +15,7 @@ const ModifyTemplate = () => {
   const { index } = useParams();
   const isEditMode = index !== undefined;
   const idx = isEditMode ? parseInt(index) : undefined;
-  const { templates: customCards, addTemplate, modifyTemplate } = useTemplates();
+  const { templates, addTemplate, modifyTemplate } = useTemplates();
   const navigate = useNavigate();
 
   const form = useRef<HTMLFormElement>(null);
@@ -57,13 +57,13 @@ const ModifyTemplate = () => {
       );
     } else {
       // Edit 모드일 때는 기존 카드 필드로 채움
-      if (isEditMode && idx !== undefined && customCards[idx]) {
+      if (isEditMode && idx !== undefined && templates[idx]) {
         frontRef.current?.setDefaultFields(
-          customCards[idx].Front.fields as (TemplateField & { locked?: boolean })[],
+          templates[idx].Front.fields as (TemplateField & { locked?: boolean })[],
           false
         );
         backRef.current?.setDefaultFields(
-          customCards[idx].Back.fields as (TemplateField & { locked?: boolean })[],
+          templates[idx].Back.fields as (TemplateField & { locked?: boolean })[],
           false
         );
       }
@@ -115,7 +115,7 @@ const ModifyTemplate = () => {
     frontRef.current?.clearFields();
     backRef.current?.clearFields();
     form.current?.reset();
-    
+
   };
   // TODO : BUG :  CardField가 Modify 할때마다 늘어남.
   return (
@@ -129,14 +129,14 @@ const ModifyTemplate = () => {
           <input
             name="cardName"
             placeholder="Card Name"
-            defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.templateName : ""}
+            defaultValue={isEditMode && idx !== undefined ? templates[idx]?.templateName : ""}
             required
             className={modifyTemplateStyle.inputMain}
           />
           <textarea
             name="description"
             placeholder="Description"
-            defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.meta.description : ""}
+            defaultValue={isEditMode && idx !== undefined ? templates[idx]?.meta.description : ""}
             className={modifyTemplateStyle.textarea}
           />
         </div>
@@ -145,19 +145,19 @@ const ModifyTemplate = () => {
           <input
             name="urlPatterns"
             placeholder="URL patterns (comma separated)"
-            defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.urlPatterns || []).join(", ") : ""}
+            defaultValue={isEditMode && idx !== undefined ? (templates[idx]?.urlPatterns || []).join(", ") : ""}
             className={modifyTemplateStyle.inputSmall}
           />
           <input
             name="tags"
             placeholder="tags (comma separated)"
-            defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.tags || []).join(", ") : ""}
+            defaultValue={isEditMode && idx !== undefined ? (templates[idx]?.tags || []).join(", ") : ""}
             className={modifyTemplateStyle.inputSmall}
           />
           <input
             name="rootTag"
             placeholder="root Css Selector (comma separated)"
-            defaultValue={isEditMode && idx !== undefined ? (customCards[idx]?.rootTag || "body") : "body"}
+            defaultValue={isEditMode && idx !== undefined ? (templates[idx]?.rootTag || "body") : "body"}
             className={modifyTemplateStyle.inputSmall}
           />
         </div>
@@ -167,7 +167,7 @@ const ModifyTemplate = () => {
             <h3 className={modifyTemplateStyle.sideTitle}>Front</h3>
             <Editor
               defaultLanguage="html"
-              defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.Front.html : "<p>{{front}}</p>"}
+              defaultValue={isEditMode && idx !== undefined ? templates[idx]?.Front.html : "<p>{{front}}</p>"}
               height={80}
               width={'100%'}
               theme="light"
@@ -182,7 +182,7 @@ const ModifyTemplate = () => {
             <h3 className={modifyTemplateStyle.sideTitle}>Back</h3>
             <Editor
               defaultLanguage="html"
-              defaultValue={isEditMode && idx !== undefined ? customCards[idx]?.Back.html : "<p>{{back}}</p>"}
+              defaultValue={isEditMode && idx !== undefined ? templates[idx]?.Back.html : "<p>{{back}}</p>"}
               height={80}
               width={'100%'}
               theme="light"

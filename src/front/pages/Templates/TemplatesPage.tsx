@@ -11,7 +11,7 @@ const TemplatesPage = ({}) => {
       navigate("/modify");
     }}
     style={{cursor: "pointer"}}/>  
-    {templates.map((template)=><TemplateDetail template={template} />)}
+    {templates.map((template)=><TemplateDetail key={template.templateName} template={template} />)}
   </div>);
 };
 export default TemplatesPage;

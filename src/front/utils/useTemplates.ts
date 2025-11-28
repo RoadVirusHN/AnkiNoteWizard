@@ -159,10 +159,14 @@ const useTemplate = create<TemplateState>()(
       },
     }),
     {
-      name: 'anki-card-wizard-global-var-store',
+      name: 'anki-card-wizard-template-store',
       storage: {
         getItem: async (name) => (await chrome.storage.local.get(name))[name],
-        setItem: async (name, value) => await chrome.storage.local.set({ [name]: value }),
+        setItem: async (name, value) => {
+          await chrome.storage.local.set({ [name]: value }).then(()=>console.log("saved successfully")).catch(()=>console.log("saved error"));
+          console.log("test,test,test");
+          console.log({[name]: value});
+        },
         removeItem: async (name) => await chrome.storage.local.remove(name),
       },
     }
