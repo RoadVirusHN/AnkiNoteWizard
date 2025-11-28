@@ -27,6 +27,9 @@ const Tabs = ({}) => {
       case '/config':
         if (currentTab !== Tab.CONFIG) setCurrentTab(Tab.CONFIG);
         break;
+      case '/modify':
+        if (currentTab !== Tab.CONFIG) setCurrentTab(Tab.TEMPLATES);
+        break;
       default:
         if (currentTab !== Tab.DETECT) setCurrentTab(Tab.DETECT);
         break;

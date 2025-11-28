@@ -27,7 +27,11 @@ const useGlobalVarStore = create<GlobalVarState>()(
       currentDeck: '',
       isAddingCard: false,
       currentDetected: 0,
-      setCurrentTab: (tab: Tab) => set({ currentTab: tab }),
+      setCurrentTab: (tab: Tab) => {
+        console.log(tab);
+        set({ currentTab: tab });
+      
+      },
       setCurrentDeck: (deck: string) => set({ currentDeck: deck }),
       setCurrentDetected: (cnt: number) => set({ currentDetected: cnt }),
       setIsAddingCard: (isAdding: boolean) => set({ isAddingCard: isAdding }),

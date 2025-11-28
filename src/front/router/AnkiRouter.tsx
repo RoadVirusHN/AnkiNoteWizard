@@ -6,7 +6,7 @@ import Main from "../pages/Main/Main";
 import DetectPage from "../pages/Detect/DetectPage";
 import AddPage from "../pages/Add/AddPage";
 import TemplatesPage from "../pages/Templates/TemplatesPage";
-import PreviewCard from "../pages/PreviewCard/PreviewCard";
+import PreviewCard from '../pages/PreviewCard/PreviewCard';
 
 const router = createHashRouter([
   {
