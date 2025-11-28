@@ -15,7 +15,7 @@ const ModifyTemplate = () => {
   const { index } = useParams();
   const isEditMode = index !== undefined;
   const idx = isEditMode ? parseInt(index) : undefined;
-  const { templates: customCards, addTemplate: addCustomCard, modifyTemplate: modifyCustomCard } = useTemplates();
+  const { templates: customCards, addTemplate, modifyTemplate } = useTemplates();
   const navigate = useNavigate();
 
   const form = useRef<HTMLFormElement>(null);
@@ -109,12 +109,13 @@ const ModifyTemplate = () => {
       tags,
     };
 
-    if (isEditMode && idx !== undefined) modifyCustomCard(idx, newCard);
-    else addCustomCard(newCard);
+    if (isEditMode && idx !== undefined) modifyTemplate(idx, newCard);
+    else addTemplate(newCard);
 
     frontRef.current?.clearFields();
     backRef.current?.clearFields();
     form.current?.reset();
+    
   };
   // TODO : BUG :  CardField가 Modify 할때마다 늘어남.
   return (

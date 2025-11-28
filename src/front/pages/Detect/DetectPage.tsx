@@ -8,8 +8,6 @@ import SimpleButton from '@/front/components/SimpleButton/SimpleButton';
 import useAnkiConnectionStore from '@/front/utils/useAnkiConnectionStore';
 import useGlobalVarStore from '@/front/utils/useGlobalVarStore';
 import useTemplate from '@/front/utils/useTemplates';
-import { useLocation, useNavigate } from 'react-router';
-import { MessageType } from '@/scripts/background/messages';
 
 const buildCard = (key: 'Front' | 'Back', customCard: Template, extracted: Extracted) =>
   customCard[key].html.replaceAll(/\{\{(.*?)\}\}/g, 
