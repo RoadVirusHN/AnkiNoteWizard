@@ -7,9 +7,12 @@ import PreviewIcon from "@/public/Icon/Icon-Preview.svg";
 import CancleIcon from "@/public/Icon/Icon-Reset.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import CodeIcon from "@/public/Icon/Icon-Code.svg";
+import ExtractIcon from "@/public/Icon/Icon-Code.svg"
 import { useState } from "react";
 import Tags from "@/front/components/Tags/Tags";
 import { Editor } from "@monaco-editor/react";
+import SimpleButton from "@/front/components/SimpleButton/SimpleButton";
+import { MessageType } from "@/scripts/background/messages";
 
 const PreviewCard = ({}) => {
   const {index} = useParams();
@@ -63,7 +66,16 @@ const PreviewCard = ({}) => {
             setIsChanged(true);
           }}/>
         </div>
-        <h3>front preview</h3>
+        <h3>front preview{isModifying ? <SimpleButton Svg={ExtractIcon} onClick={async ()=>{
+          const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+          if (!tab.id) {
+            console.warn('No active tab found!');
+            return;
+          }
+          chrome.tabs.sendMessage(tab.id, {
+            type: MessageType.ENTER_OVERLAY_MODE
+          });
+        }}/> : ''}</h3>
         {
           isModifying ?
           (<Editor

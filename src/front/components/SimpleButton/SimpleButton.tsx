@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, SVGAttributes, useState } from 'react';
+import { FunctionComponent, SVGAttributes } from 'react';
 import simpleButtonStyles from './simpleButton.module.css';
 interface ButtonProps {
   text?: string;

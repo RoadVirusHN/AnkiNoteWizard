@@ -6,6 +6,7 @@ import {
   Extracted,
 } from '@/front/utils/useTemplates';
 import { MessageType } from '../background/messages';
+import { activateInspectionMode, deactivateInspectionMode } from './tagExtraction';
 // import { STORAGE_KEY } from '../background/constants';
 
 //TODO : Make Message Types Constant Enum
@@ -116,5 +117,11 @@ chrome.runtime.onMessage.addListener((message) => {
   if (message.type === MessageType.REQUEST_DETECTED_CARDS) {
     console.log('Received EXTRACT_DATA_REQUEST message');
     sendDetectedCards(message.customCards);
+  } else if (message.type === MessageType.ENTER_OVERLAY_MODE) {
+    console.log("request OverlayMode");
+    activateInspectionMode();
+  } else if (message.type === MessageType.EXIT_OVERLAY_MODE) {
+    console.log("request unset OverlayMode");
+    deactivateInspectionMode();
   }
 });
