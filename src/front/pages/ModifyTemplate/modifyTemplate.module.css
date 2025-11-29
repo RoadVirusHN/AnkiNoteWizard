@@ -1,130 +1,238 @@
-.wrapper {
-  width: 100%;
-  height: 100%;
-  background-color: var(--color-light);
+.container {
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 전체 스크롤 억제 */
-  border-radius: 10px;
-  padding: 10px;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg);
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background-color: white;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-text);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  background: white;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 0;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.activeTab {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* Content Area */
+.content {
+  flex: 1;
+  overflow-y: auto; /* 내용만 스크롤 */
+  padding: 12px;
   box-sizing: border-box;
+}
+
+/* Settings Form */
+.settingsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.formGroup label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+}
+
+.req { color: var(--color-danger); }
+
+.row {
+  display: flex;
   gap: 10px;
 }
 
-.header {
-  background-color: var(--color-primary);
-  color: white;
-  font-weight: 700;
-  text-align: center;
-  padding: 2px;
-  border-radius: 8px;
-  font-size: 1.05rem;
-}
+.row > div { flex: 1; }
 
-/* form 영역 전체 */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* 기본 정보(이름/설명) 한 줄 */
-.basicRow {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.inputMain {
-  flex: 1;
-  background-color: var(--color-dark);
-  color: var(--color-secondary);
-  border: none;
-  padding: 2px;
+.input, .select, .textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
+  font-size: 13px;
+  background: white;
   box-sizing: border-box;
 }
 
-/* urlPatterns / tags 같은 작은 입력 */
-.metaRow {
+.textarea { resize: vertical; }
+
+.inputWithBtn {
   display: flex;
-  flex-direction: column;
   gap: 4px;
 }
 
-.inputSmall {
-  flex: 1;
-  background-color: var(--color-dark);
-  color: var(--color-secondary);
-  border: none;
-  padding: 2px;
+.pickBtn {
+  background: #eee;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
-  box-sizing: border-box;
+  cursor: pointer;
+  padding: 0 8px;
+  font-size: 14px;
 }
 
-/* front/back 영역: 좌우 분할, 내부만 스크롤 */
-.cardArea {
-  flex: 1;
+.hint {
+  font-size: 11px;
+  color: #999;
+  margin: 2px 0 0 0;
+}
+
+/* --- Editor Styles --- */
+.editorContainer {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  overflow: hidden;
+  height: 100%;
 }
 
-.cardSide {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  border-radius: 8px;
-  padding: 2px;
-  box-sizing: border-box;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.sideTitle {
-  margin: 0 0 6px 0;
-  color: var(--color-primary);
-  font-size: 1rem;
-}
-
-/* 작은 HTML 편집 박스(고정 높이) */
-.textarea {
-  
-}
-
-/* CardFieldInput 영역만 스크롤 허용 */
-.scrollArea {
-  flex: 1;
-  overflow-y: auto;
-  background: rgba(255,255,255,0.03);
-  padding: 3px;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
-/* submit 버튼 영역 */
-.submitRow {
-  display: flex;
-  justify-content: flex-end;
-  position: sticky;
-  left: 10px;
-  bottom: 10px;
-  width: 20%;
-}
-
-.submitBtn {
-  background-color: var(--color-warning);
-  color: var(--color-primary);
-  border: none;
-  padding: 5px 8px;
-  border-radius: 8px;
+.sectionTitle {
+  font-size: 12px;
   font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Preview */
+.previewBox {
+  width: 100%;
+  border: 1px dashed var(--color-border);
+  background: white;
+  border-radius: 6px;
+  padding: 10px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.previewContent {
+  transform: scale(0.85); /* 요구사항 */
+  transform-origin: center;
+  width: 100%;
+  text-align: center;
+}
+
+/* Monaco */
+.monacoWrapper {
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Fields List */
+.fieldHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.addBtn {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
   cursor: pointer;
 }
 
-.submitBtn:hover {
-  opacity: 0.95;
+.fieldsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 20px;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: white;
+  padding: 4px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.fieldName { flex: 0 0 20%; min-width: 40px; }
+.selectorWrapper { flex: 1; display: flex; gap: 2px; }
+.fieldSelector { flex: 1; }
+
+.miniPickBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 2px;
+}
+
+.select { width: auto; padding: 4px; }
+
+.chkWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+.chkLabel { font-size: 9px; color: #888; }
+
+.delBtn {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 6px;
 }

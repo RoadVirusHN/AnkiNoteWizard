@@ -34,13 +34,11 @@ const PreviewCard = ({}) => {
           <CancleIcon  onClick={()=>{
             setCurNote(notes[idx]);
             setIsChanged(false);
-            }} style={{'cursor': 'pointer'}}/>
+            }} style={{'cursor': 'pointer', margin:'5px'}}/>
           <SaveIcon  onClick={()=>{
-            console.log(isChanged);
             updateNote(idx,{...curNote});
             setIsChanged(false);
-            console.log(isChanged);
-            }} style={{'cursor': 'pointer'}}/>
+            }} style={{'cursor': 'pointer', margin: '5px'}}/>
         </div>
         <PreviewIcon />
         <label className={commonStyle.switch}>

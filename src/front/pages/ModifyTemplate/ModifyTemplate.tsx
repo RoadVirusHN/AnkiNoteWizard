@@ -1,15 +1,16 @@
-import commonStyles from "@/front/common.module.css";
-import useTemplates from "@/front/utils/useTemplates";
-import { Form, useNavigate, useParams } from "react-router";
-import { useEffect, useRef } from "react";
-import TemplateFieldInput, { TemplateFieldInputRef } from "./TemplateFieldInput/TemplateFieldInput";
+import useTemplates, { TemplateFieldDataType } from "@/front/utils/useTemplates";
+import { useNavigate, useParams } from "react-router";
+import { useEffect,useState } from "react";
 import modifyTemplateStyle from "./modifyTemplate.module.css";
-import type { TemplateField as TemplateField } from "@/front/utils/useTemplates";
-import Editor, { OnMount, loader } from "@monaco-editor/react";
-import {editor} from 'monaco-editor';
+import type { Template, } from "@/front/utils/useTemplates";
+
 import SimpleButton from "@/front/components/SimpleButton/SimpleButton";
 import ReturnIcon from "@/public/Icon/Icon-Return.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
+import TemplateSideEditor from "./TemplateSideEditor/TemplateSideEditor";
+// 탭 상수
+const TAB = { SETTINGS: "settings", FRONT: "front", BACK: "back" } as const;
+type TabType = typeof TAB[keyof typeof TAB];
 
 const ModifyTemplate = () => {
   const { index } = useParams();
@@ -18,187 +19,192 @@ const ModifyTemplate = () => {
   const { templates, addTemplate, modifyTemplate } = useTemplates();
   const navigate = useNavigate();
 
-  const form = useRef<HTMLFormElement>(null);
-  const frontRef = useRef<TemplateFieldInputRef>(null);
-  const backRef = useRef<TemplateFieldInputRef>(null);
-  const frontEditorRef = useRef<editor.IStandaloneCodeEditor>(null);
-  const backEditorRef = useRef<editor.IStandaloneCodeEditor>(null);
-
-  const handleBackEditorMount: OnMount = (editor, monaco)=>{
-    backEditorRef.current = editor;
-  }
-  const handleFrontEditorMount : OnMount = (editor, monaco)=>{
-    frontEditorRef.current = editor;
-  }
-  // Add 모드일 때 기본 필드 자동 세팅 (삭제 불가)
-  useEffect(() => {
-    if (!isEditMode) {
-      frontRef.current?.setDefaultFields(
-        [
-          {
-            name: "front",
-            content: "h1",
-            dataType: "text",
-            locked: true,
-          } as TemplateField & { locked?: boolean },
-        ],
-        true
-      );
-      backRef.current?.setDefaultFields(
-        [
-          {
-            name: "back",
-            content: "h2",
-            dataType: "text",
-            locked: true,
-          } as TemplateField & { locked?: boolean },
-        ],
-        true
-      );
-    } else {
-      // Edit 모드일 때는 기존 카드 필드로 채움
-      if (isEditMode && idx !== undefined && templates[idx]) {
-        frontRef.current?.setDefaultFields(
-          templates[idx].Front.fields as (TemplateField & { locked?: boolean })[],
-          false
-        );
-        backRef.current?.setDefaultFields(
-          templates[idx].Back.fields as (TemplateField & { locked?: boolean })[],
-          false
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditMode, idx]);
-
-  const submitHandler = () => {
-    const formData = new FormData(form.current!);
-    const templateName = (formData.get("cardName") as string) || "";
-    const description = (formData.get("description") as string) || "";
-    const urlPatternsRaw = (formData.get("urlPatterns") as string) || "";
-    const tagsRaw = (formData.get("tags") as string) || "";
-    const rootTag = (formData.get("rootTag") as string) || "";
-    
-    const frontHtml = frontEditorRef.current?.getValue() || "<p>{{front}}</p>";
-    const backHtml = backEditorRef.current?.getValue() || "<p>{{back}}</p>";
-    const frontFields = frontRef.current?.getFields() ?? [];
-    const backFields = backRef.current?.getFields() ?? [];
-
-    const urlPatterns = urlPatternsRaw
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    const tags = tagsRaw
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    // TODO : rootTag 기본값 Body 
-    const newCard = {
-      meta: {
-        author : 'user',
-        description
-      },
-      templateName,
-      description,
+  const [activeTab, setActiveTab] = useState<TabType>(TAB.SETTINGS);
+  const [templateData, setTemplateData] = useState<Template>({
+      templateName: "",
+      meta: { author: "", description: "", version: "0.0.1" },
       modelName: "Basic",
-      rootTag,
-      urlPatterns,
-      Front: { html: frontHtml, fields: frontFields },
-      Back: { html: backHtml, fields: backFields },
-      tags,
-    };
+      urlPatterns: ["*"],
+      rootTag: "div.word",
+      tags: [],
+      Front: { html: "<h2>{{front}}</h2>", fields: [] },
+      Back: { html: "<p>{{back}}</p>", fields: [] },
+    });
 
-    if (isEditMode && idx !== undefined) modifyTemplate(idx, newCard);
-    else addTemplate(newCard);
-
-    frontRef.current?.clearFields();
-    backRef.current?.clearFields();
-    form.current?.reset();
-
+// 초기 데이터 로드
+  useEffect(() => {
+    if (isEditMode && idx !== undefined && templates[idx]) {
+      setTemplateData(JSON.parse(JSON.stringify(templates[idx]))); // Deep Copy
+    } else if (!isEditMode) {
+      // 신규 추가 시 기본 필수 필드 설정
+      setTemplateData((prev) => ({
+        ...prev,
+        Front: { ...prev.Front, fields: [{ name: "front", content: "h1", dataType: TemplateFieldDataType.TEXT, isOptional: false }] },
+        Back: { ...prev.Back, fields: [{ name: "back", content: "h2", dataType: TemplateFieldDataType.TEXT, isOptional: false }] },
+      }));
+    }
+  }, [isEditMode, idx, templates]);
+  // 공통 핸들러: 깊은 객체 업데이트 헬퍼
+  const updateMeta = (key: string, value: unknown) => {
+    setTemplateData(prev => ({ ...prev, meta: { ...prev.meta, [key]: value } }));
   };
-  // TODO : BUG :  CardField가 Modify 할때마다 늘어남.
-  return (
-    <div className={`${commonStyles.container} ${modifyTemplateStyle.wrapper}`}>
+
+  const handleSave = () => {
+    if (!templateData.templateName.trim()) {
+      alert("Card Name is required.");
+      return;
+    }
+    if (isEditMode && idx !== undefined) modifyTemplate(idx, templateData);
+    else addTemplate(templateData);
+    navigate("/templates");
+  };
+
+  // 픽커(추출) 기능 모의 함수
+  const handlePickElement = (callback: (selector: string) => void) => {
+    // 실제 구현: Content Script로 메시지를 보내 사용자가 요소를 클릭하게 함
+    console.log("Start element picker...");
+    // 예시: 2초 뒤 임의의 선택자 입력
+    setTimeout(() => callback("div.extracted > span"), 500); 
+  };
+
+return (
+    <div className={modifyTemplateStyle.container}>
+      {/* Header */}
       <div className={modifyTemplateStyle.header}>
-        {isEditMode ? `Modify Card #${idx}` : "Add Custom Card"}
+        <div className={modifyTemplateStyle.headerLeft}>
+          <SimpleButton Svg={ReturnIcon} onClick={() => navigate("/templates")} />
+          <span className={modifyTemplateStyle.title}>{isEditMode ? "Edit Template" : "New Template"}</span>
+        </div>
+        <SimpleButton 
+          Svg={SaveIcon} 
+          onClick={handleSave} 
+          overridedStyle={{ backgroundColor: "var(--color-warning)", width: "32px", height: "32px" }} 
+        />
       </div>
 
-      <Form ref={form} method="post" onSubmit={(e) => e.preventDefault()} className={modifyTemplateStyle.form}>
-        <div className={modifyTemplateStyle.basicRow}>
-          <input
-            name="cardName"
-            placeholder="Card Name"
-            defaultValue={isEditMode && idx !== undefined ? templates[idx]?.templateName : ""}
-            required
-            className={modifyTemplateStyle.inputMain}
-          />
-          <textarea
-            name="description"
-            placeholder="Description"
-            defaultValue={isEditMode && idx !== undefined ? templates[idx]?.meta.description : ""}
-            className={modifyTemplateStyle.textarea}
-          />
-        </div>
+      {/* Tabs */}
+      <div className={modifyTemplateStyle.tabs}>
+        <button 
+          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.SETTINGS ? modifyTemplateStyle.activeTab : ""}`} 
+          onClick={() => setActiveTab(TAB.SETTINGS)}
+        >
+          Settings
+        </button>
+        <button 
+          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.FRONT ? modifyTemplateStyle.activeTab : ""}`} 
+          onClick={() => setActiveTab(TAB.FRONT)}
+        >
+          Front
+        </button>
+        <button 
+          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.BACK ? modifyTemplateStyle.activeTab : ""}`} 
+          onClick={() => setActiveTab(TAB.BACK)}
+        >
+          Back
+        </button>
+      </div>
 
-        <div className={modifyTemplateStyle.metaRow}>
-          <input
-            name="urlPatterns"
-            placeholder="URL patterns (comma separated)"
-            defaultValue={isEditMode && idx !== undefined ? (templates[idx]?.urlPatterns || []).join(", ") : ""}
-            className={modifyTemplateStyle.inputSmall}
-          />
-          <input
-            name="tags"
-            placeholder="tags (comma separated)"
-            defaultValue={isEditMode && idx !== undefined ? (templates[idx]?.tags || []).join(", ") : ""}
-            className={modifyTemplateStyle.inputSmall}
-          />
-          <input
-            name="rootTag"
-            placeholder="root Css Selector (comma separated)"
-            defaultValue={isEditMode && idx !== undefined ? (templates[idx]?.rootTag || "body") : "body"}
-            className={modifyTemplateStyle.inputSmall}
-          />
-        </div>
+      {/* Content Area */}
+      <div className={modifyTemplateStyle.content}>
+        
+        {/* --- SETTINGS TAB --- */}
+        {activeTab === TAB.SETTINGS && (
+          <div className={modifyTemplateStyle.settingsForm}>
+            <div className={modifyTemplateStyle.formGroup}>
+              <label>Template Name <span className={modifyTemplateStyle.req}>*</span></label>
+              <input
+                className={modifyTemplateStyle.input}
+                value={templateData.templateName}
+                onChange={(e) => setTemplateData({ ...templateData, templateName: e.target.value })}
+                placeholder="e.g. Eng-Kor Words"
+              />
+            </div>
 
-        <div className={modifyTemplateStyle.cardArea}>
-          <div className={modifyTemplateStyle.cardSide}>
-            <h3 className={modifyTemplateStyle.sideTitle}>Front</h3>
-            <Editor
-              defaultLanguage="html"
-              defaultValue={isEditMode && idx !== undefined ? templates[idx]?.Front.html : "<p>{{front}}</p>"}
-              height={80}
-              width={'100%'}
-              theme="light"
-              onMount={handleFrontEditorMount}
-            />
-            <div className={modifyTemplateStyle.scrollArea}>
-              <TemplateFieldInput ref={frontRef} />
+            <div className={modifyTemplateStyle.row}>
+              <div className={modifyTemplateStyle.formGroup}>
+                <label>Author</label>
+                <input
+                  className={modifyTemplateStyle.input}
+                  value={templateData.meta.author || ""}
+                  onChange={(e) => updateMeta("author", e.target.value)}
+                />
+              </div>
+              <div className={modifyTemplateStyle.formGroup}>
+                <label>Version</label>
+                <input
+                  className={modifyTemplateStyle.input}
+                  value={templateData.meta.version || ""}
+                  onChange={(e) => updateMeta("version", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className={modifyTemplateStyle.formGroup}>
+              <label>Model Name (Anki)</label>
+              <input
+                className={modifyTemplateStyle.input}
+                value={templateData.modelName}
+                onChange={(e) => setTemplateData({ ...templateData, modelName: e.target.value })}
+              />
+            </div>
+
+            <div className={modifyTemplateStyle.formGroup}>
+              <label>Root Tag (Container) <span className={modifyTemplateStyle.req}>*</span></label>
+              <div className={modifyTemplateStyle.inputWithBtn}>
+                <input
+                  className={modifyTemplateStyle.input}
+                  value={templateData.rootTag}
+                  onChange={(e) => setTemplateData({ ...templateData, rootTag: e.target.value })}
+                  placeholder="e.g. div.card-body"
+                />
+                <button 
+                  className={modifyTemplateStyle.pickBtn} 
+                  onClick={() => handlePickElement((sel) => setTemplateData({...templateData, rootTag: sel}))}
+                  title="Pick from Page"
+                >
+                  🎯
+                </button>
+              </div>
+              <p className={modifyTemplateStyle.hint}>Fields will be searched inside this tag.</p>
+            </div>
+
+            <div className={modifyTemplateStyle.formGroup}>
+              <label>URL Patterns</label>
+              <input
+                className={modifyTemplateStyle.input}
+                value={templateData.urlPatterns.join(", ")}
+                onChange={(e) => setTemplateData({ ...templateData, urlPatterns: e.target.value.split(",").map(s=>s.trim()) })}
+                placeholder="*"
+              />
+            </div>
+            
+            <div className={modifyTemplateStyle.formGroup}>
+              <label>Description</label>
+              <textarea
+                className={modifyTemplateStyle.textarea}
+                value={templateData.meta.description || ""}
+                onChange={(e) => updateMeta("description", e.target.value)}
+                rows={3}
+              />
             </div>
           </div>
+        )}
 
-          <div className={modifyTemplateStyle.cardSide}>
-            <h3 className={modifyTemplateStyle.sideTitle}>Back</h3>
-            <Editor
-              defaultLanguage="html"
-              defaultValue={isEditMode && idx !== undefined ? templates[idx]?.Back.html : "<p>{{back}}</p>"}
-              height={80}
-              width={'100%'}
-              theme="light"
-              onMount={handleBackEditorMount}
-            />
-            <div className={modifyTemplateStyle.scrollArea}>
-              <TemplateFieldInput ref={backRef} />
-            </div>
-          </div>
-        </div>
-
-      </Form>
-
-      <div className={modifyTemplateStyle.submitRow}>
-        <SimpleButton Svg={ReturnIcon} onClick={()=>navigate('/templates')}/>
-        <SimpleButton Svg={SaveIcon} onClick={submitHandler} overridedStyle={{backgroundColor: 'var(--color-warning)'}}/>
+        {/* --- FRONT / BACK TABS --- */}
+        {(activeTab === TAB.FRONT || activeTab === TAB.BACK) && (
+          <TemplateSideEditor
+            side={activeTab === TAB.FRONT ? "Front" : "Back"}
+            data={activeTab === TAB.FRONT ? templateData.Front : templateData.Back}
+            // 상위 State 업데이트
+            onChange={(newData) => {
+              setTemplateData(prev => ({
+                ...prev,
+                [activeTab === TAB.FRONT ? "Front" : "Back"]: newData
+              }));
+            }}
+            onPickElement={handlePickElement}
+          />
+        )}
       </div>
     </div>
   );
