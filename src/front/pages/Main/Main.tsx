@@ -1,4 +1,4 @@
-import Tabs from '@/front/components/Tabs/Tabs';
+import Tabs from '@/front/common/Tabs/Tabs';
 import mainStyle from "./main.module.css";
 import { Outlet } from 'react-router';
 

@@ -2,9 +2,9 @@ import detectPageStyle from '@/front/pages/Detect/detectPage.module.css';
 import { JSX, useEffect, useState } from 'react';
 import useCustomCard, { Extracted, ExtractedMap, Note, Template, TemplateFieldDataType } from '@/front/utils/useTemplates';
 import DetectedCard from './DetectedCard/DetectedCard';
-import DeckInput from '@/front/components/StatusBar/DeckInput/DeckInput';
+import DeckInput from '@/front/common/StatusBar/DeckInput/DeckInput';
 import AddIcon from '@/public/Icon/Icon-Add.svg';
-import SimpleButton from '@/front/components/SimpleButton/SimpleButton';
+import SimpleButton from '@/front/common/SimpleButton/SimpleButton';
 import useAnkiConnectionStore from '@/front/utils/useAnkiConnectionStore';
 import useGlobalVarStore from '@/front/utils/useGlobalVarStore';
 import useTemplate from '@/front/utils/useTemplates';
@@ -90,7 +90,10 @@ const DetectPage: React.FC = () => {
           });
   }
   const addSelected = ()=>{   
-    fetchAnki({action: "addNotes",params: { notes : [...selected.keys()].map((i)=>notes[i])}})
+    fetchAnki({action: "addNotes",params: { notes : [...selected.keys()].map((i)=>({
+      ...notes[i],
+      deckName: currentDeck
+    }))}})
     .then((res) => {
       console.log(res);
       if (res.error) {

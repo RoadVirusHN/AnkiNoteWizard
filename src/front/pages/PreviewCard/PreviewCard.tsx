@@ -9,9 +9,9 @@ import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import ExtractIcon from "@/public/Icon/Icon-Code.svg"
 import { useEffect, useState } from "react";
-import Tags from "@/front/components/Tags/Tags";
+import Tags from "@/front/common/Tags/Tags";
 import { Editor } from "@monaco-editor/react";
-import SimpleButton from "@/front/components/SimpleButton/SimpleButton";
+import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 import { MessageType } from "@/scripts/background/messages";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
 
@@ -28,6 +28,7 @@ const PreviewCard = ({}) => {
   useEffect(()=>{
     chrome.runtime.onMessage.addListener((message) => {
       if (message.type === MessageType.SEND_INSPECT_DATA){
+        //TODO : doesn't work! debug it!
         if (curFocusedInput) {
           const startPos = curFocusedInput.selectionStart || 0;
           const endPos = curFocusedInput.selectionEnd || 0;

@@ -6,7 +6,7 @@ import DelIcon from "@/public/Icon/Icon-Dump.svg";
 import { useNavigate } from "react-router";
 import { getComplementaryColor } from "@/front/utils/functions";
 import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
-import Tags from "@/front/components/Tags/Tags";
+import Tags from "@/front/common/Tags/Tags";
 
 
 interface DetectedCardProps {

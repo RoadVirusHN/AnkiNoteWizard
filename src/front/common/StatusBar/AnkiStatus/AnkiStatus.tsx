@@ -3,7 +3,7 @@ import AnkiPng from "@/public/Anki-Png.png";
 import ResetSvg from "@/public/Reset-Vector.svg";
 import commonStyle from "@/front/common.module.css";
 import ankiStatusStyle from "./ankiStatus.module.css";
-import ToolTipWrapper from "@/front/components/TooltipWrapper/TooltipWrapper";
+import ToolTipWrapper from "@/front/common/TooltipWrapper/TooltipWrapper";
 import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
 
 

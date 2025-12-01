@@ -4,7 +4,7 @@ import { useEffect,useState } from "react";
 import modifyTemplateStyle from "./modifyTemplate.module.css";
 import type { Template, } from "@/front/utils/useTemplates";
 
-import SimpleButton from "@/front/components/SimpleButton/SimpleButton";
+import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 import ReturnIcon from "@/public/Icon/Icon-Return.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import TemplateSideEditor from "./TemplateSideEditor/TemplateSideEditor";
