@@ -9,7 +9,7 @@ import ReturnIcon from "@/public/Icon/Icon-Return.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import TemplateSideEditor from "./TemplateSideEditor/TemplateSideEditor";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
-import { MessageType } from "@/scripts/background/messages";
+import { MessageType } from "@/scripts/background/messageHandler";
 // 탭 상수
 const TAB = { SETTINGS: "settings", FRONT: "front", BACK: "back" } as const;
 type TabType = typeof TAB[keyof typeof TAB];

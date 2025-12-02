@@ -6,3 +6,7 @@ export const getComplementaryColor = (hsl: string) => {
   const complementaryHue = (hue + 180) % 360;
   return `hsl(${complementaryHue}, ${saturation}%, ${lightness}%)`;
 }
+export const getCurrentTabId = async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  return tab.id;
+}

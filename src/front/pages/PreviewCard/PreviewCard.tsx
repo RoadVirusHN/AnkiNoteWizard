@@ -12,8 +12,8 @@ import { useEffect, useState } from "react";
 import Tags from "@/front/common/Tags/Tags";
 import { Editor } from "@monaco-editor/react";
 import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
-import { MessageType } from "@/scripts/background/messages";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
+import { MessageType } from "@/scripts/background/messageHandler";
 
 const PreviewCard = ({}) => {
   const {index} = useParams();

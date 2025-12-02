@@ -1,4 +1,4 @@
-import { MessageType } from '../background/messages';
+import { MessageType } from "../background/messageHandler";
 
 let overlayElement: HTMLDivElement | null = null; // 오버레이 DIV
 let infoElement: HTMLDivElement | null = null; // 툴팁 DIV ("Copied!" 메시지용)

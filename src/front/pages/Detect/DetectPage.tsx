@@ -8,7 +8,7 @@ import SimpleButton from '@/front/common/SimpleButton/SimpleButton';
 import useAnkiConnectionStore from '@/front/utils/useAnkiConnectionStore';
 import useGlobalVarStore from '@/front/utils/useGlobalVarStore';
 import useTemplate from '@/front/utils/useTemplates';
-import { MessageType } from '@/scripts/background/messages';
+import { MessageType } from '@/scripts/background/messageHandler';
 
 const buildCard = (key: 'Front' | 'Back', customCard: Template, extracted: Extracted) =>
   customCard[key].html.replaceAll(/\{\{(.*?)\}\}/g, 
@@ -37,28 +37,35 @@ const buildCard = (key: 'Front' | 'Back', customCard: Template, extracted: Extra
 // TODO : IT'S DIRTY!!!!!!!!!!!
 const DetectPage: React.FC = () => {
   const {templates} = useCustomCard();
-  const [url, setUrl] = useState<string>(''); 
   const [isPending, setIsPending] = useState(false);
   const [selected, setSelected] = useState(new Set<string>());
   const {fetchAnki} = useAnkiConnectionStore();
-  const {currentDeck} = useGlobalVarStore();
+  const {currentDeck, setCurrentDetected} = useGlobalVarStore();
   const {notes, extractedMaps, setNotes, setExtractedMaps} = useTemplate();
 
-  let pendingId : NodeJS.Timeout;
   const requestExtracteds = async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab.id) {
-      console.warn('No active tab found!');
-      return;
-    }
     setIsPending(true);
-    chrome.tabs.sendMessage(tab.id, {
+    console.log("send request");
+    chrome.runtime.sendMessage({
       type: MessageType.REQUEST_DETECTED_CARDS_FROM_PANEL,
-      customCards: templates,
+      data: templates,
+    }, (response) => {
+        console.log("receive detected cards", response);
+        const em = response[0] as ExtractedMap;
+        setCurrentDetected(response[1] as number);
+        setIsPending(false);
+        const newNotes = {} as typeof notes;
+        Object.keys(em).map((key)=>{
+          const numberKey = Number(key);
+          const cardInfos = em[numberKey];
+          cardInfos.forEach((extracted, idx)=>{
+            const id = key + "-" + idx;
+            newNotes[id] = (getNote(templates[numberKey],extracted));
+          });
+        });
+        setNotes(newNotes);
+        setExtractedMaps(em);
     });
-    pendingId = setInterval(()=>{
-      setIsPending(false);
-    },5000);
   };
 
   const checkAdd = (id:string)=>(val:boolean)=>{
@@ -105,34 +112,6 @@ const DetectPage: React.FC = () => {
       }
     });
   }
-  const messageListener = (message : any) => {
-      if (message.type === 'SEND_DETECTED_CARDS'){
-        console.log("Received detected cards from content script:", message.data);
-        //TODO: filter duplicated one in history or target deck.
-        const em = message.data as ExtractedMap;
-        setUrl(message.URL);
-        setIsPending(false);
-        const newNotes = {} as typeof notes;
-        Object.keys(em).map((key)=>{
-          const numberKey = Number(key);
-          const cardInfos = em[numberKey];
-          cardInfos.forEach((extracted, idx)=>{
-            const id = key + "-" + idx;
-            newNotes[id] = (getNote(templates[numberKey],extracted));
-          });
-        });
-        setNotes(newNotes);
-        setExtractedMaps(em);
-        clearInterval(pendingId);
-      }
-    } 
-  useEffect(()=>{
-    chrome.runtime.onMessage.addListener(messageListener);
-    return ()=>{
-      clearInterval(pendingId)
-      chrome.runtime.onMessage.removeListener(messageListener)
-    };
-  },[]);
   return (
     <div className={detectPageStyle.pageContainer}>
 

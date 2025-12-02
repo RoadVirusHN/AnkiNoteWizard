@@ -5,9 +5,8 @@ import {
   ExtractedMap,
   Extracted,
 } from '@/front/utils/useTemplates';
-import { MessageType } from '../background/messages';
-import { activateInspectionMode, deactivateInspectionMode } from './tagExtraction';
 import { messageHandler } from './messageHandler';
+import { MessageType } from '../background/messageHandler';
 // import { STORAGE_KEY } from '../background/constants';
 
 //TODO : Make Message Types Constant Enum
@@ -103,15 +102,6 @@ export const getExtractedFromPage = (customCards: Template[]): [ExtractedMap, nu
   });
   return [res, cnt];
 };
-const sendDetectedCards = (customCards: Template[]) => {
-  const [extractedData, cnt] = getExtractedFromPage(customCards);
-  // 추출된 데이터를 백그라운드 스크립트로 전송
-  chrome.runtime.sendMessage({
-    type: MessageType.SEND_DETECTED_CARDS,
-    cnt,
-    data: extractedData,
-    url: window.location.href,
-  });
-};
+
 chrome.runtime.onMessage.addListener(messageHandler);
 
