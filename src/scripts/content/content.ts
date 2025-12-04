@@ -77,7 +77,6 @@ const extractFields = (root: Element, record: Record<string, string>) => (field:
     console.warn(`Failed to extract field ${field.name}`, e);
   }
 };
-
 export const getExtractedFromPage = (customCards: Template[]): [ExtractedMap, number] => {
   const res: ExtractedMap = {};
   let cnt = 0;

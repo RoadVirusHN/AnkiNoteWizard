@@ -12,7 +12,7 @@ export enum InspectionMode {
 let currentMode: InspectionMode = InspectionMode.TEXT_EXTRACTION; // 현재 모드 상태 관리
 
 // -----------------------------------------------------------------------------
-// 1. 유틸리티: CSS Selector 생성기
+// 1. 유틸리티: CSS Selector 생성기 // TODO : Change to Library
 // -----------------------------------------------------------------------------
 const getUniqueSelector = (el: HTMLElement): string => {
   if (el.id) return '#' + el.id;

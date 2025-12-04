@@ -1,5 +1,5 @@
 import { STORAGE_KEY } from './constants';
-import { getCurrentTabId } from './functions';
+import { sendAsyncMessage } from './functions';
 
 export interface Message {
   type: MessageType;
@@ -12,7 +12,8 @@ export enum MessageType {
   REQUEST_DETECTED_CARDS_TO_CONTENT = 'REQUEST_DETECTED_CARDS_TO_CONTENT',
   ENTER_INSPECT_MODE_FROM_PANEL = 'ENTER_INSPECT_MODE_FROM_PANEL',
   ENTER_INSPECT_MODE_TO_CONTENT = 'ENTER_INSPECT_MODE_TO_CONTENT',
-  EXIT_INSPECT_MODE = 'EXIT_INSPECT_MODE',
+  EXIT_INSPECT_MODE_FROM_PANEL = 'EXIT_INSPECT_MODE_FROM_PANEL',
+  EXIT_INSPECT_MODE_TO_CONTENT = 'EXIT_INSPECT_MODE_TO_CONTENT',
   SEND_INSPECT_DATA = 'SEND_INSPECT_DATA',
 }
 
@@ -35,81 +36,28 @@ export const messageHandler = (
           const customCards = response['customCards'] || [];
           sendResponse({ customCards });
         } catch (e) {
-          sendResponse({ error: e});
+          sendResponse({ error: e });
         }
       })();
       break;
 
     case MessageType.REQUEST_DETECTED_CARDS_FROM_PANEL:
       console.log('Received REQUEST_DETECTED_CARDS_FROM_PANEL message');
-      shouldKeepChannelOpen = true; 
-
-      (async () => {
-        try {
-          const tabId = await getCurrentTabId();
-          console.log('tabId:', tabId);
-
-          if (tabId === undefined) {
-            sendResponse({ error: "No Active tab found" });
-            return;
-          }
-
-          // Content Script로 메시지 전송
-          chrome.tabs.sendMessage(
-            tabId,
-            { type: MessageType.REQUEST_DETECTED_CARDS_TO_CONTENT, data: message.data },
-            (response) => {
-              if (chrome.runtime.lastError) {
-                console.error("Content Script Error:", chrome.runtime.lastError.message);
-                sendResponse({ error: chrome.runtime.lastError.message });
-              } else {
-                console.log('Response from content script (Valid):', response);
-                sendResponse(response); 
-              }
-            }
-          );
-        } catch (error) {
-          console.error("Background Error:", error);
-          sendResponse({ error: "Background script error" });
-        }
-      })();
+      shouldKeepChannelOpen = true;
+      sendAsyncMessage<Message>(
+        { type: MessageType.REQUEST_DETECTED_CARDS_TO_CONTENT, data: message.data },
+        sendResponse
+      );
       break;
 
     case MessageType.ENTER_INSPECT_MODE_FROM_PANEL:
       console.log('Received ENTER_INSPECT_MODE message');
       shouldKeepChannelOpen = true;
-      
-      (async () => {
-        try {
-          const tabId = await getCurrentTabId(); // TODO : need to refactoring
-          console.log('tabId:', tabId);
-
-          if (tabId === undefined) {
-            sendResponse({ error: "No Active tab found" });
-            return;
-          }
-
-          // Content Script로 메시지 전송
-          chrome.tabs.sendMessage(
-            tabId,
-            { type: MessageType.ENTER_INSPECT_MODE_TO_CONTENT, data: message.data },
-            (response) => {
-              if (chrome.runtime.lastError) {// TODO : need to refactoring
-                console.error("Content Script Error:", chrome.runtime.lastError.message);
-                sendResponse({ error: chrome.runtime.lastError.message });
-              } else {
-                console.log('Response from content script (Valid):', response);
-                sendResponse(response); 
-              }
-            }
-          );
-        } catch (error) {
-          console.error("Background Error:", error);
-          sendResponse({ error: "Background script error" });
-        }
-      })();
+      sendAsyncMessage<Message>(
+        { type: MessageType.ENTER_INSPECT_MODE_TO_CONTENT, data: message.data },
+        sendResponse
+      );
       break;
-
   }
 
   return shouldKeepChannelOpen;
