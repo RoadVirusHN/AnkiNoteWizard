@@ -18,7 +18,10 @@ export const messageHandler = async (
       break;
     case MessageType.ENTER_INSPECT_MODE_TO_CONTENT:
       console.log("Enter inspect mode requested: " + (message.data));
-      activateInspectionMode(message.data as InspectionMode);
+      isAsync = true;
+      (async () =>{
+        await sendResponse(activateInspectionMode(message.data as InspectionMode));
+      })();
       break;
     case MessageType.EXIT_INSPECT_MODE_TO_CONTENT:
   }
