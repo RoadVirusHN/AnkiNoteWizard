@@ -70,7 +70,7 @@ const ModifyTemplate = () => {
       return;
     }
     chrome.tabs.sendMessage(tab.id, {
-      type: MessageType.ENTER_INSPECT_MODE_FROM_PANEL,
+      type: MessageType.ENTER_INSPECTION_MODE_FROM_PANEL,
       mode: InspectionMode.TAG_EXTRACTION
     });
   };

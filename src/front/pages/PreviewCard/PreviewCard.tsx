@@ -82,7 +82,7 @@ const PreviewCard = ({}) => {
         </div>
         <h3>front preview{isModifying ? <SimpleButton Svg={ExtractIcon} onClick={()=>{
           chrome.runtime.sendMessage({
-            type: MessageType.ENTER_INSPECT_MODE_FROM_PANEL,
+            type: MessageType.ENTER_INSPECTION_MODE_FROM_PANEL,
             data: InspectionMode.TEXT_EXTRACTION
           },(response) => {alert(response)});
         }}/> : ''}</h3>

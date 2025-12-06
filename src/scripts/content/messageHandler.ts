@@ -2,6 +2,7 @@ import { Template } from "@/front/utils/useTemplates";
 import { Message, MessageType } from "../background/messageHandler";
 import { getExtractedFromPage } from "./content";
 import { activateInspectionMode, InspectionMode } from "./tagExtraction";
+import { PortNames } from "../background/connectHandler";
 
 
 
@@ -16,14 +17,13 @@ export const messageHandler = async (
       console.log('Received REQUEST_DETECTED_CARDS_TO_CONTENT message');
       sendResponse(getExtractedFromPage(message.data as Template[]));
       break;
-    case MessageType.ENTER_INSPECT_MODE_TO_CONTENT:
+    case MessageType.ENTER_INSPECTION_MODE_FROM_PANEL:
       console.log("Enter inspect mode requested: " + (message.data));
-      isAsync = true;
-      (async () =>{
-        await sendResponse(activateInspectionMode(message.data as InspectionMode));
-      })();
+      chrome.runtime.connect({name: PortNames.READY_INSPECTION_MODE_FROM_CONTENT});
+      if (message.data === InspectionMode.TEXT_EXTRACTION) {
+      } else if (message.data === InspectionMode.TAG_EXTRACTION) {
+      }
       break;
-    case MessageType.EXIT_INSPECT_MODE_TO_CONTENT:
   }
   return isAsync;
 };

@@ -369,6 +369,7 @@ export const activateInspectionMode = (mode: InspectionMode = InspectionMode.TEX
   document.addEventListener('mouseover', handleMouseOver, true);
   document.addEventListener('mouseout', handleMouseOut, true);
   document.addEventListener('mousedown', handleMouseDown, true);
+  
 };
 
 export const deactivateInspectionMode = () => {
