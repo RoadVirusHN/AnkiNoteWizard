@@ -1,10 +1,8 @@
-import { Template } from "@/front/utils/useTemplates";
-import { Message, MessageType } from "../background/messageHandler";
-import { getExtractedFromPage } from "./content";
-import { activateInspectionMode, InspectionMode } from "./tagExtraction";
-import { PortNames } from "../background/connectHandler";
-
-
+import { Template } from '@/front/utils/useTemplates';
+import { Message, MessageType } from '../background/messageHandler';
+import { getExtractedFromPage } from './content';
+import { activateInspectionMode, deactivateInspectionMode, InspectionMode } from './tagExtraction';
+import { PortNames } from '../background/connectHandler';
 
 export const messageHandler = async (
   message: Message,
@@ -18,11 +16,12 @@ export const messageHandler = async (
       sendResponse(getExtractedFromPage(message.data as Template[]));
       break;
     case MessageType.ENTER_INSPECTION_MODE_FROM_PANEL:
-      console.log("Enter inspect mode requested: " + (message.data));
-      chrome.runtime.connect({name: PortNames.READY_INSPECTION_MODE_FROM_CONTENT});
-      if (message.data === InspectionMode.TEXT_EXTRACTION) {
-      } else if (message.data === InspectionMode.TAG_EXTRACTION) {
-      }
+      console.log('Enter inspect mode requested: ' + message.data);
+      const port = chrome.runtime.connect({ name: PortNames.READY_INSPECTION_MODE_FROM_CONTENT });
+      port.onDisconnect.addListener(() => {
+        deactivateInspectionMode();
+      });
+      activateInspectionMode(message.data as InspectionMode, port);
       break;
   }
   return isAsync;

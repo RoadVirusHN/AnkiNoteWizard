@@ -11,8 +11,9 @@ export enum MessageType {
   REQUEST_DETECTED_CARDS_FROM_PANEL = 'REQUEST_DETECTED_CARDS_FROM_PANEL',
   REQUEST_DETECTED_CARDS_TO_CONTENT = 'REQUEST_DETECTED_CARDS_TO_CONTENT',
   ENTER_INSPECTION_MODE_FROM_PANEL = 'ENTER_INSPECTION_MODE_FROM_PANEL',
+  SET_INSPECTION_TAB_ID = 'SET_INSPECTION_TAB_ID',
   EXIT_INSPECTION_MODE_FROM_PANEL = 'EXIT_INSPECTION_MODE_FROM_PANEL',
-
+  SEND_INSPECTION_DATA_FROM_CONTENT = 'SEND_INSPECTION_DATA_FROM_CONTENT',
 }
 
 export const messageHandler = (
@@ -48,14 +49,6 @@ export const messageHandler = (
       );
       break;
 
-    case MessageType.ENTER_INSPECTION_MODE_FROM_PANEL:
-      console.log('Received ENTER_INSPECT_MODE message');
-      shouldKeepChannelOpen = true;
-      sendAsyncMessage<Message>(
-        { type: MessageType.ENTER_INSPECT_MODE_TO_CONTENT, data: message.data },
-        sendResponse
-      );
-      break;
   }
 
   return shouldKeepChannelOpen;

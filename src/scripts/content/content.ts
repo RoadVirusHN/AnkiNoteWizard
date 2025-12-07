@@ -6,20 +6,9 @@ import {
   Extracted,
 } from '@/front/utils/useTemplates';
 import { messageHandler } from './messageHandler';
-import { MessageType } from '../background/messageHandler';
-// import { STORAGE_KEY } from '../background/constants';
 
-//TODO : Make Message Types Constant Enum
 //TODO : Delayed search for Delayed Content delivery
 console.log('✅ Content script loaded');
-// let customCards: Template[] = [];
-// window.onload = async () => {
-//   const response = await chrome.storage.local.get(STORAGE_KEY);
-//   customCards = response['customCards'] || [];
-//   // chrome.runtime.sendMessage({ type: 'REQUEST_CUSTOM_CARDS_FROM_BACKGROUND' });
-//   console.log('Content script window.onload fired', customCards);
-//   sendDetectedCards(customCards);
-// };
 
 const checkUrlMatched = (customCard: Template): boolean => {
   customCard.urlPatterns = customCard.urlPatterns || ['body'];

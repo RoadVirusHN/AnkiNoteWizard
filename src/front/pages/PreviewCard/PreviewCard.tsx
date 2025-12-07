@@ -14,6 +14,7 @@ import { Editor } from "@monaco-editor/react";
 import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
 import { MessageType } from "@/scripts/background/messageHandler";
+import { PortNames } from "@/scripts/background/connectHandler";
 
 const PreviewCard = ({}) => {
   const {index} = useParams();
@@ -22,23 +23,10 @@ const PreviewCard = ({}) => {
   const {notes, templates, updateNote} = useTemplate();
   const idx = index ?? '0-0';
   const [curNote, setCurNote] = useState(notes[idx]);
-  const [curFocusedInput, setCurFocusedInput] = useState<HTMLTextAreaElement|null>(null);
+  const [curText, setCurText] = useState('');
   const templateIdx = Number(idx.split('-')[0]);
   const navigate = useNavigate();
-  useEffect(()=>{
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.type === MessageType.SEND_INSPECT_DATA){
-        //TODO : doesn't work! debug it!
-        if (curFocusedInput) {
-          const startPos = curFocusedInput.selectionStart || 0;
-          const endPos = curFocusedInput.selectionEnd || 0;
-          curFocusedInput.value = curFocusedInput.value.substring(0, startPos) + message.data + curFocusedInput.value.substring(endPos);
-          curFocusedInput.selectionEnd = startPos + message.data.length;
-          curFocusedInput.focus();
-        }
-      }
-    });
-  },[])
+  let panelPort : chrome.runtime.Port|null = null;
   return (<div>
     <div className={previewCardStyle.header}>
       <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
@@ -80,11 +68,22 @@ const PreviewCard = ({}) => {
             setIsChanged(true);
           }}/>
         </div>
-        <h3>front preview{isModifying ? <SimpleButton Svg={ExtractIcon} onClick={()=>{
-          chrome.runtime.sendMessage({
-            type: MessageType.ENTER_INSPECTION_MODE_FROM_PANEL,
-            data: InspectionMode.TEXT_EXTRACTION
-          },(response) => {alert(response)});
+        {curText}
+        <SimpleButton text="cancle" onClick={()=>{
+          if (panelPort!=null)  panelPort.disconnect();
+        }}/>
+        <h3>front preview{isModifying ? <SimpleButton Svg={ExtractIcon} onClick={async ()=>{
+          if (panelPort!=null)  panelPort.disconnect();
+          const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+          const tabId = tab.id;
+          panelPort = chrome.runtime.connect({ name: PortNames.ENTER_TEXT_INSPECTION_MODE_FROM_PANEL });
+          panelPort.postMessage({type:MessageType.SET_INSPECTION_TAB_ID, tabId });
+          panelPort.onMessage.addListener((msg)=>{
+            let data = msg.data as string;
+            data = data.trim();
+            setCurText(msg.data);
+            console.log('Received extracted text:', data);
+          });
         }}/> : ''}</h3>
         {
           isModifying ?
@@ -99,10 +98,8 @@ const PreviewCard = ({}) => {
             }}
             onMount={(editor)=>{
               editor.onDidFocusEditorText(()=>{
-                setCurFocusedInput(editor.getDomNode() ? null: editor.getDomNode()!.querySelector('textarea'));
               });
               editor.onDidBlurEditorText(()=>{
-                setCurFocusedInput(null);
               });
             }}
             />) :
@@ -127,10 +124,8 @@ const PreviewCard = ({}) => {
             }}
             onMount={(editor)=>{
               editor.onDidFocusEditorText(()=>{
-                setCurFocusedInput(editor.getDomNode() ? null: editor.getDomNode()!.querySelector('textarea'));
               });
               editor.onDidBlurEditorText(()=>{
-                setCurFocusedInput(null);
               });
             }}
             />)

@@ -3,6 +3,7 @@ import { MessageType } from "../background/messageHandler";
 let overlayElement: HTMLDivElement | null = null; // 오버레이 DIV
 let infoElement: HTMLDivElement | null = null; // 툴팁 DIV ("Copied!" 메시지용)
 let menuElement: HTMLDivElement | null = null; // 메뉴 DIV (선택창용)
+let contentPort: chrome.runtime.Port | null = null; // 포트 연결 상태 관리;
 
 export enum InspectionMode {
   TAG_EXTRACTION = 'TAG_EXTRACTION',
@@ -268,6 +269,7 @@ const copyToClipboard = (text: string, x: number, y: number) => {
     .writeText(text)
     .then(() => {
       showTooltip(text, x, y);
+      contentPort?.postMessage({ type: MessageType.SEND_INSPECTION_DATA_FROM_CONTENT, data: text });
     })
     .catch((err) => console.error(err));
 };
@@ -279,9 +281,6 @@ const showTooltip = (text: string, x: number, y: number) => {
     infoElement.style.left = `${x + 15}px`;
     infoElement.style.top = `${y + 15}px`;
     infoElement.style.display = 'block';
-
-    // Background Script로 메시지 전송 (기존 로직 유지)
-    chrome.runtime.sendMessage({ type: MessageType.SEND_INSPECT_DATA, data: text });
 
     setTimeout(() => {
       if (infoElement) infoElement.style.display = 'none';
@@ -311,6 +310,9 @@ export const handleMouseOver = (event: MouseEvent) => {
     overlayElement.style.height = `${rect.height}px`;
     overlayElement.style.display = 'block';
   }
+  if (currentMode===InspectionMode.TEXT_EXTRACTION&&isValidElement(targetElement)) {
+    contentPort?.postMessage({data: targetElement.textContent?.trim()||''});
+  }
 };
 
 export const handleMouseOut = () => {
@@ -327,12 +329,9 @@ export const handleMouseDown = (event: MouseEvent) => {
   const targetElement = event.target as HTMLElement;
   if (!isValidElement(targetElement)) return;
 
-  // 분기 처리: 모드에 따라 동작 다름
   if (currentMode === InspectionMode.TAG_EXTRACTION) {
-    // 태그 추출 모드 -> 메뉴 오픈
     showActionMenu(targetElement, event.clientX, event.clientY);
   } else {
-    // 텍스트 추출 모드 (기존 동작)
     const textContent = targetElement.textContent?.trim() || '';
     if (textContent.length > 0) {
       copyToClipboard(textContent, event.clientX, event.clientY);
@@ -360,12 +359,12 @@ const isValidElement = (element: HTMLElement) => {
 // -----------------------------------------------------------------------------
 
 // 활성화 시 모드를 인자로 받을 수 있도록 변경 (default: TEXT)
-export const activateInspectionMode = (mode: InspectionMode = InspectionMode.TEXT_EXTRACTION) => {
+export const activateInspectionMode = (mode: InspectionMode = InspectionMode.TEXT_EXTRACTION, port: chrome.runtime.Port) => {
   console.log(`Activate InspectionMode: ${mode}`);
   currentMode = mode; // 모드 설정
 
   createUIComponents(); // UI 준비
-
+  contentPort = port;
   document.addEventListener('mouseover', handleMouseOver, true);
   document.addEventListener('mouseout', handleMouseOut, true);
   document.addEventListener('mousedown', handleMouseDown, true);
@@ -378,6 +377,7 @@ export const deactivateInspectionMode = () => {
   if (overlayElement) overlayElement.style.display = 'none';
   if (menuElement) menuElement.style.display = 'none'; // 메뉴도 숨김
 
+  contentPort?.disconnect();
   document.removeEventListener('mouseover', handleMouseOver, true);
   document.removeEventListener('mouseout', handleMouseOut, true);
   document.removeEventListener('mousedown', handleMouseDown, true);
