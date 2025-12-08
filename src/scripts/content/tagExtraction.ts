@@ -13,7 +13,7 @@ export enum InspectionMode {
 let currentMode: InspectionMode = InspectionMode.TEXT_EXTRACTION; // 현재 모드 상태 관리
 
 // -----------------------------------------------------------------------------
-// 1. 유틸리티: CSS Selector 생성기 // TODO : Change to Library
+// 1. 유틸리티: CSS Selector 생성기 // TODO : Change to Library, remove child nth
 // -----------------------------------------------------------------------------
 const getUniqueSelector = (el: HTMLElement): string => {
   if (el.id) return '#' + el.id;
@@ -50,7 +50,7 @@ function createUIComponents() {
   // 2-1. 하이라이트 오버레이
   if (!overlayElement) {
     overlayElement = document.createElement('div');
-    overlayElement.id = 'extension-overlay';
+    overlayElement.id = 'extension-overlay'; // TODO: make id unique
     Object.assign(overlayElement.style, {
       position: 'fixed',
       pointerEvents: 'none',
@@ -268,8 +268,8 @@ const copyToClipboard = (text: string, x: number, y: number) => {
   navigator.clipboard
     .writeText(text)
     .then(() => {
-      showTooltip(text, x, y);
       contentPort?.postMessage({ type: MessageType.SEND_INSPECTION_DATA_FROM_CONTENT, data: text });
+      showTooltip(text, x, y);
     })
     .catch((err) => console.error(err));
 };
@@ -319,12 +319,12 @@ export const handleMouseOut = () => {
   if (overlayElement) overlayElement.style.display = 'none';
 };
 
-export const handleMouseDown = (event: MouseEvent) => {
+export const handleClick = (event: MouseEvent) => {
   // 메뉴 내부 클릭이면 무시 (이벤트 처리하도록 둠)
   if (menuElement && menuElement.contains(event.target as Node)) return;
-
-  event.stopPropagation();
+  console.log("button down event:", event);
   event.preventDefault();
+  event.stopPropagation();
 
   const targetElement = event.target as HTMLElement;
   if (!isValidElement(targetElement)) return;
@@ -367,7 +367,7 @@ export const activateInspectionMode = (mode: InspectionMode = InspectionMode.TEX
   contentPort = port;
   document.addEventListener('mouseover', handleMouseOver, true);
   document.addEventListener('mouseout', handleMouseOut, true);
-  document.addEventListener('mousedown', handleMouseDown, true);
+  document.addEventListener('click', handleClick, true);
   document.addEventListener('scroll', handleMouseOut, true);
 };
 
@@ -380,6 +380,6 @@ export const deactivateInspectionMode = () => {
   contentPort?.disconnect();
   document.removeEventListener('mouseover', handleMouseOver, true);
   document.removeEventListener('mouseout', handleMouseOut, true);
-  document.removeEventListener('mousedown', handleMouseDown, true);
+  document.removeEventListener('click', handleClick, true);
   document.removeEventListener('scroll', handleMouseOut, true);
 };
