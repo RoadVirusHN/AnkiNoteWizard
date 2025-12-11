@@ -38,7 +38,7 @@ const router = createHashRouter([
         element: <ConfigPage/>
       },
       {
-        path: "modify/:index?",
+        path: "/templates/modify/:index?",
         element: <ModifyTemplate/>
       },
       {
