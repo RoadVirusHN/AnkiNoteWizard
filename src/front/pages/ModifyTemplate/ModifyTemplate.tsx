@@ -10,8 +10,9 @@ import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import TemplateSideEditor from "./TemplateSideEditor/TemplateSideEditor";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
 import { MessageType } from "@/scripts/background/messageHandler";
+import TemplateMetaEditor from "./TemplateMetaEditor/TemplateMetaEditor";
 // 탭 상수
-const TAB = { SETTINGS: "settings", FRONT: "front", BACK: "back" } as const;
+const TAB = { META: "meta",COMMON: 'common' ,FRONT: "front", BACK: "back" } as const;
 type TabType = typeof TAB[keyof typeof TAB];
 
 const ModifyTemplate = () => {
@@ -21,7 +22,7 @@ const ModifyTemplate = () => {
   const { templates, addTemplate, modifyTemplate } = useTemplates();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<TabType>(TAB.SETTINGS);
+  const [activeTab, setActiveTab] = useState<TabType>(TAB.META);
   const [templateData, setTemplateData] = useState<Template>({
       templateName: "",
       meta: { author: "", description: "", version: "0.0.1" },
@@ -93,10 +94,16 @@ return (
       {/* Tabs */}
       <div className={modifyTemplateStyle.tabs}>
         <button 
-          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.SETTINGS ? modifyTemplateStyle.activeTab : ""}`} 
-          onClick={() => setActiveTab(TAB.SETTINGS)}
+          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.META ? modifyTemplateStyle.activeTab : ""}`} 
+          onClick={() => setActiveTab(TAB.META)}
         >
-          Settings
+          Meta
+        </button>        
+        <button 
+          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.COMMON ? modifyTemplateStyle.activeTab : ""}`} 
+          onClick={() => setActiveTab(TAB.COMMON)}
+        >
+          Common
         </button>
         <button 
           className={`${modifyTemplateStyle.tab} ${activeTab === TAB.FRONT ? modifyTemplateStyle.activeTab : ""}`} 
@@ -111,91 +118,9 @@ return (
           Back
         </button>
       </div>
-
-      {/* Content Area */}
-      <div className={modifyTemplateStyle.content}>
-        
-        {/* --- SETTINGS TAB --- */}
-        {activeTab === TAB.SETTINGS && (
-          <div className={modifyTemplateStyle.settingsForm}>
-            <div className={modifyTemplateStyle.formGroup}>
-              <label>Template Name <span className={modifyTemplateStyle.req}>*</span></label>
-              <input
-                className={modifyTemplateStyle.input}
-                value={templateData.templateName}
-                onChange={(e) => setTemplateData({ ...templateData, templateName: e.target.value })}
-                placeholder="e.g. Eng-Kor Words"
-              />
-            </div>
-
-            <div className={modifyTemplateStyle.row}>
-              <div className={modifyTemplateStyle.formGroup}>
-                <label>Author</label>
-                <input
-                  className={modifyTemplateStyle.input}
-                  value={templateData.meta.author || ""}
-                  onChange={(e) => updateMeta("author", e.target.value)}
-                />
-              </div>
-              <div className={modifyTemplateStyle.formGroup}>
-                <label>Version</label>
-                <input
-                  className={modifyTemplateStyle.input}
-                  value={templateData.meta.version || ""}
-                  onChange={(e) => updateMeta("version", e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className={modifyTemplateStyle.formGroup}>
-              <label>Model Name (Anki)</label>
-              <input
-                className={modifyTemplateStyle.input}
-                value={templateData.modelName}
-                onChange={(e) => setTemplateData({ ...templateData, modelName: e.target.value })}
-              />
-            </div>
-
-            <div className={modifyTemplateStyle.formGroup}>
-              <label>Root Tag (Container) <span className={modifyTemplateStyle.req}>*</span></label>
-              <div className={modifyTemplateStyle.inputWithBtn}>
-                <input
-                  className={modifyTemplateStyle.input}
-                  value={templateData.rootTag}
-                  onChange={(e) => setTemplateData({ ...templateData, rootTag: e.target.value })}
-                  placeholder="e.g. div.card-body"
-                />
-                <button 
-                  className={modifyTemplateStyle.pickBtn} 
-                  onClick={() => handlePickElement((sel) => setTemplateData({...templateData, rootTag: sel}))}
-                  title="Pick from Page"
-                >
-                  🎯
-                </button>
-              </div>
-              <p className={modifyTemplateStyle.hint}>Fields will be searched inside this tag.</p>
-            </div>
-
-            <div className={modifyTemplateStyle.formGroup}>
-              <label>URL Patterns</label>
-              <input
-                className={modifyTemplateStyle.input}
-                value={templateData.urlPatterns.join(", ")}
-                onChange={(e) => setTemplateData({ ...templateData, urlPatterns: e.target.value.split(",").map(s=>s.trim()) })}
-                placeholder="*"
-              />
-            </div>
-            
-            <div className={modifyTemplateStyle.formGroup}>
-              <label>Description</label>
-              <textarea
-                className={modifyTemplateStyle.textarea}
-                value={templateData.meta.description || ""}
-                onChange={(e) => updateMeta("description", e.target.value)}
-                rows={3}
-              />
-            </div>
-          </div>
+      <div className={modifyTemplateStyle.content}>        
+        {activeTab === TAB.META && (
+          <TemplateMetaEditor/>
         )}
 
         {/* --- FRONT / BACK TABS --- */}
