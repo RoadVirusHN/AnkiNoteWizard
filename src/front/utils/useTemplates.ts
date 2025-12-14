@@ -69,9 +69,9 @@ export interface Template {
 }
 interface TemplateState {
   templates: Template[];
-  addTemplate: (card: Template) => void;
+  addTemplate: (card: Template) => TEMPLATE_CODE;
   removeTemplate: (name: string) => void;
-  modifyTemplate: (name: string, card: Template) => void;
+  modifyTemplate: (name: string, card: Template) => TEMPLATE_CODE;
   notes: { [idx: string]: Note };
   addNote: (idx: string, note: Note) => void;
   removeNote: (idx: string) => void;
@@ -85,7 +85,7 @@ interface TemplateState {
   setExtractedMaps: (newMaps: ExtractedMap) => void;
 }
 
-enum TEMPLATE_CODE {
+export enum TEMPLATE_CODE {
   OK='OK',
   INVALID_TEMPLATE_NAME='INVALID_TEMPLATE_NAME',
   DUPLICATE_TEMPLATE_NAME='DUPLICATE_TEMPLATE_NAME',

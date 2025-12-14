@@ -1,4 +1,4 @@
-import useTemplates, { TemplateFieldDataType } from "@/front/utils/useTemplates";
+import useTemplates, { TEMPLATE_CODE, TemplateFieldDataType } from "@/front/utils/useTemplates";
 import { useNavigate, useParams } from "react-router";
 import { useEffect,useState } from "react";
 import modifyTemplateStyle from "./modifyTemplate.module.css";
@@ -52,9 +52,10 @@ const ModifyTemplate = () => {
       alert("Card Name is required.");
       return;
     }
-    if (isEditMode && idx !== undefined) modifyTemplate(templates[idx].templateName, templateData);
-    else addTemplate(templateData);
-    navigate("/templates");
+    const code = isEditMode && idx !== undefined ? 
+      modifyTemplate(templates[idx].templateName, templateData) :
+      addTemplate(templateData);
+    if (code===TEMPLATE_CODE.OK) navigate("/templates");
   };
 
 return (

@@ -2,6 +2,7 @@ import { Template } from "@/front/utils/useTemplates";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
 import { MessageType } from "@/scripts/background/messageHandler";
 import modifyTemplateStyle from "../modifyTemplate.module.css";
+import Tags from "@/front/common/Tags/Tags";
 interface Props {
   data : Template;
   setData: (data: Template) => void;
@@ -39,7 +40,17 @@ const TemplateCommonEditor = ({data, setData}:Props) => {
         placeholder="*"
       />
     </div>
-    <div> tags</div>
+    <Tags givenTags={data.tags} isModifying={true} onAddTag={
+      (newTag) => {
+        if (!data.tags.includes(newTag)) {
+          setData({ ...data, tags: [...data.tags, newTag] });
+        }
+      }
+    } onRemoveTag={
+      (tagToRemove) => {
+        setData({ ...data, tags: data.tags.filter(tag => tag !== tagToRemove) });
+      }
+    }/>
     <div className={modifyTemplateStyle.formGroup}>
       <label>Root Tag (Container) <span className={modifyTemplateStyle.req}>*</span></label>
       <div className={modifyTemplateStyle.inputWithBtn}>

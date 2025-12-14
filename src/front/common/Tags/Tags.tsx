@@ -31,7 +31,6 @@ const Tags = ({givenTags, isModifying, onRemoveTag, onAddTag}:TagsProps) => {
     }
   }
   return (<div className={tagsStyle.tags}>
-    <span className={tagsStyle.badges}>
       {givenTags.map((tag)=>{
         let tagColor = tags[tag] ? tags[tag].color : getRandomColor();
         if (tags[tag]===undefined) addTag(tag, tagColor);
@@ -41,7 +40,6 @@ const Tags = ({givenTags, isModifying, onRemoveTag, onAddTag}:TagsProps) => {
         </span>);
       }
     )}
-    </span> 
     {isModifying ? <span>
     <input id="tagInput" className={tagsStyle.tagInput} type='text' placeholder="Add New Tag" 
     onKeyDown={(e)=>{if (e.key==='Enter') insertTag()}}/> 
