@@ -1,12 +1,24 @@
-import modifyTemplateStyle from "./modifyTemplate.module.css";
-const TemplateMetaEditor = ({templateData }) => {
+import { Template } from "@/front/utils/useTemplates";
+import modifyTemplateStyle from "../modifyTemplate.module.css";
+
+interface Props {
+  data : Template;
+  setData: (data: Template) => void;
+}
+const TemplateMetaEditor = ({data, setData}:Props) => {  
+  
+  // 공통 핸들러: 깊은 객체 업데이트 헬퍼
+  const updateMeta = (key: string, value: unknown) => {
+    setData({ ...data, meta: { ...data.meta, [key]: value } });
+  };
+  
   return (<div className={modifyTemplateStyle.settingsForm}>
   <div className={modifyTemplateStyle.formGroup}>
     <label>Template Name <span className={modifyTemplateStyle.req}>*</span></label>
     <input
       className={modifyTemplateStyle.input}
-      value={templateData.templateName}
-      onChange={(e) => setTemplateData({ ...templateData, templateName: e.target.value })}
+      value={data.templateName}
+      onChange={(e) => setData({ ...data, templateName: e.target.value })}
       placeholder="e.g. Eng-Kor Words"
     />
   </div>
@@ -16,7 +28,7 @@ const TemplateMetaEditor = ({templateData }) => {
       <label>Author</label>
       <input
         className={modifyTemplateStyle.input}
-        value={templateData.meta.author || ""}
+        value={data.meta.author || ""}
         onChange={(e) => updateMeta("author", e.target.value)}
       />
     </div>
@@ -24,7 +36,7 @@ const TemplateMetaEditor = ({templateData }) => {
       <label>Version</label>
       <input
         className={modifyTemplateStyle.input}
-        value={templateData.meta.version || ""}
+        value={data.meta.version || ""}
         onChange={(e) => updateMeta("version", e.target.value)}
       />
     </div>
@@ -35,7 +47,7 @@ const TemplateMetaEditor = ({templateData }) => {
     <label>Description</label>
     <textarea
       className={modifyTemplateStyle.textarea}
-      value={templateData.meta.description || ""}
+      value={data.meta.description || ""}
       onChange={(e) => updateMeta("description", e.target.value)}
       rows={3}
     />

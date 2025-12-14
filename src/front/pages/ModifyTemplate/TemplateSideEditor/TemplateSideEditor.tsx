@@ -11,32 +11,31 @@ interface SideData {
 interface Props {
   side: "Front" | "Back";
   data: SideData;
-  onChange: (data: SideData) => void;
-  onPickElement: (cb: (sel: string) => void) => void;
+  setData: (data: SideData) => void;
 }
 
-const TemplateSideEditor: React.FC<Props> = ({ side, data, onChange, onPickElement }) => {
+const TemplateSideEditor: React.FC<Props> = ({ side, data, setData }) => {
   
   // -- Handlers --
   const handleHtmlChange = (val: string | undefined) => {
-    onChange({ ...data, html: val || "" });
+    setData({ ...data, html: val || "" });
   };
 
   const handleFieldChange = (idx: number, key: keyof TemplateField, val: unknown) => {
     const newFields = [...data.fields];
     newFields[idx] = { ...newFields[idx], [key]: val };
-    onChange({ ...data, fields: newFields });
+    setData({ ...data, fields: newFields });
   };
 
   const addField = () => {
-    onChange({
+    setData({
       ...data,
       fields: [...data.fields, { name: "", content: "", dataType: TemplateFieldDataType.TEXT, isOptional: true }]
     });
   };
 
   const removeField = (idx: number) => {
-    onChange({ ...data, fields: data.fields.filter((_, i) => i !== idx) });
+    setData({ ...data, fields: data.fields.filter((_, i) => i !== idx) });
   };
 
   // -- Preview Logic --
@@ -116,7 +115,7 @@ const TemplateSideEditor: React.FC<Props> = ({ side, data, onChange, onPickEleme
                 />
                  <button 
                   className={styles.miniPickBtn} 
-                  onClick={() => onPickElement((sel) => handleFieldChange(i, "content", sel))}
+                  onClick={() => ((sel:string) => handleFieldChange(i, "content", sel))}
                   title="Pick element"
                 >
                   🎯

@@ -8,12 +8,10 @@ import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 import ReturnIcon from "@/public/Icon/Icon-Return.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import TemplateSideEditor from "./TemplateSideEditor/TemplateSideEditor";
-import { InspectionMode } from "@/scripts/content/tagExtraction";
-import { MessageType } from "@/scripts/background/messageHandler";
 import TemplateMetaEditor from "./TemplateMetaEditor/TemplateMetaEditor";
-// 탭 상수
-const TAB = { META: "meta",COMMON: 'common' ,FRONT: "front", BACK: "back" } as const;
-type TabType = typeof TAB[keyof typeof TAB];
+import TemplateCommonEditor from "./TemplateCommonEditor/TemplateCommonEditor";
+
+enum TAB { META="meta",COMMON='common' ,FRONT="front", BACK="back" };
 
 const ModifyTemplate = () => {
   const { index } = useParams();
@@ -22,7 +20,7 @@ const ModifyTemplate = () => {
   const { templates, addTemplate, modifyTemplate } = useTemplates();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<TabType>(TAB.META);
+  const [activeTab, setActiveTab] = useState<TAB>(TAB.META);
   const [templateData, setTemplateData] = useState<Template>({
       templateName: "",
       meta: { author: "", description: "", version: "0.0.1" },
@@ -47,10 +45,7 @@ const ModifyTemplate = () => {
       }));
     }
   }, [isEditMode, idx, templates]);
-  // 공통 핸들러: 깊은 객체 업데이트 헬퍼
-  const updateMeta = (key: string, value: unknown) => {
-    setTemplateData(prev => ({ ...prev, meta: { ...prev.meta, [key]: value } }));
-  };
+
 
   const handleSave = () => {
     if (!templateData.templateName.trim()) {
@@ -62,23 +57,8 @@ const ModifyTemplate = () => {
     navigate("/templates");
   };
 
-  // 픽커(추출) 기능 모의 함수
-  const handlePickElement = async (callback: (selector: string) => void) => {
-    console.log("Entering inspect mode for element picking...");
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab.id) {
-      console.warn('No active tab found!');
-      return;
-    }
-    chrome.tabs.sendMessage(tab.id, {
-      type: MessageType.ENTER_INSPECTION_MODE_FROM_PANEL,
-      mode: InspectionMode.TAG_EXTRACTION
-    });
-  };
-
 return (
     <div className={modifyTemplateStyle.container}>
-      {/* Header */}
       <div className={modifyTemplateStyle.header}>
         <div className={modifyTemplateStyle.headerLeft}>
           <SimpleButton Svg={ReturnIcon} onClick={() => navigate("/templates")} />
@@ -90,52 +70,46 @@ return (
           overridedStyle={{ backgroundColor: "var(--color-warning)", width: "32px", height: "32px" }} 
         />
       </div>
-
-      {/* Tabs */}
       <div className={modifyTemplateStyle.tabs}>
-        <button 
-          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.META ? modifyTemplateStyle.activeTab : ""}`} 
-          onClick={() => setActiveTab(TAB.META)}
-        >
-          Meta
-        </button>        
-        <button 
-          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.COMMON ? modifyTemplateStyle.activeTab : ""}`} 
-          onClick={() => setActiveTab(TAB.COMMON)}
-        >
-          Common
-        </button>
-        <button 
-          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.FRONT ? modifyTemplateStyle.activeTab : ""}`} 
-          onClick={() => setActiveTab(TAB.FRONT)}
-        >
-          Front
-        </button>
-        <button 
-          className={`${modifyTemplateStyle.tab} ${activeTab === TAB.BACK ? modifyTemplateStyle.activeTab : ""}`} 
-          onClick={() => setActiveTab(TAB.BACK)}
-        >
-          Back
-        </button>
+        {Object.values(TAB).map(tab => 
+          <button
+            key={tab}
+            className={`${modifyTemplateStyle.tab} ${activeTab === tab ? modifyTemplateStyle.activeTab : ""}`}
+            onClick={() => setActiveTab(tab as TAB)}>
+            {tab}
+          </button>)}
       </div>
       <div className={modifyTemplateStyle.content}>        
         {activeTab === TAB.META && (
-          <TemplateMetaEditor/>
-        )}
-
-        {/* --- FRONT / BACK TABS --- */}
-        {(activeTab === TAB.FRONT || activeTab === TAB.BACK) && (
+          <TemplateMetaEditor 
+            data={templateData} 
+            setData={setTemplateData}/>)}
+        {activeTab === TAB.COMMON && (
+          <TemplateCommonEditor 
+            data={templateData} 
+            setData={setTemplateData}/>)}
+        {activeTab === TAB.FRONT && (
           <TemplateSideEditor
-            side={activeTab === TAB.FRONT ? "Front" : "Back"}
-            data={activeTab === TAB.FRONT ? templateData.Front : templateData.Back}
-            // 상위 State 업데이트
-            onChange={(newData) => {
+            side={"Front"}
+            data={templateData.Front}
+            setData={(newData) => {
               setTemplateData(prev => ({
                 ...prev,
-                [activeTab === TAB.FRONT ? "Front" : "Back"]: newData
+                ["Front"]: newData
               }));
             }}
-            onPickElement={handlePickElement}
+          />
+        )}
+        {activeTab === TAB.BACK && (
+          <TemplateSideEditor
+            side={"Back"}
+            data={templateData.Back}
+            setData={(newData) => {
+              setTemplateData(prev => ({
+                ...prev,
+                ["Back"]: newData
+              }));
+            }}
           />
         )}
       </div>

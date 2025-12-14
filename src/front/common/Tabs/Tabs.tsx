@@ -57,7 +57,9 @@ const Tabs = ({}) => {
         <p>History</p> 
       </NavLink>
     </TooltipWrapper>
-    <NavLink className={`${tabsStyle.tab} ${currentTab==Tab.TEMPLATES? tabsStyle.selected : ''}`} to={'/templates'}>
+    <NavLink 
+    className={`${tabsStyle.tab} ${currentTab==Tab.TEMPLATES? tabsStyle.selected : ''}`} 
+    to={'/templates'}>
       <CardTypeIcon/>
       <p>Templates</p>
     </NavLink>    
