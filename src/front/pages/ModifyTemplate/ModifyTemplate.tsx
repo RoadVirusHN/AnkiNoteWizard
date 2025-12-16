@@ -1,15 +1,12 @@
-import useTemplates, { TEMPLATE_CODE, TemplateFieldDataType } from "@/front/utils/useTemplates";
-import { useNavigate, useParams } from "react-router";
-import { useEffect,useState } from "react";
+import useTemplates, { TEMPLATE_CODE} from "@/front/utils/useTemplates";
+import { useParams } from "react-router";
+import { useState } from "react";
 import modifyTemplateStyle from "./modifyTemplate.module.css";
-import type { Template, } from "@/front/utils/useTemplates";
-
-import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
-import ReturnIcon from "@/public/Icon/Icon-Return.svg";
-import SaveIcon from "@/public/Icon/Icon-Save.svg";
+import type { Template } from "@/front/utils/useTemplates";
 import TemplateSideEditor from "./TemplateSideEditor/TemplateSideEditor";
 import TemplateMetaEditor from "./TemplateMetaEditor/TemplateMetaEditor";
 import TemplateCommonEditor from "./TemplateCommonEditor/TemplateCommonEditor";
+import ModifyTemplateHeader from "./ModifyTemplateHeader/ModifyTemplateHeader";
 
 enum TAB { META="meta",COMMON='common' ,FRONT="front", BACK="back" };
 
@@ -18,8 +15,6 @@ const ModifyTemplate = () => {
   const isEditMode = index !== undefined;
   const idx = isEditMode ? parseInt(index) : undefined;
   const { templates, addTemplate, modifyTemplate } = useTemplates();
-  const navigate = useNavigate();
-
   const [activeTab, setActiveTab] = useState<TAB>(TAB.META);
   const [templateData, setTemplateData] = useState<Template>(isEditMode? templates[idx!]:{
     templateName: "",
@@ -31,31 +26,50 @@ const ModifyTemplate = () => {
     Front: { html: "<h2>{{front}}</h2>", fields: [] },
     Back: { html: "<p>{{back}}</p>", fields: [] },
   });
-
+  const [isChanged, setIsChanged] = useState<boolean>(false);
+  const changeTemplatData = (updatedData: Template) => {
+    setIsChanged(true);
+    setTemplateData(updatedData);
+  };
   const handleSave = () => {
-    if (!templateData.templateName.trim()) {
-      alert("Card Name is required.");
-      return;
-    }
     const code = isEditMode && idx !== undefined ? 
       modifyTemplate(templates[idx].templateName, templateData) :
       addTemplate(templateData);
-    if (code===TEMPLATE_CODE.OK) navigate("/templates");
+    if (code===TEMPLATE_CODE.OK) {
+      setIsChanged(false);
+    } else {
+      alert(`Error occurred: ${code}`);
+      return;
+    }
   };
+
+  const handleCancle = () => {
+    if (isEditMode && idx !== undefined) {
+      setTemplateData(templates[idx]);
+    } else {
+      setTemplateData({
+        templateName: "",
+        meta: { author: "", description: "", version: "0.0.1" },
+        modelName: "Basic",
+        urlPatterns: ["*"],
+        rootTag: "div.word",
+        tags: [],
+        Front: { html: "<h2>{{front}}</h2>", fields: [] },
+        Back: { html: "<p>{{back}}</p>", fields: [] },
+      });
+    }
+    setIsChanged(false);
+  };
+  
 
 return (
     <div className={modifyTemplateStyle.container}>
-      <div className={modifyTemplateStyle.header}>
-        <div className={modifyTemplateStyle.headerLeft}>
-          <SimpleButton Svg={ReturnIcon} onClick={() => navigate("/templates")} />
-          <span className={modifyTemplateStyle.title}>{isEditMode ? "Edit Template" : "New Template"}</span>
-        </div>
-        <SimpleButton 
-          Svg={SaveIcon} 
-          onClick={handleSave} 
-          overridedStyle={{ backgroundColor: "var(--color-warning)", width: "32px", height: "32px" }} 
-        />
-      </div>
+      <ModifyTemplateHeader 
+        title={isEditMode ? "Edit Template" : "New Template"}
+        isChanged={isChanged}
+        onSave={handleSave}
+        onCancle={handleCancle}
+      />
       <div className={modifyTemplateStyle.tabs}>
         {Object.values(TAB).map(tab => 
           <button
@@ -69,11 +83,11 @@ return (
         {activeTab === TAB.META && (
           <TemplateMetaEditor 
             data={templateData} 
-            setData={setTemplateData}/>)}
+            setData={changeTemplatData}/>)}
         {activeTab === TAB.COMMON && (
           <TemplateCommonEditor 
             data={templateData} 
-            setData={setTemplateData}/>)}
+            setData={changeTemplatData}/>)}
         {activeTab === TAB.FRONT && (
           <TemplateSideEditor
             side={"Front"}
@@ -83,6 +97,7 @@ return (
                 ...prev,
                 ["Front"]: newData
               }));
+              setIsChanged(true);
             }}
           />
         )}
@@ -95,6 +110,7 @@ return (
                 ...prev,
                 ["Back"]: newData
               }));
+              setIsChanged(true);
             }}
           />
         )}

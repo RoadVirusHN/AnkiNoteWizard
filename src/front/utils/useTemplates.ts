@@ -92,6 +92,7 @@ export enum TEMPLATE_CODE {
   INVALID_AUTHOR_NAME='INVALID_AUTHOR_NAME',
   INVALID_MODEL_NAME='INVALID_MODEL_NAME',
   INVALID_ROOT_TAG='INVALID_ROOT_TAG',
+  NO_SUCH_TEMPLATE='NO_SUCH_TEMPLATE',
 
 }
 
@@ -142,10 +143,12 @@ const useTemplate = create<TemplateState>()(
       },
       modifyTemplate: (name: string, template: Template) => {
         const code = isTemplateValid(template, get().templates);
-        if (code === TEMPLATE_CODE.OK)
+        if (code === TEMPLATE_CODE.DUPLICATE_TEMPLATE_NAME){
           set((state) => ({
             templates: state.templates.map((c) => (c.templateName === name ? template : c)),
           }));
+          return TEMPLATE_CODE.OK;
+        } else if (code === TEMPLATE_CODE.OK) return TEMPLATE_CODE.NO_SUCH_TEMPLATE;
         return code;
       },
       notes: {},
