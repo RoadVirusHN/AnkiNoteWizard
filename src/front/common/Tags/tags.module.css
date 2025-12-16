@@ -15,8 +15,7 @@
 }
 
 .tagInput{
-  border-width: 1px;
-  border-radius: 8px;
+  border: none;
   min-width: 5em;
   font-size: small;
   max-width: 10em;

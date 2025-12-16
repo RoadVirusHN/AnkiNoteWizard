@@ -40,11 +40,11 @@ const Tags = ({givenTags, isModifying, onRemoveTag, onAddTag}:TagsProps) => {
         </span>);
       }
     )}
-    {isModifying ? <span>
-    <input id="tagInput" className={tagsStyle.tagInput} type='text' placeholder="Add New Tag" 
+    {isModifying ? <div className={tagsStyle.tags}>
+    <input id="tagInput" className={tagsStyle.tagInput} type='text' placeholder="New Tag" 
     onKeyDown={(e)=>{if (e.key==='Enter') insertTag()}}/> 
     <span style={{cursor: 'pointer'}} onClick={insertTag}> ⨁</span>
-    </span> : null}
+    </div> : null}
   </div>);
 };
 export default Tags;

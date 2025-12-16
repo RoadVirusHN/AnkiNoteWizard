@@ -3,7 +3,7 @@ import templateDetailStyle from "./templateDetail.module.css";
 import ModifySvg from "@/public/Icon/Icon-Modify.svg";
 import DumpSvg from "@/public/Icon/Icon-Dump.svg";
 import { useNavigate } from "react-router";
-const TemplateDetail = ({template}:{template: Template}) => {
+const TemplateDetail = ({template, idx}:{template: Template, idx: number}) => {
   const {removeTemplate} = useTemplate();
   const navigate = useNavigate();
   
@@ -17,7 +17,7 @@ const TemplateDetail = ({template}:{template: Template}) => {
       }
     }}/>
     <ModifySvg onClick={()=>{
-      navigate(`/templates/modify/${template.templateName}`);
+      navigate(`/templates/modify/${idx}`);
     }}/>
   </div>);
 };
