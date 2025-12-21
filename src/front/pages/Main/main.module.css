@@ -11,9 +11,14 @@ body > .root {
 .main {
   text-align: center;
   height: 100%;
+  overflow: hidden;
+  flex-direction: column;
+  display: flex;
 }
 .main-content {
+  flex: 1;
   position: relative;
-  overflow: auto;
+  overflow-y: auto;
   padding-top: 8px;
+  min-height: 0;
 }
