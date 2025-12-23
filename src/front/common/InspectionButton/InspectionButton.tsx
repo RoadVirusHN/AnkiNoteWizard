@@ -4,10 +4,20 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { PortNames } from "@/scripts/background/connectHandler";
 import { MessageType } from "@/scripts/background/messageHandler";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
+import inspectionButtonStyle from "./InspectionButton.module.css";
 
 const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION}:{setResult: Dispatch<SetStateAction<string>>, mode?: InspectionMode}) => {
   const [panelPort, setPanelPort] = useState<chrome.runtime.Port|null>();
   return <>
+    <div className={inspectionButtonStyle.overlay} style={{display:panelPort ? 'flex':'none'}} 
+    onClick={()=>{
+      console.log(panelPort);
+      if (panelPort!=null)  {
+        console.log("cancle inspection mode");
+        panelPort.disconnect();
+        setPanelPort(null);
+      }
+    }}>overlay</div>
     <SimpleButton Svg={ExtractIcon} onClick={async ()=>{
       if (panelPort!=null)  {
         console.log("disconnect previous port");
@@ -31,6 +41,7 @@ const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION}:{setRe
       if (panelPort!=null)  {
         console.log("cancle inspection mode");
         panelPort.disconnect();
+        setPanelPort(null);
       }
     }}/>
   </> ;
