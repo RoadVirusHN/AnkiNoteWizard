@@ -37,6 +37,11 @@ const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION}:{setRe
         newPort.onMessage.addListener((msg)=>{
           let data = msg.data as string;
           setResult(data.trim());
+          newPort.disconnect();
+        });
+        newPort.onDisconnect.addListener(()=>{
+          console.log("inspection mode disconnected");
+          setPanelPort(null);
         });
       }
     }}/> 

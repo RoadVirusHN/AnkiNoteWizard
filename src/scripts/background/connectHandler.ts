@@ -40,6 +40,7 @@ export const connectHandler = (port: chrome.runtime.Port) => {
       });
       port.onDisconnect.addListener(() => {
         console.log("panel request port disconnection");
+        // TODO : Add Common Disconnect Handler to execute both handler
         const tabId = portTabMap.get(port);
         if (tabId !== undefined) {
           contentScriptPorts[tabId].disconnect();
@@ -62,6 +63,7 @@ export const connectHandler = (port: chrome.runtime.Port) => {
         });
         port.onDisconnect.addListener(() => {
           console.log("content request port disconnection");
+          // TODO : Add Common Disconnect Handler to execute both handler
           const tabId = port.sender!.tab!.id!;
           sidePanelPorts[tabId].disconnect();
           // Clean up the mapping on disconnect
