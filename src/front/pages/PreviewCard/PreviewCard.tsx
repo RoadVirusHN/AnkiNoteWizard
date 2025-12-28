@@ -8,6 +8,7 @@ import InspectionButton from "@/front/common/InspectionButton/InspectionButton";
 import Preview from "@/front/common/Preview/Preview";
 import PreviewHeader from "./PreviewHeader/PreviewHeader";
 import { PreviewContext } from "./PreviewContext";
+import { InspectionMode } from "@/scripts/content/tagExtraction";
 
 const PreviewCard = ({}) => {
   const {index} = useParams();
@@ -39,7 +40,7 @@ const PreviewCard = ({}) => {
         </div>
         {curText}
 
-        <h3>front preview{isModifying ? <InspectionButton setResult={setResult}/> : ''}</h3>
+        <h3>front preview{isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={setResult}/> : ''}</h3>
         {
           isModifying ?
           (<Editor

@@ -1,5 +1,5 @@
 .simple-btn{
-  width: 60px;
+  width: fit-content;
   height: 30px;
   border: none;
   background-color: var(--color-dark);

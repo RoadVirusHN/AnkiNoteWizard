@@ -1,11 +1,10 @@
-import ExtractIcon from "@/public/Icon/Icon-Code.svg"
 import SimpleButton from "../SimpleButton/SimpleButton";
 import { Dispatch, SetStateAction, useState } from "react";
 import { PortNames } from "@/scripts/background/connectHandler";
 import { MessageType } from "@/scripts/background/messageHandler";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
 import inspectionButtonStyle from "./InspectionButton.module.css";
-// import leftArrowIcon from "@/public/Icon/Icon-LeftArrow.svg";
+import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 
 const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION}:{setResult: (text:string)=>void, mode?: InspectionMode}) => {
   const [panelPort, setPanelPort] = useState<chrome.runtime.Port|null>();
@@ -18,20 +17,42 @@ const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION}:{setRe
         setPanelPort(null);
       }
     }}>  
-      <div className={inspectionButtonStyle.pointers}>
-        {Array.from({length: 10}).map((_, i)=> (<span key={i} className={inspectionButtonStyle['left-pointer']}>◀</span>))}
-      </div>
       <div className={inspectionButtonStyle['instruction-box']}>
-        <h3>Your in "Inspection Mode"</h3>
-        <ol>
-            <li>Hover over the tag</li>
-            <li>Click to copy into your clipboard.</li>
-            <li>Paste the text where you want!</li>
-        </ol>
-        <h4>* Click here to exit mode.</h4>
+        <span className={inspectionButtonStyle['left-pointer']}>◀</span>
+        <span className={inspectionButtonStyle['left-pointer']}>◀</span>
+        <span className={inspectionButtonStyle['left-pointer']}>◀</span>
+        <span className={inspectionButtonStyle['left-pointer']}>◀</span>
+        {
+          mode==InspectionMode.TEXT_EXTRACTION ?(<>
+            <h1>Text Extraction Mode</h1>
+            <ol>
+                <li>Hover over the text</li>
+                <li>Click to copy into your clipboard.</li>
+                <li>Paste the text where you want!</li>
+            </ol></>) : (<>
+              <h1>Tag Inspection Mode</h1>
+              <ol>
+                  <li>Hover over the Tag</li>
+                  <li>Click to pop up the menu
+                    <ul>
+                      <li>"Extract text" : copy the text Content.</li>
+                      <li>"Extract Selector" : copy the CSS Selector of the tag.</li>
+                      <li>"Select Children" : change target tag to a child.</li>
+                    </ul>
+                  </li>
+
+                  <li>Select to copy data into your clipboard.</li>
+              </ol>
+            </>)
+        }
+        <h2>* Click here to exit mode.</h2> 
+        <span className={inspectionButtonStyle['left-pointer']}>◀</span>
+        <span className={inspectionButtonStyle['left-pointer']}>◀</span>
+        <span className={inspectionButtonStyle['left-pointer']}>◀</span>
+        <span className={inspectionButtonStyle['left-pointer']}>◀</span>
       </div>
      </div>
-    <SimpleButton src={ExtractIcon} onClick={async ()=>{
+    <SimpleButton title="Extract Text" src={MagicIcon} onClick={async ()=>{
       if (panelPort!=null)  {
         console.log("disconnect previous port");
         panelPort.disconnect();

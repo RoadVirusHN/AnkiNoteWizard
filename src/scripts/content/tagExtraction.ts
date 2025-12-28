@@ -310,9 +310,10 @@ export const handleMouseOver = (event: MouseEvent) => {
     overlayElement.style.height = `${rect.height}px`;
     overlayElement.style.display = 'block';
   }
-  if (currentMode===InspectionMode.TEXT_EXTRACTION&&isValidElement(targetElement)) {
-    contentPort?.postMessage({data: targetElement.textContent?.trim()||''});
-  }
+  // Send text data when hover
+  // if (currentMode===InspectionMode.TEXT_EXTRACTION&&isValidElement(targetElement)) {
+  //   contentPort?.postMessage({data: targetElement.textContent?.trim()||''});
+  // }
 };
 
 export const handleMouseOut = () => {
