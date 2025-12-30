@@ -26,7 +26,6 @@ const DetectedCard = ({idx, extracted, template, checkAdd}:DetectedCardProps) =>
       <div className={detectPageStyle.detectedCardContent}>
         <div style={{display: 'flex'}}>
           <span className={detectPageStyle.templateName} >{template.templateName}</span>
-          <Tags givenTags={notes[idx].tags} isModifying={false} onAddTag={()=>{}}  onRemoveTag={()=>{}}/>
         </div>
         {/* TODO : change Front value when card front html value changed? */}
         {/* TODO : Modifyied! flag when modifyied */}

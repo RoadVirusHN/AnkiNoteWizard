@@ -12,6 +12,7 @@ interface AnkiConnectionState {
   isConnected: boolean;
   isPending: boolean;
   decks: string[];
+  models: string[];
   checkConnection: () => Promise<void>;
   fetchAnki: <T>(request: FetchAnkiRequestBody) => Promise<AnkiResponseBody<T>>;
 }
@@ -32,6 +33,7 @@ const useAnkiConnectionStore = create<AnkiConnectionState>((set, get) => ({
   isConnected: false,
   isPending: false,
   decks: [],
+  models: [],
   checkConnection: async () => {
     if (get().isPending) return;
     set({ isPending: true });
@@ -40,6 +42,8 @@ const useAnkiConnectionStore = create<AnkiConnectionState>((set, get) => ({
       return { result: null, error: err.message };
     });
     set({ isPending: false, isConnected: !res.error, decks: res.result || [] });
+    const userModels = await callAnki<string[]>({ action: 'modelNames' })
+    set({ models: userModels.result || [] });
   },
   fetchAnki: async <T>(request: FetchAnkiRequestBody) => {
     if (get().isConnected === false) return Promise.reject('Anki is not connected');

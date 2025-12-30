@@ -24,23 +24,19 @@ const PreviewCard = ({}) => {
     </PreviewContext.Provider>
     {
       <section className={previewCardStyle.previewPage}>
-        <div style={{display: 'flex', margin: '5px'}}>
-          <h2 style={{margin: '0'}}> {curNote.modelName}</h2>
-          <Tags givenTags={curNote.tags} isModifying={isModifying} 
-          onAddTag={(tag)=>{
-            setContextValue({...contextValue,
-              curNote: {...curNote, tags: [...curNote.tags, tag]},
-              isChanged:true});
-          }} 
-          onRemoveTag={(tag)=>{
-            setContextValue({...contextValue, 
-              curNote: {...curNote, tags: curNote.tags.filter(t=>t!==tag)},
-              isChanged:true});
-          }}/>
-        </div>
-        {curText}
-
-        <h3>front preview{isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={setResult}/> : ''}</h3>
+        <h2 style={{margin: '0'}}> {curNote.modelName}</h2>
+        <Tags givenTags={curNote.tags} isModifying={isModifying} 
+        onAddTag={(tag)=>{
+          setContextValue({...contextValue,
+            curNote: {...curNote, tags: [...curNote.tags, tag]},
+            isChanged:true});
+        }} 
+        onRemoveTag={(tag)=>{
+          setContextValue({...contextValue, 
+            curNote: {...curNote, tags: curNote.tags.filter(t=>t!==tag)},
+            isChanged:true});
+        }}/>
+        <h3>front preview {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={setResult}/> : ''}</h3>
         {
           isModifying ?
           (<Editor
@@ -62,7 +58,7 @@ const PreviewCard = ({}) => {
             />) :
             <Preview html={curNote.fields.Front}/>
         }
-        <h3>back preview</h3>
+        <h3>back preview {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={setResult}/> : ''}</h3>
         {
           isModifying ? 
           (<Editor
