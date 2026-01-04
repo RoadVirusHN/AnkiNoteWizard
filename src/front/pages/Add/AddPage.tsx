@@ -6,7 +6,6 @@ import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import addPageStyle from "./addPage.module.css";
 import commonStyle from "@/front/common.module.css";
 import InspectionButton from "@/front/common/InspectionButton/InspectionButton";
-import useTemplate from "@/front/utils/useTemplates";
 import Preview from "@/front/common/Preview/Preview";
 import { Editor } from "@monaco-editor/react";
 import Tags from "@/front/common/Tags/Tags";
@@ -14,10 +13,23 @@ import { useNavigate } from "react-router";
 import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
 import ModelInput from "@/front/common/Inputs/ModelInput/ModelInput";
 import { useState } from "react";
+import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
+import { InspectionMode } from "@/scripts/content/tagExtraction";
 const AddPage = ({}) => {
   // TODO : templates 혹은 default template를 이용해서 카드를 추가하는 기능
   // 사용자가 기본값을 변경했으면 나갈때 경고창을 띄우는 기능
-  const {models} = useAnkiConnectionStore();
+  const {models, fetchAnki} = useAnkiConnectionStore();
+  const {currentAddingNote, setCurrentAddingNote} = useGlobalVarStore();
+  const [curNote, setCurNote] = useState({
+        templateName: '',
+        deckName: '',
+        modelName: '',
+        fields: {
+          Front: '',
+          Back: '',
+        },
+        tags: [],
+   });
   const [curModel, setCurModel] = useState(models[0] || '');
   const [isChanged, setIsChanged] = useState(false);
   const [isModifying, setIsModifying] = useState(true);
@@ -31,43 +43,50 @@ const AddPage = ({}) => {
       <div className={commonStyle.toggle}>
         <div className={addPageStyle.modBtns} style={{visibility: isChanged ? "visible" : "hidden"}}>
           <img src={SaveIcon}  onClick={()=>{
-            updateNote(idx,{...curNote});
-            setContextValue({...contextValue,isChanged:false});
+            setIsChanged(false);
+            setCurrentAddingNote(curNote);
           }} style={{'cursor': 'pointer', margin: '5px'}}/>
           <img src={AddIcon}  onClick={()=>{
-            setContextValue({...contextValue, curNote: notes[idx],isChanged:false});
+            const req = {
+              action: 'addNote',
+              params: {
+                note: curNote,
+              },
+            };
+            fetchAnki(req).then((res)=>{
+                setIsChanged(false);
+                setCurNote({
+                  templateName: '',
+                  deckName: '',
+                  modelName: curModel,
+                  fields: {
+                    Front: '',
+                    Back: '',
+                  },
+                  tags: [],
+                });
+              });
             }} style={{'cursor': 'pointer', margin:'5px'}}/>
         </div>
         <img src={PreviewIcon} />
         <label className={commonStyle.switch}>
           <input type="checkbox" onChange={(e)=>{
-            setContextValue({...contextValue,isModifying:e.target.checked});
+            setIsModifying(e.target.checked);
           }}/>
           <span className={commonStyle.slider} title={isModifying ? "Modify" : "Preview"}/>
         </label>
         <img src={CodeIcon} />
       </div>
     </div>
-      {<section className={addPageStyle.previewPage}>{
-          isModifying ? 
-            (<ModelInput setModel={(modelName:string)=>setContextValue({
-              ...contextValue,
-              curNote: {...curNote, modelName},
-              isChanged:true
-            })} defaultModel={curNote.modelName}/>) : 'Model :' + curNote.modelName
-        }
+      {<section className={addPageStyle.previewPage}>
           <Tags givenTags={curNote.tags} isModifying={isModifying} 
           onAddTag={(tag)=>{
-            setContextValue({...contextValue,
-              curNote: {...curNote, tags: [...curNote.tags, tag]},
-              isChanged:true});
+            setIsChanged(true);
+            setIsChanged(true);
           }} 
           onRemoveTag={(tag)=>{
-            setContextValue({...contextValue, 
-              curNote: {...curNote, tags: curNote.tags.filter(t=>t!==tag)},
-              isChanged:true});
           }}/>
-          <h3>front preview {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={setResult}/> : ''}</h3>
+          <h3>front preview {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}}/> : ''}</h3>
           {
             isModifying ?
             (<Editor
@@ -76,9 +95,8 @@ const AddPage = ({}) => {
               width='100%'
               height='200px'
               onChange={(value)=>{
-                setContextValue({...contextValue,
-                  curNote:{...curNote, fields: {...curNote.fields, Front: value || ''}},
-                  isChanged:true});
+                setCurNote({...curNote, fields: {...curNote.fields, Front: value || ''}}); 
+                setIsChanged(true); 
               }}
               onMount={(editor)=>{
                 editor.onDidFocusEditorText(()=>{
@@ -89,7 +107,7 @@ const AddPage = ({}) => {
               />) :
               <Preview html={curNote.fields.Front}/>
           }
-          <h3>back preview {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={setResult}/> : ''}</h3>
+          <h3>back preview {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}}/> : ''}</h3>
           {
             isModifying ? 
             (<Editor
@@ -98,9 +116,8 @@ const AddPage = ({}) => {
               width='100%'
               height='200px'
               onChange={(value)=>{
-                setContextValue({...contextValue,
-                  curNote:{...curNote, fields: {...curNote.fields, Back: value || ''}},
-                  isChanged:true});
+                setCurNote({...curNote, fields: {...curNote.fields, Front: value || ''}});  
+                setIsChanged(true);
               }}
               onMount={(editor)=>{
                 editor.onDidFocusEditorText(()=>{
@@ -113,7 +130,6 @@ const AddPage = ({}) => {
           }
         </section>      
       }
-
   </div>;
 };
 export default AddPage;

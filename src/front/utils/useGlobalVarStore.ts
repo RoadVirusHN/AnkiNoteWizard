@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { Note } from './useTemplates';
 
 export enum Tab {
   DETECT = 'DETECT',
@@ -14,9 +15,11 @@ interface GlobalVarState {
   currentDeck: string;
   isAddingCard: boolean;
   currentDetected: number;
+  currentAddingNote: Note;
   setCurrentTab: (tab: Tab) => void;
   setCurrentDeck: (deck: string) => void;
   setCurrentDetected: (cnt: number) => void;
+  setCurrentAddingNote: (note: Note) => void;
   setIsAddingCard: (isAdding: boolean) => void;
 }
 
@@ -27,11 +30,22 @@ const useGlobalVarStore = create<GlobalVarState>()(
       currentDeck: '',
       isAddingCard: false,
       currentDetected: 0,
+      currentAddingNote: {
+        templateName: '',
+        deckName: '',
+        modelName: '',
+        fields: {
+          Front: '',
+          Back: '',
+        },
+        tags: [],
+      },
       setCurrentTab: (tab: Tab) => {
         set({ currentTab: tab });
       },
       setCurrentDeck: (deck: string) => set({ currentDeck: deck }),
       setCurrentDetected: (cnt: number) => set({ currentDetected: cnt }),
+      setCurrentAddingNote: (note: Note) => set({ currentAddingNote: note }),
       setIsAddingCard: (isAdding: boolean) => set({ isAddingCard: isAdding }),
     }),
     {

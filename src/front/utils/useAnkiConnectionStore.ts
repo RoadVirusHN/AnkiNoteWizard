@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-interface FetchAnkiRequestBody {
+export interface FetchAnkiRequestBody {
   action: string;
   params?: Record<string, unknown>;
 }
