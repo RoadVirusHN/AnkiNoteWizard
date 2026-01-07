@@ -19,15 +19,16 @@ import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 const AddPage = ({}) => {
   // TODO : templates 혹은 default template를 이용해서 카드를 추가하는 기능
   // 사용자가 기본값을 변경했으면 나갈때 경고창을 띄우는 기능
-  const {models, fetchAnki} = useAnkiConnectionStore();
+  const {fetchAnki} = useAnkiConnectionStore();
   const {currentAddingNote, setCurrentAddingNote} = useGlobalVarStore();
   const [curNote, setCurNote] = useState(currentAddingNote);
   const [isChanged, setIsChanged] = useState(false);
   const [isModifying, setIsModifying] = useState(true);
   return <div>
     <div className={addPageStyle.header}>     
-      <ModelInput defaultModel={models[0]} setModel={(model:string)=>{
+      <ModelInput defaultModel={curNote.modelName} setModel={(model:string)=>{
         setCurNote({...curNote, modelName: model});
+        setIsChanged(true);
       }}/>
       <div className={commonStyle.toggle}>
         <div className={addPageStyle.modBtns} style={{visibility: isChanged ? "visible" : "hidden"}}>
@@ -54,9 +55,11 @@ const AddPage = ({}) => {
           <Tags givenTags={curNote.tags} isModifying={isModifying} 
           onAddTag={(tag)=>{
             setIsChanged(true);
-            setIsChanged(true);
+            setCurNote({...curNote, tags: [...curNote.tags, tag]});
           }} 
           onRemoveTag={(tag)=>{
+            setIsChanged(true);
+            setCurNote({...curNote, tags: curNote.tags.filter(t=>t!==tag)});
           }}/>
           <h3>front preview {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}}/> : ''}</h3>
           {
@@ -88,7 +91,7 @@ const AddPage = ({}) => {
               width='100%'
               height='200px'
               onChange={(value)=>{
-                setCurNote({...curNote, fields: {...curNote.fields, Front: value || ''}});  
+                setCurNote({...curNote, fields: {...curNote.fields, Back: value || ''}});  
                 setIsChanged(true);
               }}
               onMount={(editor)=>{

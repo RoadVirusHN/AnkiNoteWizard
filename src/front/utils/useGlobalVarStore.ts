@@ -36,7 +36,7 @@ const useGlobalVarStore = create<GlobalVarState>()(
       currentAddingNote: {
         templateName: '',
         deckName: '',
-        modelName: '',
+        modelName: 'Basic',
         fields: {
           Front: '',
           Back: '',
