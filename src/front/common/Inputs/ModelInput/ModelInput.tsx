@@ -1,5 +1,4 @@
 import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
-import modelInputStyle from "./modeInput.module.css";
 import { useState } from "react";
 const ModelInput = ({setModel, defaultModel}:{setModel: (model:string)=>void, defaultModel: string}) => {
   const {models} = useAnkiConnectionStore();
@@ -9,7 +8,7 @@ const ModelInput = ({setModel, defaultModel}:{setModel: (model:string)=>void, de
     setModel(model);
   }
   return (
-    <div className={modelInputStyle.modelInputContainer}>
+    <div>
       <label htmlFor="model-select">
         Model 
       </label>
