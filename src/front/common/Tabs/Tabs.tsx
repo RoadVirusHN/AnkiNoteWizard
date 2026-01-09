@@ -50,15 +50,12 @@ const Tabs = ({}) => {
       <img src={CardTypeIcon}/>
       <p>Templates</p>
     </NavLink>    
-    <TooltipWrapper text="Comming soon!" tooltipDirection={TooltipDirection.BOTTOM_LEFT} styles={{flex: '1'}}>
-      <NavLink 
-      onClick={(e)=>e.preventDefault()}
-      className={`${tabsStyle.tab} ${currentTab==Tab.CONFIG? tabsStyle.selected : ''}`} 
-      to={'/config'}>
-        <img src={ConfigIcon} style={{fill: "gray"}}/>
-        <p>Config</p>
-      </NavLink>
-    </TooltipWrapper>
+    <NavLink 
+    className={`${tabsStyle.tab} ${currentTab==Tab.CONFIG? tabsStyle.selected : ''}`} 
+    to={'/config'}>
+      <img src={ConfigIcon} style={{fill: "gray"}}/>
+      <p>Config</p>
+    </NavLink>
   </nav>
   );
 };
