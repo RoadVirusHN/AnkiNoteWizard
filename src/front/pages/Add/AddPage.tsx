@@ -16,6 +16,7 @@ import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
 import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 import TemplateInput from "@/front/common/Inputs/TemplatInput/TemplateInput";
+import DeckInput from "@/front/common/StatusBar/DeckInput/DeckInput";
 
 const AddPage = ({}) => {
   // TODO : templates 혹은 default template를 이용해서 카드를 추가하는 기능
@@ -50,6 +51,7 @@ const AddPage = ({}) => {
       </div>
     </div>
       {<section className={addPageStyle.previewPage}>
+        <DeckInput onChange={(deck:string)=>{setCurNote({...curNote, deckName: deck})}}/>
         <TemplateInput defaultTemplate={curNote.templateName} setTemplate={(template:string)=>{
           setCurNote({...curNote, templateName: template});
           setIsChanged(true);
@@ -115,7 +117,7 @@ const AddPage = ({}) => {
           const req = {
             action: 'addNote',
             params: {
-              note: curNote,
+              note: curNote
             },
           };
           fetchAnki(req).then((res)=>{
