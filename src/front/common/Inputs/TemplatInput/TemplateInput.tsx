@@ -16,8 +16,8 @@ const TemplateInput = ({setTemplate, defaultTemplate}:{setTemplate: (model:strin
         onChangeModel(e.currentTarget.value); 
         setCurVal(e.currentTarget.value);
       }} value={curVal}>
-        {templates.map((template) => <option key={template.templateName} value={template.templateName}>{template.templateName}</option>)}
         <option value='Empty'>Empty</option>          
+        {templates.map((template) => <option key={template.templateName} value={template.templateName}>{template.templateName}</option>)}
       </select>
     </div>
   );
