@@ -1,5 +1,5 @@
 import detectPageStyle from '@/front/pages/Detect/detectPage.module.css';
-import { JSX, useEffect, useState } from 'react';
+import { JSX, useState } from 'react';
 import useCustomCard, { Extracted, ExtractedMap, Note, Template, TemplateFieldDataType } from '@/front/utils/useTemplates';
 import DetectedCard from './DetectedCard/DetectedCard';
 import DeckInput from '@/front/common/StatusBar/DeckInput/DeckInput';
@@ -9,6 +9,7 @@ import useAnkiConnectionStore from '@/front/utils/useAnkiConnectionStore';
 import useGlobalVarStore from '@/front/utils/useGlobalVarStore';
 import useTemplate from '@/front/utils/useTemplates';
 import { MessageType } from '@/scripts/background/messageHandler';
+import { useTranslation } from 'react-i18next';
 
 const buildCard = (key: 'Front' | 'Back', customCard: Template, extracted: Extracted) =>
   customCard[key].html.replaceAll(/\{\{(.*?)\}\}/g, 
@@ -34,7 +35,6 @@ const buildCard = (key: 'Front' | 'Back', customCard: Template, extracted: Extra
 // - customCards : 사용자가 정의한 카드 템플릿들
 // SEND_DETECTED_CARDS : content script에서 감지된 카드 데이터를 CardPage로 전송
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
-// TODO : IT'S DIRTY!!!!!!!!!!!
 const DetectPage: React.FC = () => {
   const {templates} = useCustomCard();
   const [isPending, setIsPending] = useState(false);
@@ -42,10 +42,13 @@ const DetectPage: React.FC = () => {
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentDeck, setCurrentDetected} = useGlobalVarStore();
   const {notes, extractedMaps, setNotes, setExtractedMaps} = useTemplate();
-
+  
+  // TODO : make it as hook.
+  const {t} = useTranslation();
+  const tl = (key:string)=>t('pages.DetectPage.'+key);
+  
   const requestExtracteds = async () => {
     setIsPending(true);
-    console.log("send request");
     chrome.runtime.sendMessage({
       type: MessageType.REQUEST_DETECTED_CARDS_FROM_PANEL,
       data: templates,
@@ -105,10 +108,10 @@ const DetectPage: React.FC = () => {
       console.log(res);
       if (res.error) {
         console.error('Error adding note to Anki:', res.error);
-        alert('Failed to add note to Anki: ' + res.error);
+        alert(tl('Failed to add note') + res.error);
       } else {
         console.log('Note added to Anki with ID:', res.result);
-        alert('Note added to Anki successfully!');
+        alert(tl('Note added successfully'));
       }
     });
   }
@@ -119,10 +122,10 @@ const DetectPage: React.FC = () => {
         <DeckInput/> 
         <div className={detectPageStyle.headerButtons}>
           <button disabled={isPending} className={detectPageStyle.redetectCard} onClick={requestExtracteds}>
-            {isPending ? 'Scanning...': '↺ Scan'}
+            {isPending ? tl("Scanning") : '↺ '+tl("Scan")}
           </button>
         </div>
-        <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `+ ${selected.size}` :'Add'}/>
+        <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `+ ${selected.size}` : tl('Add')}/>
       </div>
 
       <div className={detectPageStyle.cardsWrapper}>
@@ -147,7 +150,7 @@ const DetectPage: React.FC = () => {
             return cards;
           })
         ) : (
-          <div className={detectPageStyle.noCard}>감지된 카드가 없습니다.</div>
+          <div className={detectPageStyle.noCard}>{tl("No Note Detected")}</div>
         )}
       </div>
     </div>

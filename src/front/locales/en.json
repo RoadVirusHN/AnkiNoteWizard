@@ -32,6 +32,14 @@
     }
   },
   "pages":{
+    "DetectPage":{
+      "No Note Detected": "No Note Detected.",
+      "Scanning": "Scanning...",
+      "Scan": "Scan",
+      "Add": "Add",
+      "Failed to add note": "Failed to add note :",
+      "Note added successfully": "Note added successfully."
+    },
     "ConfigPage": {
       "Locale": "Locale" 
     }

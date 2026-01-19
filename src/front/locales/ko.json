@@ -32,6 +32,14 @@
     }
   },
   "pages":{
+    "DetectPage":{
+      "No Note Detected": "감지된 노트가 없습니다.",
+      "Scanning": "감지 중...",
+      "Scan": "찾기",
+      "Add": "추가",
+      "Failed to add note": "노트 추가 실패 :",
+      "Note added successfully": "노트가 성공적으로 추가되었습니다."
+    },
     "ConfigPage": {
       "Locale": "언어 설정" 
     }
