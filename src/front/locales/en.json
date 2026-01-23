@@ -55,6 +55,7 @@
     },
     "ConfigPage": {
       "Locale": "Locale",
+      "Theme": "Theme",
       "Light": "Light",
       "Dark": "Dark",
       "System": "System"

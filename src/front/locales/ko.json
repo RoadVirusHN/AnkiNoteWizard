@@ -55,6 +55,7 @@
     },
     "ConfigPage": {
       "Locale": "언어 설정",
+      "Theme": "테마",
       "Light": "라이트",
       "Dark": "다크",
       "System": "시스템 설정"
