@@ -58,7 +58,9 @@
       "Theme": "Theme",
       "Light": "Light",
       "Dark": "Dark",
-      "System": "System"
+      "System": "System",
+      "SystemDark": "System Default(Dark)",
+      "SystemLight": "System Default(Light)"
     },
     "ModifyTemplate":{
       "meta": "Meta",

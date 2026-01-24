@@ -58,7 +58,9 @@
       "Theme": "테마",
       "Light": "라이트",
       "Dark": "다크",
-      "System": "시스템 설정"
+      "System": "시스템 설정",
+      "SystemDark": "시스템 설정(다크)",
+      "SystemLight": "시스템 설정(라이트)"
     },
     "ModifyTemplate":{
       "meta": "메타 정보",

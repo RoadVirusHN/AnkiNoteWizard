@@ -10,9 +10,12 @@ const ConfigPage: React.FC = () => {
   // font size, about, javascript, default Anki Connect url, default setting, default templates 
   const [_t, i18n] = useTranslation();
   const tl = useLocale('pages.ConfigPage');
-  const {language, theme, setLanguage, setTheme} = useConfigure();
+  const {language, theme, isUserSchemeDark,setLanguage, setTheme} = useConfigure();
   const [locale, setLocale] = useState(language);
   const [curTheme, setCurTheme] = useState(theme);
+  console.log("ConfigPage render, language:", language, "theme:", theme);
+  console.log("ConfigPage render", "storage theme:", curTheme);
+
   return (
     <div>
       <div>
@@ -32,14 +35,14 @@ const ConfigPage: React.FC = () => {
         <label htmlFor="theme-select">{tl('Theme')}</label>
         <select name="theme" id="theme-select" onChange={
           (e)=>{
-            const selectedTheme = e.target.value;
-            setTheme(selectedTheme as Theme);
-            setCurTheme(selectedTheme as Theme);
+            const selectedTheme = e.target.value as Theme;
+            setTheme(selectedTheme);
+            setCurTheme(selectedTheme);
           }
         }
         value={curTheme}
         >
-          <option value={Theme.SYSTEM}>{tl('System')}</option>
+          <option value={isUserSchemeDark ? Theme.SYSTEM_DARK : Theme.SYSTEM_LIGHT}>{isUserSchemeDark ?tl('SystemDark'):tl('SystemLight')}</option>
           <option value={Theme.LIGHT}>{tl('Light')}</option>
           <option value={Theme.DARK}>{tl('Dark')}</option>
         </select>

@@ -7,7 +7,9 @@ export enum Language {
 }
 
 export enum Theme {
-  SYSTEM = 'system',
+  NONE = 'none',
+  SYSTEM_DARK = 'system-dark',
+  SYSTEM_LIGHT = 'system-light',
   LIGHT = 'light',
   DARK = 'dark',
 }
@@ -17,35 +19,38 @@ export enum Theme {
 interface ConfigureState {
   language: Language;
   theme: Theme;
+  isUserSchemeDark: boolean;
   setLanguage: (lang: Language) => void;
   setTheme: (theme: Theme) => void;
+  setIsUserSchemeDark: (scheme: boolean) => void;
 }
 
 const useConfigure = create<ConfigureState>()(
   persist(
     (set) => ({
       language: Language.EN,
-      theme: Theme.SYSTEM,
+      theme: Theme.NONE,
+      isUserSchemeDark: false,
       setLanguage: (lang: Language) => {
-        console.log("Setting language to:", lang);
         set({ language: lang });
       },
       setTheme: (theme: Theme) => {
         set({ theme });
         switch (theme) {
-          case Theme.LIGHT:
+          case Theme.LIGHT: case Theme.SYSTEM_LIGHT:
             document.documentElement.setAttribute('data-theme', 'light');
             break;
-          case Theme.DARK:
+          case Theme.DARK: case Theme.SYSTEM_DARK:
             document.documentElement.setAttribute('data-theme', 'dark');
             break;
-          case Theme.SYSTEM:
           default:
-            document.documentElement.removeAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', 'light');
             break;
-        
         }
-      }
+      },
+      setIsUserSchemeDark: (scheme: boolean) => {
+        set({ isUserSchemeDark: scheme });
+      },
     }),
     {
       name: 'anki-card-wizard-configure-store',

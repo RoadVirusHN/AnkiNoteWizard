@@ -7,6 +7,7 @@ export const onInstalled = () => {
   console.log('Detected UI Language:', uiLanguage, 'Setting default language to:', defaultLang);
   useConfigure.getState().setLanguage(defaultLang);
   console.log('Extension installed or updated. Default language set to:', useConfigure.getState().language);
+
 };
 export const getCurrentTabId = async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
