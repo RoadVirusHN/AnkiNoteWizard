@@ -23,6 +23,7 @@
 .tab {
   height: 50px;
   flex: 1;
+  font-size: 0.8rem;
   position: relative;
   background-color: var(--color-dark);
   border-radius: 0 0 16px 16px;

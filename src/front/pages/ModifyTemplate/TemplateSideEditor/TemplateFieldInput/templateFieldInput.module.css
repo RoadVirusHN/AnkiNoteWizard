@@ -26,7 +26,7 @@
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 6px;
   padding: 1px 2px;
-  font-size: 13px;
+  font-size: 0.7rem;
   outline: none;
   box-sizing: border-box;
   word-wrap: break-word;
@@ -50,7 +50,7 @@
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 6px;
   padding: 1px 2px;
-  font-size: 13px;
+  font-size: 0.7rem;
   outline: none;
   box-sizing: border-box;
 }
@@ -85,7 +85,7 @@
 .lockBadge {
   flex: 0 0 30px;
   text-align: center;
-  font-size: 14px;
+  font-size: 0.8rem;
 }
 
 /* 하단 컨트롤(추가 버튼 등) */

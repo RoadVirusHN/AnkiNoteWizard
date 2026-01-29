@@ -57,12 +57,11 @@ const ConfigPage: React.FC = () => {
           setFontSize(selectedFontSize);
           setCurFontSize(selectedFontSize);
         }} 
-        value={curFontSize}
-        >
-          <option value="90%">small</option>
-          <option value="100%">normal(default)</option>
-          <option value="110%">large</option>
-          <option value="120%">xx-large</option>
+        value={curFontSize}>
+          <option value="small">small</option>
+          <option value="normal">normal(default)</option>
+          <option value="large">large</option>
+          <option value="very-large">very large</option>
         </select>
       </div>
     </div>

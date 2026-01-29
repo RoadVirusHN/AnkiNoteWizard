@@ -42,7 +42,7 @@ const useConfigure = create<ConfigureState>()(
         theme: Theme.LIGHT,
         userSetting: ThemeSetting.NONE,
       },
-      fontSize: '100%',
+      fontSize: 'normal',
       setLanguage: (lang: Language) => {
         set({ language: lang });
       },
@@ -63,6 +63,9 @@ const useConfigure = create<ConfigureState>()(
         set({ themeOption: newThemeOption });
       },
       setFontSize: (fontSize: string) => {
+        const html = document.documentElement;
+        html.classList.remove('font-small', 'font-normal', 'font-large', 'font-very-large');
+        html.classList.add(`font-${fontSize}`);
         set({ fontSize: fontSize });
       }
     }),

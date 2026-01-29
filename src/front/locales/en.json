@@ -60,7 +60,8 @@
       "Dark": "Dark",
       "System": "System",
       "SystemDark": "System Default(Dark)",
-      "SystemLight": "System Default(Light)"
+      "SystemLight": "System Default(Light)",
+      "font size": "Font Size"
     },
     "ModifyTemplate":{
       "meta": "Meta",

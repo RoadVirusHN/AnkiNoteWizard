@@ -8,7 +8,13 @@
   --color-on: #68d952;
   --color-off: #61758a;
   --color-hyperlink: #81b1e1;
+  --font-size-base: 100%; /* 16px : 1rem */
 }
+
+html.font-small { font-size: 87.5%; }
+html.font-normal { font-size: 100%; }
+html.font-large { font-size: 112.5%; }
+html.font-very-large { font-size: 125%; }
 
 [data-theme="dark"] {
   --color-primary: #cbd1d7;
@@ -48,7 +54,7 @@ input, select, textarea {
 .badge {
   border-radius: 18px;
   background-color: var(--color-hyperlink);
-  font-size: x-small;
+  font-size: 1rem;
   padding-left: 2px;
   padding-right: 2px;
   margin-left: 3px;

@@ -60,7 +60,8 @@
       "Dark": "다크",
       "System": "시스템 설정",
       "SystemDark": "시스템 설정(다크)",
-      "SystemLight": "시스템 설정(라이트)"
+      "SystemLight": "시스템 설정(라이트)",
+      "font size": "폰트 사이즈"
     },
     "ModifyTemplate":{
       "meta": "메타 정보",

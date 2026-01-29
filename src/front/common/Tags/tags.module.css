@@ -5,7 +5,7 @@
   scrollbar-width: none;     
   overflow-y: hidden;
   display: flex;
-  font-size: small;
+  font-size: 0.5rem;
   align-items: center;
 }
 .tag{
@@ -30,7 +30,7 @@
   field-sizing: content;
   border: 2px dashed var(--color-primary);
   color: var(--color-primary);
-  font-size: small;
+  font-size: 0.5rem;
 }
 .tagInput:focus{
   outline: none;

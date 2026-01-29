@@ -8,7 +8,7 @@ import i18n from './locales/i18n';
 const App = ({}) => {
   const {currentUrl} = useGlobalVarStore();
   const [router, setRouter] =  useState<ReturnType<typeof AnkiRouter>| null>(null);
-  const {language, themeOption, setThemeSetting} = useConfigure();
+  const {language, themeOption, setThemeSetting, fontSize} = useConfigure();
 
   useEffect(()=>{
     setRouter(AnkiRouter(currentUrl || '/'));
@@ -24,6 +24,10 @@ const App = ({}) => {
     if (themeOption.theme===Theme.DARK) {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
+    
+    const html = document.documentElement;
+    html.classList.remove('font-small', 'font-normal', 'font-large', 'font-very-large');
+    html.classList.add(`font-${fontSize}`);
   }, []);
   return router ? <RouterProvider router={router}/> : null;
 };
