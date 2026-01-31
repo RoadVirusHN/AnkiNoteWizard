@@ -119,9 +119,9 @@ const DetectPage: React.FC = () => {
       <div className={detectPageStyle.header}>
         <DeckInput/> 
         <div className={detectPageStyle.headerButtons}>
-          <button disabled={isPending} className={detectPageStyle.redetectCard} onClick={requestExtracteds}>
+          <SimpleButton disabled={isPending} className={detectPageStyle.redetectCard} onClick={requestExtracteds}>
             {isPending ? tl("Scanning") : '↺ '+tl("Scan")}
-          </button>
+          </SimpleButton>
         </div>
         <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `+ ${selected.size}` : tl('Add')}/>
       </div>
