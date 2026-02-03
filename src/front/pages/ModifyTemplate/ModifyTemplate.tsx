@@ -1,4 +1,4 @@
-import useTemplates, { TEMPLATE_CODE} from "@/front/utils/useTemplates";
+import useTemplates, { TEMPLATE_CODE, TemplateFieldDataType} from "@/front/utils/useTemplates";
 import { useParams } from "react-router";
 import { useState } from "react";
 import modifyTemplateStyle from "./modifyTemplate.module.css";
@@ -9,8 +9,20 @@ import TemplateCommonEditor from "./TemplateCommonEditor/TemplateCommonEditor";
 import ModifyTemplateHeader from "./ModifyTemplateHeader/ModifyTemplateHeader";
 import useLocale from "@/front/utils/useLocale";
 
+const emptyTemplate: Template = {
+    templateName: "",
+    meta: { author: "", description: "", version: "0.0.1" },
+    modelName: "Basic",
+    urlPatterns: ["*"],
+    rootTag: "div.word",
+    tags: [],
+    Front: { html: "<h2>{{front}}</h2>", fields: [{name: "front", content: "h1", dataType: TemplateFieldDataType.TEXT,isOptional: false}] },
+    Back: { html: "<p>{{back}}</p>", fields: [{name: "back", content: "p", dataType: TemplateFieldDataType.TEXT,isOptional: false}] },
+};
+
 
 const ModifyTemplate = () => {
+  // BUGS : NO DEFAULT FIELDS (FRONT/BACK) CHECKED
   const { index } = useParams();
   const isEditMode = index !== undefined;
   const idx = isEditMode ? parseInt(index) : undefined;
@@ -18,16 +30,7 @@ const ModifyTemplate = () => {
   const tl = useLocale('pages.ModifyTemplate');
   enum TAB { META="meta",COMMON='common' ,FRONT="front", BACK="back" };
   const [activeTab, setActiveTab] = useState<TAB>(TAB.META);
-  const [templateData, setTemplateData] = useState<Template>(isEditMode? templates[idx!]:{
-    templateName: "",
-    meta: { author: "", description: "", version: "0.0.1" },
-    modelName: "Basic",
-    urlPatterns: ["*"],
-    rootTag: "div.word",
-    tags: [],
-    Front: { html: "<h2>{{front}}</h2>", fields: [] },
-    Back: { html: "<p>{{back}}</p>", fields: [] },
-  });
+  const [templateData, setTemplateData] = useState<Template>(isEditMode? templates[idx!]:emptyTemplate);
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const changeTemplatData = (updatedData: Template) => {
     setIsChanged(true);
@@ -49,16 +52,7 @@ const ModifyTemplate = () => {
     if (isEditMode && idx !== undefined) {
       setTemplateData(templates[idx]);
     } else {
-      setTemplateData({
-        templateName: "",
-        meta: { author: "", description: "", version: "0.0.1" },
-        modelName: "Basic",
-        urlPatterns: ["*"],
-        rootTag: "div.word",
-        tags: [],
-        Front: { html: "<h2>{{front}}</h2>", fields: [] },
-        Back: { html: "<p>{{back}}</p>", fields: [] },
-      });
+      setTemplateData(emptyTemplate);
     }
     setIsChanged(false);
   };

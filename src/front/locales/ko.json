@@ -19,7 +19,8 @@
     "back":"뒷면",
     "front":"앞면",
     "preview":"미리보기",
-    "modify": "수정"
+    "modify": "수정",
+    "save": "저장"
   },
   "component": {
     "ModelInput":{
@@ -70,6 +71,9 @@
       "back": "뒷면",
       "modify template": "템플릿 수정",
       "new template": "새 템플릿",
+      "ModifyTemplateHeader": {
+        "Back to Empty": "내용 초기화"
+      },
       "TemplateCommonEditor": {
         "Model Name" : "모델명",
         "URL Patterns": "URL 패턴",
@@ -88,7 +92,7 @@
         "Fields": "요소",
         "Add Field": "요소 추가",
         "Name": "이름",
-        "Cannot change mandator field name": "필수 요소 이름은 변경할 수 없습니다",
+        "Cannot change mandatory field": "필수 요소는 변경할 수 없습니다",
         "Displaying Field Name": "표시되는 요소명",
         "CSS Selector": "CSS 선택자",
         "Pick tag from page": "페이지에서 태그를 선택하세요.",

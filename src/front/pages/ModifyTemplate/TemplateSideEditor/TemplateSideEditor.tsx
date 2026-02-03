@@ -105,7 +105,7 @@ const TemplateSideEditor: React.FC<Props> = ({ side, data, setData }) => {
                 placeholder={tl("Name")}
                 onChange={(e) => handleFieldChange(i, "name", e.target.value)}
                 disabled={locked} // Lock mandatory names
-                title={locked ? tl("Cannot change mandatory field name") : tl("Displaying Field Name")}
+                title={locked ? tl("Cannot change mandatory field") : tl("Displaying Field Name")}
               />
               
               {/* CSS Selector + Picker */}
@@ -141,6 +141,9 @@ const TemplateSideEditor: React.FC<Props> = ({ side, data, setData }) => {
                  <input
                   type="checkbox"
                   checked={field.isOptional}
+                  disabled={locked}
+                  title={locked ? tl("Cannot change mandatory field") : tl("Is Optional")}
+                  style={{ opacity: locked ? 0.3 : 1 }}
                   onChange={(e) => handleFieldChange(i, "isOptional", e.target.checked)}
                 />
                 <span className={styles.chkLabel}>?</span>
@@ -152,6 +155,7 @@ const TemplateSideEditor: React.FC<Props> = ({ side, data, setData }) => {
                 onClick={() => removeField(i)}
                 disabled={locked}
                 style={{ opacity: locked ? 0.3 : 1 }}
+                title={locked? tl("Cannot change mandatory field") : ""}
               >
                 ×
               </button>

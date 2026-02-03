@@ -104,9 +104,9 @@ const isTemplateValid = (template: Template, curTemplates: Template[]): TEMPLATE
   if (curTemplates.filter((t) => t.templateName === template.templateName).length > 0) {
     return TEMPLATE_CODE.DUPLICATE_TEMPLATE_NAME;
   }
-  if (!template.meta.author || template.meta.author.trim() === '') {
-    return TEMPLATE_CODE.INVALID_AUTHOR_NAME;
-  }
+  // if (!template.meta.author || template.meta.author.trim() === '') {
+  //   return TEMPLATE_CODE.INVALID_AUTHOR_NAME;
+  // }
   if (!template.modelName || template.modelName.trim() === '') {
     return TEMPLATE_CODE.INVALID_MODEL_NAME;
   }

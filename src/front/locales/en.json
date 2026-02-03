@@ -19,7 +19,8 @@
     "back":"Back",
     "front":"Front",
     "preview":"Preview",
-    "modify": "Modify"
+    "modify": "Modify",
+    "save": "Save"
   },
   "component": {
     "ModelInput":{
@@ -70,6 +71,9 @@
       "back": "Back",
       "modify template": "Modify Template",
       "new template": "New Template",
+      "ModifyTemplateHeader": {
+        "Back to Empty": "Back to Empty"
+      },
       "TemplateCommonEditor": {
         "Model Name" : "Model Name",
         "URL Patterns": "URL Patterns",
@@ -88,7 +92,7 @@
         "Fields": "Fields",
         "Add Field": "Add Field",
         "Name": "Name",
-        "Cannot change mandator field name": "Cannot change mandator field name",
+        "Cannot change mandatory field": "Cannot change mandatory field",
         "Displaying Field Name": "Displaying Field Name",
         "CSS Selector": "CSS Selector",
         "Pick tag from page": "Pick tag from page.",
