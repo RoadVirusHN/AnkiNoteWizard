@@ -2,6 +2,9 @@ import DOMPurify from "dompurify";
 import previewStyle from "./preview.module.css";
 import { ReactEventHandler, useState } from "react";
 import root from "react-shadow";
+import FilterIcon from "@/public/Icon/Icon-Filter.svg"
+import Icon from "../Icon/Icon";
+import useLocale from "@/front/utils/useLocale";
 
 /*
   TODO:
@@ -26,8 +29,9 @@ const Preview = ({html} : {html:string}) => {
   const sanitizedHtml = DOMPurify.sanitize(html, {
     RETURN_TRUSTED_TYPE: true,
   });
+  const removed = DOMPurify.removed;
   const [mode, setMode] = useState<PreviewMode>(PreviewMode.SAFE);
-
+  const tl = useLocale('component.Preview');
   const handleImageError : ReactEventHandler<HTMLDivElement>= (e) => {
     if (e.currentTarget.tagName === 'IMG') {
       (e.currentTarget as HTMLImageElement).src = "base64-encoded-placeholder-image"; // 대체 이미지 경로  
@@ -38,26 +42,32 @@ const Preview = ({html} : {html:string}) => {
   return (
   <div>
     <div className={previewStyle.modeSelector}>
-      <label>
-        <input 
-          type="radio" 
-          name="previewMode" 
-          value={PreviewMode.SAFE} 
-          checked={mode === PreviewMode.SAFE} 
-          onChange={() => setMode(PreviewMode.SAFE)} 
-        />
-        Safe Mode
-      </label>
-      <label>
-        <input 
-          type="radio" 
-          name="previewMode" 
-          value={PreviewMode.ALLOW_JS} 
-          checked={mode === PreviewMode.ALLOW_JS} 
-          onChange={() => setMode(PreviewMode.ALLOW_JS)} 
-          />
-        Allow JavaScript
-      </label>
+      {removed && removed.length > 0 && 
+        <Icon 
+          url={FilterIcon} 
+          title={tl("Some elementsscriptstags were removed for security reasons.")}/>}
+      <form>
+        <label>
+          <input 
+            type="radio" 
+            name="previewMode" 
+            value={PreviewMode.SAFE} 
+            checked={mode === PreviewMode.SAFE} 
+            onChange={() => setMode(PreviewMode.SAFE)} 
+            />
+          Safe Mode
+        </label>
+        <label>
+          <input 
+            type="radio" 
+            name="previewMode" 
+            value={PreviewMode.ALLOW_JS} 
+            checked={mode === PreviewMode.ALLOW_JS} 
+            onChange={() => setMode(PreviewMode.ALLOW_JS)} 
+            />
+          Allow JavaScript
+        </label>
+      </form>
     </div>
     {
       mode === PreviewMode.SAFE ?

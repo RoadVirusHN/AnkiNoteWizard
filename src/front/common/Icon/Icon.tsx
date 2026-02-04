@@ -1,4 +1,4 @@
-interface Props {
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   url: string;
   handleClick?: () => void;
   style?: React.CSSProperties;
@@ -6,7 +6,7 @@ interface Props {
 }
 
 
-const Icon = ({url, handleClick, className, style}:Props) => {
+const Icon = ({url, handleClick, className, style, ...props}:Props) => {
   return <div
     className={className}
     style={{
@@ -22,6 +22,7 @@ const Icon = ({url, handleClick, className, style}:Props) => {
       ...style
     }}
     onClick={handleClick}
+    {...props}
   />;
 };
 export default Icon;

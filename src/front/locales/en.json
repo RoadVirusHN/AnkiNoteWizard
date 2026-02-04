@@ -38,6 +38,9 @@
       "Extract Selector copy the CSS Selector": "\"Extract Selector\" : copy the CSS Selector.",
       "Select Children change taget tag to a child": "\"Select Children\" : open new menu for target child tag.",
       "Click here to exit mode": "Click here to exit mode."
+    },
+    "Preview":{
+      "Some elementsscriptstags were removed for security reasons": "Some elements(scripts,tags) were removed for security reasons."
     }
   },
   "pages":{

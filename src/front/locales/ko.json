@@ -38,6 +38,9 @@
       "Extract Selector copy the CSS Selector": "\"CSS Selector 추출\" : CSS 선택자를 복사합니다.",
       "Select Children change taget tag to a child": "\"자식 태그 선택\" : 선택 자식 태그 대상으로 새 메뉴 팝업",
       "Click here to exit mode": "모드 종료하려면 여기를 클릭하세요."
+    },
+    "Preview":{
+      "Some elementsscriptstags were removed for security reasons": "보안상의 이유로 일부 요소(스크립트, 태그)가 제거되었습니다."
     }
   },
   "pages":{
