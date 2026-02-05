@@ -66,7 +66,10 @@
       "SystemDark": "System Default(Dark)",
       "SystemLight": "System Default(Light)",
       "font size": "Font Size",
-      "apply": "Apply"
+      "Apply": "Apply",
+      "Cancle": "Cancle",
+      "Add Default Templates": "Add Default Templates",
+      "Reset to default": "기본값으로 재설정"
     },
     "ModifyTemplate":{
       "meta": "Meta",

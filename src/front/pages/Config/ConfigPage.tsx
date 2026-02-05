@@ -61,6 +61,9 @@ const ConfigPage: React.FC = () => {
           <option value="very-large">very large</option>
         </select>
       </div>
+      <SimpleButton onClick={()=>{}}>
+        {tl('Add Default Templates')}
+      </SimpleButton>
       <SimpleButton onClick={()=>{
         setLanguage(locale);
         i18n.changeLanguage(locale);
@@ -68,6 +71,13 @@ const ConfigPage: React.FC = () => {
         setFontSize(curFontSize);  
       }}>
         {tl('Apply')}
+      </SimpleButton>
+      <SimpleButton onClick={()=>{
+        setLocale(language);
+        setCurThemeSetting(themeOption.userSetting);
+        setCurFontSize(fontSize);
+      }}>
+        {tl('Cancle')}
       </SimpleButton>
     </div>
   );
