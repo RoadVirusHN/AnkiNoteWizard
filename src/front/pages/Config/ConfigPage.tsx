@@ -19,6 +19,7 @@ const ConfigPage: React.FC = () => {
   const [locale, setLocale] = useState(language);
   const [curThemeSetting, setCurThemeSetting] = useState(themeOption.userSetting);
   const [curFontSize, setCurFontSize] = useState(fontSize);
+  const hasChanges = locale !== language || curThemeSetting !== themeOption.userSetting || curFontSize !== fontSize;
   const isUserSchemeDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   return (
     <div>
@@ -64,33 +65,41 @@ const ConfigPage: React.FC = () => {
       <SimpleButton onClick={()=>{}}>
         {tl('Add Default Templates')}
       </SimpleButton>
-      <SimpleButton onClick={()=>{
-        setLanguage(locale);
-        i18n.changeLanguage(locale);
-        setThemeSetting(curThemeSetting);
-        setFontSize(curFontSize);  
-      }}>
-        {tl('Apply')}
-      </SimpleButton>
-      <SimpleButton onClick={()=>{
-        setLocale(language);
-        setCurThemeSetting(themeOption.userSetting);
-        setCurFontSize(fontSize);
-      }}>
-        {tl('Cancle')}
-      </SimpleButton>
-      <SimpleButton onClick={()=>{
-        const uiLanguage = chrome.i18n.getUILanguage();
-        const defaultLang = uiLanguage.startsWith('ko') ? Language.KO : Language.EN;
-        setLocale(defaultLang);
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (themeOption.userSetting === ThemeSetting.SYSTEM_LIGHT ||themeOption.userSetting===ThemeSetting.SYSTEM_DARK||themeOption.userSetting===ThemeSetting.NONE) {
-          setCurThemeSetting(isDark ? ThemeSetting.SYSTEM_DARK : ThemeSetting.SYSTEM_LIGHT);
-        }
-        setCurFontSize('normal');
-      }}>
-        {tl('Reset to default')}
-      </SimpleButton>
+      <div className={configPageStyle.floatingBtnContainer}>
+        <SimpleButton onClick={()=>{
+          setLanguage(locale);
+          i18n.changeLanguage(locale);
+          setThemeSetting(curThemeSetting);
+          setFontSize(curFontSize);  
+        }} 
+          style={{display: hasChanges ? 'inline-block' : 'none'}}
+        >
+          {tl('Apply')}
+        </SimpleButton>
+        <SimpleButton onClick={()=>{
+          setLocale(language);
+          setCurThemeSetting(themeOption.userSetting);
+          setCurFontSize(fontSize);
+        }}
+        style={{display: hasChanges ? 'inline-block' : 'none'}}
+        >
+          {tl('Cancle')}
+        </SimpleButton>
+        <SimpleButton onClick={()=>{
+          if (confirm(tl('Reset to default') + '?')){
+            const uiLanguage = chrome.i18n.getUILanguage();
+            const defaultLang = uiLanguage.startsWith('ko') ? Language.KO : Language.EN;
+            setLocale(defaultLang);
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (themeOption.userSetting === ThemeSetting.SYSTEM_LIGHT ||themeOption.userSetting===ThemeSetting.SYSTEM_DARK||themeOption.userSetting===ThemeSetting.NONE) {
+              setCurThemeSetting(isDark ? ThemeSetting.SYSTEM_DARK : ThemeSetting.SYSTEM_LIGHT);
+            }
+            setCurFontSize('normal');
+          }
+        }}>
+          {tl('Default')}
+        </SimpleButton>
+      </div>
     </div>
   );
 };

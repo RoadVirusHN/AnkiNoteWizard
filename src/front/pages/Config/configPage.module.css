@@ -24,3 +24,11 @@
   color: var(--color-primary);
   border-bottom-color: var(--color-primary);
 }
+
+.floatingBtnContainer{
+  position: fixed;
+  display: flex;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
