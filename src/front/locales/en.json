@@ -6,6 +6,14 @@
     "templates": "Templates",
     "config": "Config"
   },
+  "background":{
+    "Extract Text": "Extract Text",
+    "Extract Selector": "Extract Selector",
+    "Select Children": "Select Children",
+    "Select Child": "Select Child",
+    "No content to extract": "No content to extract!",
+    "Copied": "Copied"
+  }, 
   "common":{
     "model": "Model",
     "templates": "Templates",

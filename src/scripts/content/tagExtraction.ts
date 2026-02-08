@@ -1,3 +1,4 @@
+import { useLocale } from './content';
 import { MessageType } from "../background/messageHandler";
 
 let overlayElement: HTMLDivElement | null = null; // 오버레이 DIV
@@ -11,7 +12,7 @@ export enum InspectionMode {
 }
 
 let currentMode: InspectionMode = InspectionMode.TEXT_EXTRACTION; // 현재 모드 상태 관리
-
+const tl = useLocale('background');
 // -----------------------------------------------------------------------------
 // 1. 유틸리티: CSS Selector 생성기 // TODO : Change to Library, remove child nth
 // -----------------------------------------------------------------------------
@@ -169,7 +170,7 @@ const showActionMenu = (target: HTMLElement, x: number, y: number) => {
 
   // 1. 텍스트 추출 버튼
   const btnText = document.createElement('button');
-  btnText.textContent = '📄 Extract Text';
+  btnText.textContent = '📄 ' + tl('Extract Text');
   createButtonStyle(btnText);
   btnText.onclick = () => {
     const text = target.textContent?.trim() || '';
@@ -180,7 +181,7 @@ const showActionMenu = (target: HTMLElement, x: number, y: number) => {
 
   // 2. 태그 Selector 추출 버튼
   const btnSelector = document.createElement('button');
-  btnSelector.textContent = '🎯 Extract Selector';
+  btnSelector.textContent = '🎯 ' + tl('Extract Selector');
   createButtonStyle(btnSelector);
   btnSelector.onclick = () => {
     const selector = getUniqueSelector(target);
@@ -192,7 +193,7 @@ const showActionMenu = (target: HTMLElement, x: number, y: number) => {
   // 3. 자식 요소 탐색 버튼
   if (target.children.length > 0) {
     const btnChildren = document.createElement('button');
-    btnChildren.textContent = `📂 Select Children (${target.children.length})`;
+    btnChildren.textContent = '📂 ' + tl('Select Children') + ` (${target.children.length})`;
     createButtonStyle(btnChildren);
     btnChildren.style.borderBottom = 'none'; // 마지막 요소
     btnChildren.onclick = (e) => {
@@ -227,7 +228,7 @@ const showChildrenList = (parent: HTMLElement, x: number, y: number) => {
   backBtn.onclick = () => showActionMenu(parent, x, y);
 
   const title = document.createElement('span');
-  title.textContent = 'Select Child';
+  title.textContent = tl('Select Child');
 
   header.appendChild(backBtn);
   header.appendChild(title);
@@ -262,7 +263,7 @@ const showChildrenList = (parent: HTMLElement, x: number, y: number) => {
 // 클립보드 복사 및 툴팁 표시
 const copyToClipboard = (text: string, x: number, y: number) => {
   if (!text) {
-    alert('No content to extract!');
+    alert(tl('No content to extract'));
     return;
   }
   navigator.clipboard
@@ -277,7 +278,7 @@ const copyToClipboard = (text: string, x: number, y: number) => {
 // 툴팁 표시 헬퍼
 const showTooltip = (text: string, x: number, y: number) => {
   if (infoElement) {
-    infoElement.textContent = `Copied: "${text.substring(0, 20)}${text.length > 20 ? '...' : ''}"`;
+    infoElement.textContent = tl('Copied')+`: "${text.substring(0, 20)}${text.length > 20 ? '...' : ''}"`;
     infoElement.style.left = `${x + 15}px`;
     infoElement.style.top = `${y + 15}px`;
     infoElement.style.display = 'block';

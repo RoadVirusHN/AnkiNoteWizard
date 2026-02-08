@@ -6,6 +6,14 @@
     "templates": "템플릿",
     "config": "설정"
   },
+  "background":{
+    "Extract Text": "텍스트 추출",
+    "Extract Selector": "CSS 선택자 추출",
+    "Select Children": "자식 태그 선택",
+    "Select Child": "자식 태그 선택",
+    "No content to extract": "추출할 내용이 없습니다!",
+    "Copied": "복사됨"
+  }, 
   "common":{
     "model": "모델",
     "templates": "템플릿",

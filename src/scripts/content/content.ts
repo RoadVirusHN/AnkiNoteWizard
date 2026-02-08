@@ -6,9 +6,33 @@ import {
   Extracted,
 } from '@/front/utils/useTemplates';
 import { messageHandler } from './messageHandler';
-
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import enTranslations from '@/front/locales/en.json';
+import koTranslations from '@/front/locales/ko.json';
 //TODO : Delayed search for Delayed Content delivery
 console.log('✅ Content script loaded');
+
+const config = {
+  resources: {
+    en: { translation: enTranslations },
+    ko: { translation: koTranslations },
+  },
+  fallbackLng: 'en',
+  interpolation: {
+    escapeValue: false,
+    nsSeparator: false,  // 콜론(:)을 구분자로 쓰지 않음
+  },
+};
+
+i18n.use(initReactI18next).init(config);
+
+export const useLocale = (prefix: string) => {
+  return (key: string, altKey?: string) => {
+    return i18n.t(`${altKey ?? prefix}.${key}`);
+  };
+};
+
 
 const checkUrlMatched = (customCard: Template): boolean => {
   customCard.urlPatterns = customCard.urlPatterns || ['body'];
