@@ -6,33 +6,46 @@ import {
   Extracted,
 } from '@/front/utils/useTemplates';
 import { messageHandler } from './messageHandler';
-import i18n from 'i18next';
+import i18n from '@/front/locales/i18n';
+console.log('✅ Content script loaded');
 import { initReactI18next } from 'react-i18next';
 import enTranslations from '@/front/locales/en.json';
 import koTranslations from '@/front/locales/ko.json';
-//TODO : Delayed search for Delayed Content delivery
-console.log('✅ Content script loaded');
 
-const config = {
-  resources: {
-    en: { translation: enTranslations },
-    ko: { translation: koTranslations },
-  },
-  fallbackLng: 'en',
-  interpolation: {
-    escapeValue: false,
-    nsSeparator: false,  // 콜론(:)을 구분자로 쓰지 않음
-  },
-};
-
-i18n.use(initReactI18next).init(config);
-
-export const useLocale = (prefix: string) => {
-  return (key: string, altKey?: string) => {
-    return i18n.t(`${altKey ?? prefix}.${key}`);
+export const initLocale = () =>{
+  const config = {
+    resources: {
+      en: { translation: enTranslations },
+      ko: { translation: koTranslations },
+    },
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false,
+      nsSeparator: false,
+    },
   };
+  i18n.use(initReactI18next).init(config);
 };
 
+
+chrome.storage.sync.get('anki-card-wizard-configure-store', (result) => {
+  const store = result['anki-card-wizard-configure-store'];
+  if (store && store.state && store.state.language) {
+    if (i18n.isInitialized === false) initLocale();
+    i18n.changeLanguage(store.state.language);
+  }
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'sync' && changes['anki-card-wizard-configure-store']) {
+    const { newValue, oldValue } = changes['anki-card-wizard-configure-store'];
+    if (newValue?.state?.language !== oldValue?.state?.language) {
+      const newLang = newValue.state.language;
+      if (i18n.isInitialized === false) initLocale();
+      i18n.changeLanguage(newLang);
+    }
+  }
+});
 
 const checkUrlMatched = (customCard: Template): boolean => {
   customCard.urlPatterns = customCard.urlPatterns || ['body'];

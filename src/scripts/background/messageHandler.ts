@@ -14,6 +14,7 @@ export enum MessageType {
   SET_INSPECTION_TAB_ID = 'SET_INSPECTION_TAB_ID',
   EXIT_INSPECTION_MODE_FROM_PANEL = 'EXIT_INSPECTION_MODE_FROM_PANEL',
   SEND_INSPECTION_DATA_FROM_CONTENT = 'SEND_INSPECTION_DATA_FROM_CONTENT',
+  CHANGE_LANGUAGE = 'CHANGE_LANGUAGE',
 }
 
 export const messageHandler = (
@@ -47,9 +48,8 @@ export const messageHandler = (
         { type: MessageType.REQUEST_DETECTED_CARDS_TO_CONTENT, data: message.data },
         sendResponse
       );
-      break;
-
-  }
+      break;    
+}
 
   return shouldKeepChannelOpen;
 };

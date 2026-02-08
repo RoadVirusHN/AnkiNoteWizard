@@ -10,6 +10,7 @@ export const messageHandler = async (
   sendResponse: (response?: unknown) => void
 ) => {
   let isAsync = false;
+  console.log('Content script received message:', message);
   switch (message.type) {
     case MessageType.REQUEST_DETECTED_CARDS_TO_CONTENT:
       console.log('Received REQUEST_DETECTED_CARDS_TO_CONTENT message');

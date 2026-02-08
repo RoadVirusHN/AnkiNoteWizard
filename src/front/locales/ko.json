@@ -12,7 +12,8 @@
     "Select Children": "자식 태그 선택",
     "Select Child": "자식 태그 선택",
     "No content to extract": "추출할 내용이 없습니다!",
-    "Copied": "복사됨"
+    "Copied": "복사됨",
+    "Selected": "선택됨"
   }, 
   "common":{
     "model": "모델",

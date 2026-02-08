@@ -1,6 +1,6 @@
-import { useLocale } from './content';
 import { MessageType } from "../background/messageHandler";
-
+import i18n from 'i18next';
+import { initLocale } from "./content";
 let overlayElement: HTMLDivElement | null = null; // 오버레이 DIV
 let infoElement: HTMLDivElement | null = null; // 툴팁 DIV ("Copied!" 메시지용)
 let menuElement: HTMLDivElement | null = null; // 메뉴 DIV (선택창용)
@@ -10,6 +10,13 @@ export enum InspectionMode {
   TAG_EXTRACTION = 'TAG_EXTRACTION',
   TEXT_EXTRACTION = 'TEXT_EXTRACTION',
 }
+
+const useLocale = (prefix: string) => {
+  return (key: string, altKey?: string) => {
+    if (i18n.isInitialized === false) initLocale();
+    return i18n.t(`${altKey ?? prefix}.${key}`);
+  };
+};
 
 let currentMode: InspectionMode = InspectionMode.TEXT_EXTRACTION; // 현재 모드 상태 관리
 const tl = useLocale('background');
@@ -157,7 +164,7 @@ const showActionMenu = (target: HTMLElement, x: number, y: number) => {
 
   // 헤더 (현재 선택된 태그 정보)
   const header = document.createElement('div');
-  header.textContent = `<${target.tagName.toLowerCase()}> Selected`;
+  header.textContent = `<${target.tagName.toLowerCase()}> ` + tl('Selected');
   Object.assign(header.style, {
     padding: '8px 12px',
     fontWeight: 'bold',

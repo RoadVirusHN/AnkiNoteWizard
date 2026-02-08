@@ -12,7 +12,8 @@
     "Select Children": "Select Children",
     "Select Child": "Select Child",
     "No content to extract": "No content to extract!",
-    "Copied": "Copied"
+    "Copied": "Copied",
+    "Selected": "Selected"
   }, 
   "common":{
     "model": "Model",

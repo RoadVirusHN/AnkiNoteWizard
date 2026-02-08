@@ -7,6 +7,9 @@ import inspectionButtonStyle from "./InspectionButton.module.css";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import useLocale from "@/front/utils/useLocale";
 
+//TODO : URGENT! : fix the inspection error when user change tab then enter inspection mode.
+// Uncaught (in promise) Error: Could not establish connection. Receiving end does not exist.
+// solving : init content script when tab is changed or re-activated.
 const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION}:{setResult: (text:string)=>void, mode?: InspectionMode}) => {
   const [panelPort, setPanelPort] = useState<chrome.runtime.Port|null>();
   const tl = useLocale('component.InspectionButton');
@@ -73,7 +76,6 @@ const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION}:{setRe
         });
         newPort.onDisconnect.addListener(()=>{
           // 탭이 닫히거나 에러 등으로 포트가 끊어졌을 때 처리
-          console.log("inspection mode disconnected");
           setPanelPort(null);
         });
       }
