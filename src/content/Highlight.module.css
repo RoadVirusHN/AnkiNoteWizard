@@ -1,0 +1,9 @@
+.highlight {
+  position: fixed;
+  pointer-events: none;
+  z-index: 999999;
+  background-color: rgba(173, 216, 230, 0.5);
+  border: 2px solid royalblue;
+  box-sizing: border-box;
+  display: none;
+}

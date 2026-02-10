@@ -1,9 +1,16 @@
-.extension-overlay {
+.menu {
   position: fixed;
-  pointer-events: none;
-  z-index: 999999;
-  background-color: rgba(173, 216, 230, 0.5);
-  border: 2px solid royalblue;
-  box-sizing: border-box;
+  z-index: 1000001;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   display: none;
+  flex-direction: column;
+  min-width: 200px;
+  max-width: 300px;
+  padding: 5px;
+  font-family: sans-serif;
+  font-size: 13px;
+  color: #333;
 }
