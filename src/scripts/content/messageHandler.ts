@@ -1,7 +1,7 @@
 import { Template } from '@/front/utils/useTemplates';
 import { Message, MessageType } from '../background/messageHandler';
 import { getExtractedFromPage } from './content';
-import { activateInspectionMode, deactivateInspectionMode, InspectionMode } from './tagExtraction';
+import { activateInspectionMode, deactivateInspectionMode, InspectionMode } from './tagExtraction2';
 import { PortNames } from '../background/connectHandler';
 
 export const messageHandler = async (

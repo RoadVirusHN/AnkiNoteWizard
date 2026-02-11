@@ -81,6 +81,7 @@ function createUIComponents() {
   // 2-2. 알림 툴팁 (Copied 메시지)
   if (!infoElement) {
     root.render(<Tooltip />);
+    infoElement=<Tooltip />;
   }
 
   // 2-3. 액션 메뉴 (텍스트/태그/자식 선택) - 클릭 상호작용 필요하므로 pointerEvents: auto
@@ -274,13 +275,13 @@ const copyToClipboard = (text: string, x: number, y: number) => {
 // 툴팁 표시 헬퍼
 const showTooltip = (text: string, x: number, y: number) => {
   if (infoElement) {
-    infoElement.textContent = tl('Copied')+`: "${text.substring(0, 20)}${text.length > 20 ? '...' : ''}"`;
-    infoElement.style.left = `${x + 15}px`;
-    infoElement.style.top = `${y + 15}px`;
-    infoElement.style.display = 'block';
+    // infoElement.textContent = tl('Copied')+`: "${text.substring(0, 20)}${text.length > 20 ? '...' : ''}"`;
+    // infoElement.style.left = `${x + 15}px`;
+    // infoElement.style.top = `${y + 15}px`;
+    // infoElement.style.display = 'block';
 
     setTimeout(() => {
-      if (infoElement) infoElement.style.display = 'none';
+      // if (infoElement) infoElement.style.display = 'none';
     }, 2000);
     deactivateInspectionMode(); // 작업 후 모드 비활성화
   }
