@@ -1,8 +1,8 @@
 import Menu from "./Menu";
-import Overlay from "./Overlay";
 import Tooltip from "./Tooltip";
 import Highlight from "./Highlight";
 import { useEffect, useState } from "react";
+import commonStyle from "./common.module.css";
 
 const App = ({}) => {
   const [isDisplay, setIsDisplay] = useState(true);
@@ -21,7 +21,7 @@ const App = ({}) => {
 
 
   return <>
-  <div style={{display: isDisplay ? 'block' : 'none', position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999, backgroundColor: 'rgba(0,0,0,0.5)'}}>
+  <div className={commonStyle["extension-overlay"]} style={{display: isDisplay ? 'block' : 'none'}}>
     test
   </div>
   </>;
