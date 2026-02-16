@@ -2,35 +2,95 @@ import Menu from "./Menu";
 import Tooltip from "./Tooltip";
 import Highlight from "./Highlight";
 import { useEffect, useState } from "react";
-import commonStyle from "./common.module.css";
-import { InspectionMode } from "@/scripts/content/tagExtraction2";
+import commonStyles from "./common.module.css";
+import { EXTENSION_UI_ID, InspectionMode } from "@/scripts/content/tagExtraction2";
+import { MessageType } from "@/scripts/background/messageHandler";
 
 enum InspectionState{
   HIGHLIGHT = 'HIGHLIGHT',
   ON_CLICK= 'ON_CLICK'
 }
+const getUniqueSelector = (el: HTMLElement): string => {
+  if (el.id) return '#' + el.id;
+
+  let path = [];
+  while (el.nodeType === Node.ELEMENT_NODE && el.tagName !== 'HTML') {
+    let selector = el.nodeName.toLowerCase();
+    if (el.className && typeof el.className === 'string') {
+      // 클래스가 있으면 추가하되, 공백은 .으로 치환
+      const classes = el.className.trim().split(/\s+/).join('.');
+      if (classes) selector += '.' + classes;
+    }
+
+    // 형제 요소 중 몇 번째인지 확인 (nth-child) - 선택적 정밀도 향상
+    let sibling = el;
+    let nth = 1;
+    while (sibling.previousElementSibling) {
+      sibling = sibling.previousElementSibling as HTMLElement;
+      if (sibling.nodeName.toLowerCase() === selector.split('.')[0]) nth++;
+    }
+    if (nth > 1) selector += `:nth-of-type(${nth})`;
+
+    path.unshift(selector);
+    el = el.parentNode as HTMLElement;
+    if (!el || el.tagName === 'BODY') break;
+  }
+  return path.join(' > ');
+};
 
 // 요소 유효성 검사
 export const isValidElement = (element: HTMLElement) => {
   if (element.tagName === 'HTML' || element.tagName === 'BODY') return false;
   if (
-    element.id === 'extension-overlay' ||
-    element.id === 'extension-tooltip' ||
-    element.id === 'extension-menu'
+    element.className.includes(commonStyles["extension-tooltip"]) ||
+    element.className.includes(commonStyles.highlight) ||
+    element.id === 'extension-menu' ||
+    element.id === EXTENSION_UI_ID
   )
     return false;
   return true;
 };
 
-const App = ({mode}:{mode:InspectionMode}) => {
+const App = ({mode, port}:{mode:InspectionMode, port:chrome.runtime.Port}) => {
   const [state, setState] = useState(InspectionState.HIGHLIGHT);
-  const onClick = () =>{
+  const [showingTooltip, setShowingTooltip] = useState(false);
+  const [text, setText] = useState('');
+  const [{x,y}, setPosition] = useState({x:0, y:0});  
+  const showTooltip = (text: string, x: number, y: number) => {
+    setShowingTooltip(true);
+    setText(text);
+    setPosition({ x, y });
+    console.log("show tooltip");
+    setTimeout(() => {
+      setShowingTooltip(false);
+      port.postMessage({ type: MessageType.SEND_INSPECTION_DATA_FROM_CONTENT, data: text });
+    }, 2000); // 2초 후에 툴팁 숨김
+  };
+  // 클립보드 복사 및 툴팁 표시
+  const copyToClipboard = (text: string, x: number, y: number, port: chrome.runtime.Port) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        showTooltip(text, x, y);
+      })
+      .catch((err) => console.error(err));
+  };
+  const onClick = (e:MouseEvent) =>{
+    console.log('Element Clicked');  
+    e.preventDefault();
+    e.stopPropagation();
     setState(InspectionState.ON_CLICK);
+    copyToClipboard((e.target as HTMLElement).innerHTML.trim(), e.clientX, e.clientY, port);
+    if (mode== InspectionMode.TAG_EXTRACTION) {
+      
+    } else {
+    }
   };
   return <>
     {state === InspectionState.HIGHLIGHT && <Highlight onClick={onClick}/>}
     {state === InspectionState.ON_CLICK && 
-     ( mode == InspectionMode.TAG_EXTRACTION ? <Menu /> : <Tooltip/>)}
+     ( mode == InspectionMode.TAG_EXTRACTION ? <Menu /> : <></>)}
+    <Tooltip text={text} x={x} y={y} showingTooltip={showingTooltip}/>
   </>;
 };
 export default App;

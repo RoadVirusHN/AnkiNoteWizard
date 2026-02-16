@@ -80,8 +80,6 @@ function createUIComponents() {
 
   // 2-2. 알림 툴팁 (Copied 메시지)
   if (!infoElement) {
-    root.render(<Tooltip />);
-    infoElement=<Tooltip />;
   }
 
   // 2-3. 액션 메뉴 (텍스트/태그/자식 선택) - 클릭 상호작용 필요하므로 pointerEvents: auto
