@@ -3,27 +3,34 @@ import Tooltip from "./Tooltip";
 import Highlight from "./Highlight";
 import { useEffect, useState } from "react";
 import commonStyle from "./common.module.css";
+import { InspectionMode } from "@/scripts/content/tagExtraction2";
 
-const App = ({}) => {
-  const [isDisplay, setIsDisplay] = useState(true);
-  useEffect(()=>{
-    console.log("App mounted");
-    const handleDisplay = (e: Event) => {
-      const customEvent = e as CustomEvent<{ isDisplay: boolean }>;
-      console.log("display event :" ,e);
-      //setIsDisplay(customEvent.detail.isDisplay);
-    };
-    window.addEventListener('toggleOverlayDisplay', handleDisplay);
-    return ()=>{
-      window.removeEventListener('toggleOverlayDisplay', handleDisplay);
-    };
-  }, []);
+enum InspectionState{
+  HIGHLIGHT = 'HIGHLIGHT',
+  ON_CLICK= 'ON_CLICK'
+}
 
+// 요소 유효성 검사
+export const isValidElement = (element: HTMLElement) => {
+  if (element.tagName === 'HTML' || element.tagName === 'BODY') return false;
+  if (
+    element.id === 'extension-overlay' ||
+    element.id === 'extension-tooltip' ||
+    element.id === 'extension-menu'
+  )
+    return false;
+  return true;
+};
 
+const App = ({mode}:{mode:InspectionMode}) => {
+  const [state, setState] = useState(InspectionState.HIGHLIGHT);
+  const onClick = () =>{
+    setState(InspectionState.ON_CLICK);
+  };
   return <>
-  <div className={commonStyle["extension-overlay"]} style={{display: isDisplay ? 'block' : 'none'}}>
-    test
-  </div>
+    {state === InspectionState.HIGHLIGHT && <Highlight onClick={onClick}/>}
+    {state === InspectionState.ON_CLICK && 
+     ( mode == InspectionMode.TAG_EXTRACTION ? <Menu /> : <Tooltip/>)}
   </>;
 };
 export default App;

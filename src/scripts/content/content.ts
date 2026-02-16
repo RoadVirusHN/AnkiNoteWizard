@@ -7,11 +7,11 @@ import {
 } from '@/front/utils/useTemplates';
 import { messageHandler } from './messageHandler';
 import i18n from '@/front/locales/i18n';
-console.log('✅ Content script loaded');
 import { initReactI18next } from 'react-i18next';
 import enTranslations from '@/front/locales/en.json';
 import koTranslations from '@/front/locales/ko.json';
 
+console.log('✅ Content script loaded');
 export const initLocale = () =>{
   const config = {
     resources: {

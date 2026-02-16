@@ -16,9 +16,6 @@ export enum InspectionMode {
   TAG_EXTRACTION = 'TAG_EXTRACTION',
   TEXT_EXTRACTION = 'TEXT_EXTRACTION',
 }
-
-let currentMode: InspectionMode = InspectionMode.TEXT_EXTRACTION; // 현재 모드 상태 관리
-
 // -----------------------------------------------------------------------------
 // 1. 유틸리티: CSS Selector 생성기 // TODO : Change to Library, remove child nth
 // -----------------------------------------------------------------------------
@@ -53,8 +50,7 @@ const getUniqueSelector = (el: HTMLElement): string => {
 // -----------------------------------------------------------------------------
 // 2. UI 생성 로직 (Overlay, Tooltip, Menu)
 // -----------------------------------------------------------------------------
-// TODO : Make element IDs unique to avoid conflicts with other extensions
-function createUIComponents() {
+function createUIComponents(inspectionMode: InspectionMode) {
   if (document.getElementById('extension-ui-container')) return;
   const container = document.createElement('div');
   container.id = 'extension-ui-container';
@@ -64,112 +60,20 @@ function createUIComponents() {
   container.style.width = '100%';
   container.style.height = '100%';
   root = createRoot(container);
-  root.render(<App />);
   document.body.appendChild(container);
+  root.render(<App mode={inspectionMode}/>); // React 앱 렌더링
 }
-
-// -----------------------------------------------------------------------------
-// 3. 메뉴 동작 로직
-// -----------------------------------------------------------------------------
-
-// 공통 버튼 스타일 생성
-const createButtonStyle = (el: HTMLElement) => {
-
-};
-
-// 메인 선택 메뉴 표시
-const showActionMenu = (target: HTMLElement, x: number, y: number) => {
-
-};
-
-// 자식 요소 리스트 표시 (서브 메뉴)
-const showChildrenList = (parent: HTMLElement, x: number, y: number) => {
-
-};
-
-// 클립보드 복사 및 툴팁 표시
-const copyToClipboard = (text: string, x: number, y: number) => {
-
-  navigator.clipboard
-    .writeText(text)
-    .then(() => {
-      contentPort?.postMessage({ type: MessageType.SEND_INSPECTION_DATA_FROM_CONTENT, data: text });
-      showTooltip(text, x, y);
-    })
-    .catch((err) => console.error(err));
-};
-
-// 툴팁 표시 헬퍼
-const showTooltip = (text: string, x: number, y: number) => {
-
-};
-
-// -----------------------------------------------------------------------------
-// 4. 이벤트 핸들러
-// -----------------------------------------------------------------------------
-
-export const handleMouseOver = (event: MouseEvent) => {
-
-};
-
-export const handleMouseOut = () => {
-};
-
-export const handleClick = (event: MouseEvent) => {
-
-};
-
-// 요소 유효성 검사
-const isValidElement = (element: HTMLElement) => {
-  if (element.tagName === 'HTML' || element.tagName === 'BODY') return false;
-  if (
-    element.id === 'extension-overlay' ||
-    element.id === 'extension-tooltip' ||
-    element.id === 'extension-menu'
-  )
-    return false;
-  return true;
-};
-
-// -----------------------------------------------------------------------------
-// 5. 활성화/비활성화 (External Export)
-// -----------------------------------------------------------------------------
 
 // 활성화 시 모드를 인자로 받을 수 있도록 변경 (default: TEXT)
 export const activateInspectionMode = (mode: InspectionMode = InspectionMode.TEXT_EXTRACTION, port: chrome.runtime.Port) => {
   console.log(`Activate InspectionMode: ${mode}`);
-  currentMode = mode; // 모드 설정
-
-  createUIComponents(); // UI 준비
-//  showDisplayElements();
+  createUIComponents(mode); // UI 준비
   contentPort = port;
-  document.addEventListener('mouseover', handleMouseOver, true);
-  document.addEventListener('mouseout', handleMouseOut, true);
-  document.addEventListener('click', handleClick, true);
-  document.addEventListener('scroll', handleMouseOut, true);
 };
-function showDisplayElements(){
-  const event = new CustomEvent('toggleOverlayDisplay', { detail: { isDisplay: true } });
-  window.dispatchEvent(event);
-  console.log("showDisplayElement Event :",event);
-}
-
-function hideDisplayElements() {
-  const event = new CustomEvent('toggleOverlayDisplay', { detail: { isDisplay: false } });
-  window.dispatchEvent(event);
-  console.log("hideDisplayElement Event :",event);
-}
 
 export const deactivateInspectionMode = () => {
   console.log('DeActivate InspectionMode');
-
-
-  //hideDisplayElements();
-  document.body.removeChild(document.getElementById('extension-ui-container')!); 
-
+  root.unmount();
+  document.removeChild(document.getElementById('extension-ui-container')!);
   contentPort?.disconnect();
-  document.removeEventListener('mouseover', handleMouseOver, true);
-  document.removeEventListener('mouseout', handleMouseOut, true);
-  document.removeEventListener('click', handleClick, true);
-  document.removeEventListener('scroll', handleMouseOut, true);
 };
