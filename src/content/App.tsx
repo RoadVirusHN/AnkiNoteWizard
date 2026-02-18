@@ -10,7 +10,7 @@ enum InspectionState{
   HIGHLIGHT = 'HIGHLIGHT',
   ON_CLICK= 'ON_CLICK'
 }
-const getUniqueSelector = (el: HTMLElement): string => {
+export const getUniqueSelector = (el: HTMLElement): string => {
   if (el.id) return '#' + el.id;
 
   let path = [];
@@ -91,8 +91,13 @@ const App = ({mode, port}:{mode:InspectionMode, port:chrome.runtime.Port}) => {
   return <>
     {state === InspectionState.HIGHLIGHT && <Highlight onClick={onClick}/>}
     {state === InspectionState.ON_CLICK && target &&
-     ( mode == InspectionMode.TAG_EXTRACTION ? <Menu target={target} onClick={copyToClipboard} deClick={()=>{
-      setState(InspectionState.HIGHLIGHT);
+     ( mode == InspectionMode.TAG_EXTRACTION ? <Menu target={target} 
+      onClick={(text:string,x:number,y:number)=>{
+        copyToClipboard(text,x,y,port)
+        setTarget(undefined);
+      }} 
+      deClick={()=>{
+        setState(InspectionState.HIGHLIGHT);
       }}/> : <></>)}
     <Tooltip text={text} x={x} y={y} showingTooltip={showingTooltip}/>
   </>;
