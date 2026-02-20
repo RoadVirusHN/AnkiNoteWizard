@@ -5,38 +5,17 @@ import { useEffect, useState } from "react";
 import commonStyles from "./common.module.css";
 import { deactivateInspectionMode, EXTENSION_UI_ID, InspectionMode } from "@/scripts/content/tagExtraction2";
 import { MessageType } from "@/scripts/background/messageHandler";
+
 import "./common.css";
+import getCssSelector from "css-selector-generator";
 
 enum InspectionState{
   HIGHLIGHT = 'HIGHLIGHT',
   ON_CLICK= 'ON_CLICK'
 }
+//TODO : two modes(TAG_EXTRACTION : Non-Unique, TEXT_EXTRACTION : Unique)
 export const getUniqueSelector = (el: HTMLElement): string => {
-  if (el.id) return '#' + el.id;
-
-  let path = [];
-  while (el.nodeType === Node.ELEMENT_NODE && el.tagName !== 'HTML') {
-    let selector = el.nodeName.toLowerCase();
-    if (el.className && typeof el.className === 'string') {
-      // 클래스가 있으면 추가하되, 공백은 .으로 치환
-      const classes = el.className.trim().split(/\s+/).join('.');
-      if (classes) selector += '.' + classes;
-    }
-
-    // 형제 요소 중 몇 번째인지 확인 (nth-child) - 선택적 정밀도 향상
-    let sibling = el;
-    let nth = 1;
-    while (sibling.previousElementSibling) {
-      sibling = sibling.previousElementSibling as HTMLElement;
-      if (sibling.nodeName.toLowerCase() === selector.split('.')[0]) nth++;
-    }
-    if (nth > 1) selector += `:nth-of-type(${nth})`;
-
-    path.unshift(selector);
-    el = el.parentNode as HTMLElement;
-    if (!el || el.tagName === 'BODY') break;
-  }
-  return path.join(' > ');
+  return getCssSelector(el);
 };
 
 // 요소 유효성 검사
