@@ -1,25 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import commonStyles from "./common.module.css";
-import useLocale from "@/front/utils/useLocale";
-import { X } from "react-router/dist/development/index-react-server-client-1TI9M9o1";
-import { getUniqueSelector } from "./App";
 
 export interface MenuItem {
   key: string;
-  onClick: () => void;
+  onClick: (e:MouseEvent) => void;
 }
 interface MenuProps {
   items: MenuItem[];
+  header: string;
   deClick:() => void;
   pos: {x:number, y:number};
 }
 
-const Menu = ({items, deClick, pos}:MenuProps) => {
-  const [curItems,setCurItems] = useState(items);
-  const [mode, setMode]= useState<'main' | 'children'>('main');
-  const rect = curItems.getBoundingClientRect();
+const Menu = ({items, deClick, header, pos}:MenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const tl = useLocale('background');
   useEffect(()=>{
     const handleClickOutside= (e:MouseEvent)=>{
       if(!e.target || !(e.target instanceof HTMLElement)) return;
@@ -33,52 +27,18 @@ const Menu = ({items, deClick, pos}:MenuProps) => {
     };
   },[]);
   return <div className={commonStyles.menu} 
-    style={{top: rect.top, left: rect.left}}
+    style={{top: pos.x, left: pos.y}}
     ref={menuRef}
   >
-    <div className={commonStyles.header}>{mode ==='main' ? (`<${curItems.tagName.toLowerCase()}> ` + tl('Selected')) : tl('Select Child')}</div>
-    {
-      mode==='main' ? (
-        <>
-          <button
-            onClick={()=>{
-              const text =curItems.textContent?.trim() || '';
-              onClick(text,rect.top, rect.left);
-            }}
-            >{'📄 ' + tl('Extract Text')}</button>
-          <button
-          onClick={()=>{
-            const selector = getUniqueSelector(curItems);
-            onClick(selector,rect.top, rect.left);
-          }}
-          >{'🎯 ' + tl('Extract Selector')}</button>
-          <button
-          onClick={(e)=>{
-            e.stopPropagation();
-            setMode('children');
-          }}
-          >{'📂 ' + tl('Select Children') + ` (${curItems.children.length})`}</button>
-        </>
-    ) : (
-      <>
-        <button
-          onClick={(e)=>{
-            e.stopPropagation();
-            setMode('main');
-          }}
-        >{'⬅️'}</button>
-        {Array.from(curItems.children).map((child, idx)=>(
-          <button key={idx}
-            onClick={(e)=>{
-              e.stopPropagation();
-              setCurItems(child as HTMLElement);
-              setMode('main');
-            }}
-          >{`<${child.tagName.toLowerCase()}> ${child.textContent?.trim().slice(0,15) || '...'}`}</button>
-        ))}
-      </>
-    )}
+    <div className={commonStyles.header}>{header}</div>
+    {items.map((item, index)=>(
+      <button key={index} onClick={(e)=>{
+        e.stopPropagation();
+        item.onClick(e.nativeEvent as MouseEvent);
+      }}>
+        {item.key}
+      </button>
+    ))}
   </div>;
 };
-//TODO : change color scheme for dark mode
 export default Menu;

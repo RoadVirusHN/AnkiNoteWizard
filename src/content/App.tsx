@@ -7,7 +7,8 @@ import { deactivateInspectionMode, EXTENSION_UI_ID, InspectionMode } from "@/scr
 import { MessageType } from "@/scripts/background/messageHandler";
 
 import "./common.css";
-import getCssSelector from "css-selector-generator";
+import getCssSelector, { cssSelectorGenerator } from "css-selector-generator";
+import useLocale from "@/front/utils/useLocale";
 
 enum InspectionState{
   HIGHLIGHT = 'HIGHLIGHT',
@@ -15,8 +16,8 @@ enum InspectionState{
   TOOLTIP= 'TOOLTIP'
 }
 //TODO : two modes(TAG_EXTRACTION : Non-Unique, TEXT_EXTRACTION : Unique)
-export const getUniqueSelector = (el: HTMLElement): string => {
-  return getCssSelector(el);
+export const getUniqueSelector = (el: HTMLElement): string[] => {
+  return Array.from(cssSelectorGenerator(el, {maxResults: 3}));
 };
 
 // 요소 유효성 검사
@@ -40,6 +41,8 @@ const App = ({mode, port}:{mode:InspectionMode, port:chrome.runtime.Port}) => {
   const [text, setText] = useState('');
   const [{x,y}, setPosition] = useState({x:0, y:0});  
   const [items, setItems] = useState<MenuItem[]>([] as MenuItem[]);
+  const [menuHeader, setMenuHeader] = useState('');
+  const tl = useLocale('background');
   const showTooltip = (text: string, x: number, y: number) => {
     setState(InspectionState.TOOLTIP);
     setText(text);
@@ -48,6 +51,7 @@ const App = ({mode, port}:{mode:InspectionMode, port:chrome.runtime.Port}) => {
       port.postMessage({ type: MessageType.SEND_INSPECTION_DATA_FROM_CONTENT, data: text });
     }, 2000); // 2초 후에 툴팁 숨김
   };
+
   const showMenu = (items:MenuItem[], x: number, y: number) => {
     setState(InspectionState.MENU);
     setItems(items);
@@ -72,27 +76,51 @@ const App = ({mode, port}:{mode:InspectionMode, port:chrome.runtime.Port}) => {
       })
       .catch((err) => console.error(err));
   };
+
+  const createMenuItems = (target:HTMLElement, pos:{x:number,y:number}): MenuItem[] =>{
+    const {x,y} = pos;
+    return [{key:'📄 ' + tl('Extract Text'), onClick:()=>{
+        const text =target.textContent?.trim() || '';
+        copyToClipboard(text,x, y, port);
+      }},
+      {key:'🎯 ' + tl('Extract Selector'), onClick:()=>{
+        const selector = getUniqueSelector(target);
+        setItems(Array.from(selector, s=>({key: s, onClick:()=>{
+          copyToClipboard(s,x, y, port);
+        }})));
+      }},
+      {key:'📂 ' + tl('Select Children') + ` (${target.children.length})`, onClick:(e2)=>{
+        e2.stopPropagation();
+        const children = Array.from(target.children) as HTMLElement[];
+        setItems(Array.from(children, (child, index) => ({
+          key: `<${child.tagName.toLowerCase()}> ${child.textContent?.trim().slice(0,15) || ''}`,
+          onClick: (e3) => {
+            e3.stopPropagation();
+            setMenuHeader(tl('Select Child') + ` (${index + 1}/${children.length})`);
+            setItems(createMenuItems(child, {x,y}));
+          },
+        })));
+      }}
+    ]
+  };
   const onHighlightClicked = (e:MouseEvent) =>{
     if (state !== InspectionState.HIGHLIGHT) return;
-    console.log("onClicked!");
     e.preventDefault();
     e.stopPropagation();
-    setState(InspectionState.MENU);
+    const target = e.target;
+    if (!(target instanceof HTMLElement && isValidElement(target))) return;
     if (mode== InspectionMode.TAG_EXTRACTION) {
-      setItems([{
-
-      },
-
-      ]);
+      setState(InspectionState.MENU);
+      setItems(createMenuItems(target,{x: e.clientX, y: e.clientY}));
     } else {
-      copyToClipboard((e.target as HTMLElement).innerHTML.trim(), e.clientX, e.clientY, port);
-      setItems([]);
+      copyToClipboard(target.innerText.trim(), e.clientX, e.clientY, port);
     }
   };
   return <>
     {state === InspectionState.HIGHLIGHT && <Highlight onClick={onHighlightClicked}/>}
     {state === InspectionState.MENU &&
      ( mode == InspectionMode.TAG_EXTRACTION && items.length > 0 ? <Menu items={items} 
+      header={menuHeader}
       deClick={()=>{
         setState(InspectionState.HIGHLIGHT);
       }} pos={{x,y}}/> : <></>)}
