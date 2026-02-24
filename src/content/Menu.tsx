@@ -27,7 +27,7 @@ const Menu = ({items, deClick, header, pos}:MenuProps) => {
     };
   },[]);
   return <div className={commonStyles.menu} 
-    style={{top: pos.x, left: pos.y}}
+    style={{left: pos.x, top: pos.y}}
     ref={menuRef}
   >
     <div className={commonStyles.header}>{header}</div>

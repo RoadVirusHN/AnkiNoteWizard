@@ -52,9 +52,11 @@ const App = ({mode, port}:{mode:InspectionMode, port:chrome.runtime.Port}) => {
     }, 2000); // 2초 후에 툴팁 숨김
   };
 
-  const showMenu = (items:MenuItem[], x: number, y: number) => {
+  const showMenu = (items:MenuItem[], x: number, y: number, header:string) => {
     setState(InspectionState.MENU);
     setItems(items);
+    setPosition({ x, y });
+    setMenuHeader(header);
      // 메뉴 표시 후 클릭 이벤트가 메뉴 외부에서 발생하면 메뉴 숨김
      const handleClickOutside = (e: MouseEvent) => {
       if (!e.target || !(e.target instanceof HTMLElement)) return;
@@ -89,45 +91,55 @@ const App = ({mode, port}:{mode:InspectionMode, port:chrome.runtime.Port}) => {
           copyToClipboard(s,x, y, port);
         }})));
       }},
-      {key:'📂 ' + tl('Select Children') + ` (${target.children.length})`, onClick:(e2)=>{
+      {key:'📂 ' + tl('Select Children') + ` (${target.children.length?? "No Children"})`, onClick:(e2)=>{
         e2.stopPropagation();
         const children = Array.from(target.children) as HTMLElement[];
-        setItems(Array.from(children, (child, index) => ({
-          key: `<${child.tagName.toLowerCase()}> ${child.textContent?.trim().slice(0,15) || ''}`,
-          onClick: (e3) => {
-            e3.stopPropagation();
-            setMenuHeader(tl('Select Child') + ` (${index + 1}/${children.length})`);
-            setItems(createMenuItems(child, {x,y}));
-          },
-        })));
+        if (children.length === 0) return;
+        setItems([
+          {key: '⬅',onClick: ()=>{
+          setItems(createMenuItems(target, {x,y}));
+          }},
+          ...Array.from(children, (child) => ({
+            key: tagToText(child),
+            onClick: (e3:MouseEvent) => {
+              e3.stopPropagation();
+              setMenuHeader(tagToText(child));
+              setItems(createMenuItems(child, {x,y}));
+        }}))]);
       }}
     ]
+  };
+  const tagToText = (tag: HTMLElement) => {
+    return `<${tag.tagName.toLowerCase()}> ${((tag.textContent.length > 15 ? tag.textContent?.trim().slice(0,12) + "..." : tag.textContent) )|| ''}`;
   };
   const onHighlightClicked = (e:MouseEvent) =>{
     if (state !== InspectionState.HIGHLIGHT) return;
     e.preventDefault();
     e.stopPropagation();
     const target = e.target;
+    const rect = (target as HTMLElement).getBoundingClientRect();
     if (!(target instanceof HTMLElement && isValidElement(target))) return;
     if (mode== InspectionMode.TAG_EXTRACTION) {
-      setState(InspectionState.MENU);
-      setItems(createMenuItems(target,{x: e.clientX, y: e.clientY}));
+      showMenu(
+        createMenuItems(target,{x: rect.left, y: rect.top},),
+        rect.left, rect.top,
+        tagToText(target));
     } else {
-      copyToClipboard(target.innerText.trim(), e.clientX, e.clientY, port);
+      copyToClipboard(target.textContent.trim(), rect.left, rect.top, port);
     }
   };
   return <>
     {state === InspectionState.HIGHLIGHT && <Highlight onClick={onHighlightClicked}/>}
     {state === InspectionState.MENU &&
-     ( mode == InspectionMode.TAG_EXTRACTION && items.length > 0 ? <Menu items={items} 
+     ( mode == InspectionMode.TAG_EXTRACTION && items.length > 0 ? 
+     <Menu items={items} 
       header={menuHeader}
       deClick={()=>{
         setState(InspectionState.HIGHLIGHT);
       }} pos={{x,y}}/> : <></>)}
-      {
-        state === InspectionState.TOOLTIP &&
-        <Tooltip text={text} pos={{x,y}}/>
-      }
+    {state === InspectionState.TOOLTIP &&
+      <Tooltip text={text} pos={{x,y}}/>
+    }
   </>;
 };
 export default App;

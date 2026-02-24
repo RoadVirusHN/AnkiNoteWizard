@@ -12,20 +12,16 @@ const Highlight = ({onClick}: {onClick:(e:MouseEvent)=>void}) => {
   const [rect, setRect] = useState<HighlightRect>({width: 0, height: 0, top: 0, left: 0}); 
   const [isDisplay, setIsDisplay] = useState(true);
   useEffect(()=>{
-    console.log(`Highlight useEffect called`);
     const onMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!isValidElement(target)) return;
-      console.log(`MouseOver: ${target.tagName}, id: ${target.id}, class: ${target.className}`);
       setIsDisplay(true);
       const curRect = target.getBoundingClientRect();
       setRect({width:curRect.width, height:curRect.height, top:curRect.top, left:curRect.left});
     };
     const onMouseOut = () => {
-      console.log(`MouseOut`);
       setIsDisplay(false);
     };
-    console.log(`Highlight mounted`);
     document.addEventListener('mouseover', onMouseOver, true);
     document.addEventListener('mouseout', onMouseOut, true);
     document.addEventListener('scroll', onMouseOut, true);
