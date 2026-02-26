@@ -7,11 +7,14 @@ import inspectionButtonStyle from "./InspectionButton.module.css";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import useLocale from "@/front/utils/useLocale";
 
-//TODO : URGENT! : fix the inspection error when user change tab then enter inspection mode.
-// Uncaught (in promise) Error: Could not establish connection. Receiving end does not exist.
-// solving : init content script when tab is changed or re-activated.
-// it... just disapeared... without doing nothing....
-const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION}:{setResult: (text:string)=>void, mode?: InspectionMode}) => {
+const modeToPortName = {
+  [InspectionMode.TAG_EXTRACTION]: PortNames.ENTER_TAG_INSPECTION_MODE_FROM_PANEL,
+  [InspectionMode.TEXT_EXTRACTION]: PortNames.ENTER_TEXT_INSPECTION_MODE_FROM_PANEL,
+  [InspectionMode.FIELD_EXTRACTION]: PortNames.ENTER_FIELD_INSPECTION_MODE_FROM_PANEL,
+};
+
+// TODO: refactoring it
+const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION, rootSelector=''}:{setResult: (text:string)=>void, mode?: InspectionMode, rootSelector?:string}) => {
   const [panelPort, setPanelPort] = useState<chrome.runtime.Port|null>();
   const tl = useLocale('component.InspectionButton');
   return <>
@@ -63,12 +66,12 @@ const InspectionButton = ({setResult, mode=InspectionMode.TAG_EXTRACTION}:{setRe
         console.log("disconnect previous port");
         panelPort.disconnect();
       }
-      const newPort = chrome.runtime.connect({ name: mode==InspectionMode.TEXT_EXTRACTION ? PortNames.ENTER_TEXT_INSPECTION_MODE_FROM_PANEL : PortNames.ENTER_TAG_INSPECTION_MODE_FROM_PANEL });
+      const newPort = chrome.runtime.connect({ name: modeToPortName[mode] });
       setPanelPort(newPort);
       if (newPort){
         const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
         const tabId = tab.id;
-        newPort.postMessage({type:MessageType.SET_INSPECTION_TAB_ID, tabId });
+        newPort.postMessage({type:MessageType.SET_INSPECTION_TAB_ID, tabId, rootSelector });
         newPort.onMessage.addListener((msg)=>{
           let data = msg.data as string;
           setResult(data.trim());

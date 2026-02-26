@@ -1,9 +1,11 @@
 import React, { useMemo } from "react";
 import Editor from "@monaco-editor/react";
 import styles from "../modifyTemplate.module.css";
-import { TemplateField, TemplateFieldDataType } from "@/front/utils/useTemplates";
+import { Template, TemplateField, TemplateFieldDataType } from "@/front/utils/useTemplates";
 import useLocale from "@/front/utils/useLocale";
 import useConfigure, { Theme } from "@/front/utils/useConfigure";
+import InspectionButton from "@/front/common/InspectionButton/InspectionButton";
+import { InspectionMode } from "@/scripts/content/tagExtraction";
 
 interface SideData {
   html: string;
@@ -12,11 +14,12 @@ interface SideData {
 
 interface Props {
   side: "Front" | "Back";
+  template: Template;
   data: SideData;
   setData: (data: SideData) => void;
 }
 
-const TemplateSideEditor: React.FC<Props> = ({ side, data, setData }) => {
+const TemplateSideEditor: React.FC<Props> = ({ side, template, data, setData }) => {
   
   // -- Handlers --
   const handleHtmlChange = (val: string | undefined) => {
@@ -116,13 +119,7 @@ const TemplateSideEditor: React.FC<Props> = ({ side, data, setData }) => {
                   placeholder={tl("CSS Selector")}
                   onChange={(e) => handleFieldChange(i, "content", e.target.value)}
                 />
-                 <button 
-                  className={styles.miniPickBtn} 
-                  onClick={() => ((sel:string) => handleFieldChange(i, "content", sel))}
-                  title={tl("Pick tag from page")}
-                >
-                  🎯
-                </button>
+                <InspectionButton setResult={() => ((sel:string) => handleFieldChange(i, "content", sel))} mode={InspectionMode.FIELD_EXTRACTION} rootSelector={template.rootTag}></InspectionButton>
               </div>
 
               {/* Data Type */}

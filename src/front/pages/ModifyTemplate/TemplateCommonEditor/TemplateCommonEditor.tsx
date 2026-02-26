@@ -58,7 +58,7 @@ const TemplateCommonEditor = ({data, setData}:Props) => {
           if (rootTagInputRef.current){
             rootTagInputRef.current.value = text;
           }
-        }}/>
+        }} rootSelector={data.rootTag}/>
      </div>
       <p className={modifyTemplateStyle.hint}>{tl("Fields will be searched under the root tag")}</p>
     </div>

@@ -73,7 +73,7 @@ const AddPage = ({}) => {
           setIsChanged(true);
           setCurNote({...curNote, tags: curNote.tags.filter(t=>t!==tag)});
         }}/>
-        <h3>{tlC('front') +' '+tlC('preview')} {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}}/> : ''}</h3>
+        <h3>{tlC('front') +' '+tlC('preview')} {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}} rootSelector=""/> : ''}</h3>
         {
           isModifying ?
           (<Editor

@@ -87,6 +87,7 @@ return (
         {activeTab === TAB.FRONT && (
           <TemplateSideEditor
             side={"Front"}
+            template={templateData}
             data={templateData.Front}
             setData={(newData) => {
               setTemplateData(prev => ({
@@ -100,6 +101,7 @@ return (
         {activeTab === TAB.BACK && (
           <TemplateSideEditor
             side={"Back"}
+            template={templateData}
             data={templateData.Back}
             setData={(newData) => {
               setTemplateData(prev => ({

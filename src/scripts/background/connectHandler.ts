@@ -8,14 +8,21 @@ const contentScriptPorts = {} as { [tabId: number]: chrome.runtime.Port };
 export enum PortNames {
   ENTER_TEXT_INSPECTION_MODE_FROM_PANEL = 'ENTER_TEXT_INSPECTION_MODE_FROM_PANEL',
   ENTER_TAG_INSPECTION_MODE_FROM_PANEL = 'ENTER_TAG_INSPECTION_MODE_FROM_PANEL',
+  ENTER_FIELD_INSPECTION_MODE_FROM_PANEL = 'ENTER_FIELD_INSPECTION_MODE_FROM_PANEL',
   READY_INSPECTION_MODE_FROM_CONTENT = 'READY_INSPECTION_MODE_FROM_CONTENT',
 }
+const portNameToInspectionMode = {
+  [PortNames.ENTER_TEXT_INSPECTION_MODE_FROM_PANEL]: InspectionMode.TEXT_EXTRACTION,
+  [PortNames.ENTER_TAG_INSPECTION_MODE_FROM_PANEL]: InspectionMode.TAG_EXTRACTION,
+  [PortNames.ENTER_FIELD_INSPECTION_MODE_FROM_PANEL]: InspectionMode.FIELD_EXTRACTION,
+};
 
 export const connectHandler = (port: chrome.runtime.Port) => {
   console.log("Background received connection on port:", port.name);
   switch (port.name) {
     case PortNames.ENTER_TEXT_INSPECTION_MODE_FROM_PANEL:
     case PortNames.ENTER_TAG_INSPECTION_MODE_FROM_PANEL:
+    case PortNames.ENTER_FIELD_INSPECTION_MODE_FROM_PANEL:
       port.onMessage.addListener((msg) => {
         const tabId = msg.tabId as number;
         console.log("background get message", msg);
@@ -27,10 +34,8 @@ export const connectHandler = (port: chrome.runtime.Port) => {
             sidePanelPorts[tabId] = port;
             chrome.tabs.sendMessage(tabId, {
               type: MessageType.ENTER_INSPECTION_MODE_FROM_PANEL,
-              data:
-                port.name === PortNames.ENTER_TEXT_INSPECTION_MODE_FROM_PANEL
-                  ? InspectionMode.TEXT_EXTRACTION
-                  : InspectionMode.TAG_EXTRACTION,
+              data: portNameToInspectionMode[port.name as keyof typeof portNameToInspectionMode],
+              rootSelector: msg.rootSelector,
             });
             portTabMap.set(port, tabId); // Store tabId in the port object
             break;
