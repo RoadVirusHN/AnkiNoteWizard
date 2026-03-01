@@ -35,7 +35,7 @@
     "ModelInput":{
       "Anki Connection Error" : "Anki 연결 오류"
     },
-    "InspectionButton": {
+    "InspectionOverlay": {
       "Text Extraction Mode": "텍스트 추출 모드",
       "Hover over the text": "텍스트 위에 마우스를 올리세요",
       "Click to copy into your clipboard": "클릭하여 클립보드에 복사하세요.",

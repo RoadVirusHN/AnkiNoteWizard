@@ -3,7 +3,7 @@ import { InspectionMode } from "@/scripts/content/tagExtraction";
 import { MessageType } from "@/scripts/background/messageHandler";
 import modifyTemplateStyle from "../modifyTemplate.module.css";
 import Tags from "@/front/common/Tags/Tags";
-import InspectionButton from "@/front/common/InspectionButton/InspectionButton";
+import InspectionButton from "@/front/common/InspectionOverlay/InspectionOverlay";
 import { useRef } from "react";
 import useLocale from "@/front/utils/useLocale";
 interface Props {

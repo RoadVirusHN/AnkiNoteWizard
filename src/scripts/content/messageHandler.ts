@@ -3,6 +3,7 @@ import { Message, MessageType } from '../background/messageHandler';
 import { getExtractedFromPage } from './content';
 import { activateInspectionMode, deactivateInspectionMode, InspectionMode } from './tagExtraction2';
 import { PortNames } from '../background/connectHandler';
+import { CssSelectorGeneratorOptionsInput } from 'css-selector-generator/types/types';
 
 export const messageHandler = async (
   message: Message,
@@ -22,20 +23,15 @@ export const messageHandler = async (
       port.onDisconnect.addListener(() => {
         deactivateInspectionMode();
       });
-      if (
-        typeof message.data === 'object' &&
-        message.data !== null &&
-        'mode' in message.data &&
-        'rootSelector' in message.data
-      ) {
-        activateInspectionMode(
-          (message.data as { mode: InspectionMode }).mode,
-          port,
-          (message.data as { rootSelector: string }).rootSelector
-        );
-      } else {
-        console.error('Invalid message data:', message.data);
-      }
+      const { mode, rootSelector, cssSelectorOptions } = message.data as {
+        mode: InspectionMode;
+        rootSelector: string;
+        cssSelectorOptions: CssSelectorGeneratorOptionsInput;
+      };
+      activateInspectionMode(mode, port, {
+        ...cssSelectorOptions,
+        root: document.querySelector(rootSelector) || document.body,
+      });
       break;
   }
   return isAsync;

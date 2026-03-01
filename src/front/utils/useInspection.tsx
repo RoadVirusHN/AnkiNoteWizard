@@ -1,11 +1,12 @@
 import { InspectionMode } from "@/scripts/content/tagExtraction2";
-import { JSX, useState } from "react";
-import {} from "css-selector-generator";
+import { useState } from "react";
 import { CssSelectorGeneratorOptionsInput } from "css-selector-generator/types/types";
 import { PortNames } from "@/scripts/background/connectHandler";
 import { MessageType } from "@/scripts/background/messageHandler";
 
 interface UseInspectionParams {  
+  mode: InspectionMode;
+  rootSelector: string;
   cssSelectorOptions: CssSelectorGeneratorOptionsInput;
   onResult: (text:string)=>void;
   onEnter: ()=>void;
@@ -13,10 +14,12 @@ interface UseInspectionParams {
 }
 
 const useInspection = ({
+  mode = InspectionMode.TEXT_EXTRACTION,
+  rootSelector = 'body',
   cssSelectorOptions,
   onResult,
   onEnter,
-  onCancel
+  onCancel,
 }:UseInspectionParams) => {
 
   const [panelPort, setPanelPort] = useState<chrome.runtime.Port|null>();
@@ -32,20 +35,23 @@ const useInspection = ({
     if (newPort){
       const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
       const tabId = tab.id;
-      newPort.postMessage({type:MessageType.SET_INSPECTION_TAB_ID, tabId, data: cssSelectorOptions });
+      newPort.postMessage({type:MessageType.SET_INSPECTION_TAB_ID, tabId, data: {mode, rootSelector, cssSelectorOptions} });
       newPort.onMessage.addListener((msg)=>{
         let data = msg.data as string;
         onResult(data.trim());
         newPort.disconnect();
         setPanelPort(null);
+        onCancel();
+        setIsInspectionMode(false);
       });
       newPort.onDisconnect.addListener(()=>{
-        // 탭이 닫히거나 에러 등으로 포트가 끊어졌을 때 처리
         setPanelPort(null);
+        onCancel();
+        setIsInspectionMode(false);
       });
-    setIsInspectionMode(true);
-  }
-  onEnter();
+      setIsInspectionMode(true);
+    }
+    onEnter();
   };
   
   const cancleInspectionMode = () => {

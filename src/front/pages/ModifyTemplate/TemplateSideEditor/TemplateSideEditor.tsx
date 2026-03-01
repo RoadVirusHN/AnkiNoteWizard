@@ -4,7 +4,7 @@ import styles from "../modifyTemplate.module.css";
 import { Template, TemplateField, TemplateFieldDataType } from "@/front/utils/useTemplates";
 import useLocale from "@/front/utils/useLocale";
 import useConfigure, { Theme } from "@/front/utils/useConfigure";
-import InspectionButton from "@/front/common/InspectionButton/InspectionButton";
+import InspectionButton from "@/front/common/InspectionOverlay/InspectionOverlay";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
 
 interface SideData {

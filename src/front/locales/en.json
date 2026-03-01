@@ -35,7 +35,7 @@
     "ModelInput":{
       "Anki Connection Error" : "Anki Connection Error"
     },
-    "InspectionButton": {
+    "InspectionOverlay": {
       "Text Extraction Mode": "Text Extraction Mode",
       "Hover over the text": "Hover over the text",
       "Click to copy into your clipboard": "Click to copy into your clipboard.",

@@ -5,7 +5,7 @@ import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import addPageStyle from "./addPage.module.css";
 import commonStyle from "@/front/common.module.css";
-import InspectionButton from "@/front/common/InspectionButton/InspectionButton";
+import InspectionOverlay from "@/front/common/InspectionOverlay/InspectionOverlay";
 import Preview from "@/front/common/Preview/Preview";
 import { Editor } from "@monaco-editor/react";
 import Tags from "@/front/common/Tags/Tags";
@@ -73,7 +73,7 @@ const AddPage = ({}) => {
           setIsChanged(true);
           setCurNote({...curNote, tags: curNote.tags.filter(t=>t!==tag)});
         }}/>
-        <h3>{tlC('front') +' '+tlC('preview')} {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}} rootSelector=""/> : ''}</h3>
+        <h3>{tlC('front') +' '+tlC('preview')} {isModifying ? <InspectionOverlay mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}} rootSelector=""/> : ''}</h3>
         {
           isModifying ?
           (<Editor
@@ -95,7 +95,7 @@ const AddPage = ({}) => {
             />) :
             <Preview html={curNote.fields.Front}/>
         }
-        <h3>{tlC('back') +' ' + tlC('preview')} {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}}/> : ''}</h3>
+        <h3>{tlC('back') +' ' + tlC('preview')} {isModifying ? <InspectionOverlay mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}}/> : ''}</h3>
         {
           isModifying ? 
           (<Editor

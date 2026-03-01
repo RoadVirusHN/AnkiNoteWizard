@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import { useState } from "react";
 import Tags from "@/front/common/Tags/Tags";
 import { Editor } from "@monaco-editor/react";
-import InspectionButton from "@/front/common/InspectionButton/InspectionButton";
+import InspectionButton from "@/front/common/InspectionOverlay/InspectionOverlay";
 import Preview from "@/front/common/Preview/Preview";
 import PreviewHeader from "./PreviewHeader/PreviewHeader";
 import { PreviewContext } from "./PreviewContext";
