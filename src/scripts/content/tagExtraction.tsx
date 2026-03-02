@@ -14,7 +14,6 @@ let contentPort: chrome.runtime.Port | null = null; // 포트 연결 상태 관�
 export enum InspectionMode {
   TAG_EXTRACTION = 'TAG_EXTRACTION',
   TEXT_EXTRACTION = 'TEXT_EXTRACTION',
-  FIELD_EXTRACTION = 'FIELD_EXTRACTION',
 }
 
 const useLocale = (prefix: string) => {

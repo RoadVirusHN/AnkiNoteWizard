@@ -1,31 +1,27 @@
-import { InspectionMode } from "@/scripts/content/tagExtraction2";
 import { useState } from "react";
 import { CssSelectorGeneratorOptionsInput } from "css-selector-generator/types/types";
 import { PortNames } from "@/scripts/background/connectHandler";
 import { MessageType } from "@/scripts/background/messageHandler";
+import { InspectionMode } from "@/scripts/content/constants";
 
-interface UseInspectionParams {  
+interface _UseInspectionParams {  
   mode: InspectionMode;
   rootSelector: string;
   cssSelectorOptions: CssSelectorGeneratorOptionsInput;
   onResult: (text:string)=>void;
   onEnter: ()=>void;
-  onCancel: ()=>void;
 }
 
-const useInspection = ({
+const useInspection = (
   mode = InspectionMode.TEXT_EXTRACTION,
   rootSelector = 'body',
-  cssSelectorOptions,
-  onResult,
-  onEnter,
-  onCancel,
-}:UseInspectionParams) => {
+  cssSelectorOptions = {} as CssSelectorGeneratorOptionsInput
+) => {
 
   const [panelPort, setPanelPort] = useState<chrome.runtime.Port|null>();
   const [isInspectionMode, setIsInspectionMode] = useState(false);
 
-  const enterInspectionMode = async () => {
+  const enterInspectionMode = async (onResult=(text:string)=>{}, onCancle=()=>{}) => {
     if (panelPort!=null)  {
       console.log("disconnect previous port");
       panelPort.disconnect();
@@ -39,33 +35,27 @@ const useInspection = ({
       newPort.onMessage.addListener((msg)=>{
         let data = msg.data as string;
         onResult(data.trim());
-        newPort.disconnect();
-        setPanelPort(null);
-        onCancel();
-        setIsInspectionMode(false);
+        cancleInspectionMode(onCancle);
       });
       newPort.onDisconnect.addListener(()=>{
-        setPanelPort(null);
-        onCancel();
-        setIsInspectionMode(false);
+        cancleInspectionMode(onCancle);
       });
       setIsInspectionMode(true);
     }
-    onEnter();
   };
   
-  const cancleInspectionMode = () => {
+  const cancleInspectionMode = (onCancle=()=>{}) => {
     if (panelPort!=null){
       console.log("cancle inspection mode");
       panelPort.disconnect();
       setPanelPort(null);    
     }
     setIsInspectionMode(false);
-    onCancel();
+    onCancle();
   };
   
 
-  return [enterInspectionMode, cancleInspectionMode, isInspectionMode];
+  return {enterInspectionMode, cancleInspectionMode, isInspectionMode};
 };
 
 export default useInspection;

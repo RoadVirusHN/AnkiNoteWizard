@@ -1,15 +1,14 @@
 import Menu, { MenuItem } from "./Menu";
 import Tooltip from "./Tooltip";
 import Highlight from "./Highlight";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import commonStyles from "./common.module.css";
-import { deactivateInspectionMode, EXTENSION_UI_ID, InspectionMode } from "@/scripts/content/tagExtraction2";
 import { MessageType } from "@/scripts/background/messageHandler";
-
 import "./common.css";
-import getCssSelector, { cssSelectorGenerator } from "css-selector-generator";
+import { cssSelectorGenerator } from "css-selector-generator";
 import useLocale from "@/front/utils/useLocale";
 import { CssSelectorGeneratorOptionsInput, CssSelectorType } from "css-selector-generator/types/types";
+import { EXTENSION_UI_ID, InspectionMode } from "@/scripts/content/constants";
 
 enum InspectionState{
   HIGHLIGHT = 'HIGHLIGHT',
@@ -20,13 +19,20 @@ enum InspectionState{
 export const getUniqueSelector = (el: HTMLElement, cssSelectorOptions:CssSelectorGeneratorOptionsInput): string[] => {
   return Array.from(cssSelectorGenerator(el, cssSelectorOptions));
 };
-
-// maxResults: 3, 
-// combineWithinSelector: mode === 'Unique', // 동일한 요소 내에서 여러 selector 조합 허용 여부
-// combineBetweenSelectors: mode === 'Unique', // 여러 selector 조합 허용 여부
-// blacklist: [EXTENSION_UI_ID, ...Object.values(commonStyles)],
-// selectors: ['id', 'class', 'tag', 'attribute', ...(mode === 'Unique' ? [] : ['nth-child'])] as CssSelectorType[],
-// includeTag: true, // Css selector에 태그 이름 포함 여부
+export const uniqueCssSelectorOptions: CssSelectorGeneratorOptionsInput = {
+  maxResults: 3, 
+  combineWithinSelector: true, // 동일한 요소 내에서 여러 selector 조합 허용 여부
+  combineBetweenSelectors: true, // 여러 selector 조합 허용 여부
+  blacklist: [EXTENSION_UI_ID, ...Object.values(commonStyles)],
+  selectors: ['id', 'class', 'tag', 'attribute', 'nth-child'] as CssSelectorType[],
+  includeTag: true, // Css selector에 태그 이름 포함 여부
+};
+export const nonuniqueCssSelectorOptions: CssSelectorGeneratorOptionsInput = {
+  maxResults: 3, 
+  blacklist: [EXTENSION_UI_ID, ...Object.values(commonStyles)],
+  selectors: ['id', 'class', 'tag', 'attribute'] as CssSelectorType[],
+  includeTag: true, // Css selector에 태그 이름 포함 여부
+};
 
 // 요소 유효성 검사
 export const isValidElement = (element: HTMLElement) => {
@@ -50,7 +56,6 @@ const App = ({mode, port, cssSelectorOptions}:{mode:InspectionMode, port:chrome.
   const [{x,y}, setPosition] = useState({x:0, y:0});  
   const [items, setItems] = useState<MenuItem[]>([] as MenuItem[]);
   const [menuHeader, setMenuHeader] = useState('');
-  const [selectorMode, setSelectorMode] = useState<'Unique'|'NonUnique'>(InspectionMode.TAG_EXTRACTION===mode ? 'NonUnique' : 'Unique');
   const tl = useLocale('background');
   const showTooltip = (text: string, x: number, y: number) => {
     setState(InspectionState.TOOLTIP);
@@ -69,7 +74,7 @@ const App = ({mode, port, cssSelectorOptions}:{mode:InspectionMode, port:chrome.
      // 메뉴 표시 후 클릭 이벤트가 메뉴 외부에서 발생하면 메뉴 숨김
      const handleClickOutside = (e: MouseEvent) => {
       if (!e.target || !(e.target instanceof HTMLElement)) return;
-      if (!e.target.closest(`.${commonStyles.menu}`)) {
+      if (!e.target.closest(`.${commonStyles.menu}`)) { // TODO : 오류 해결
         setState(InspectionState.HIGHLIGHT);
       }
     };

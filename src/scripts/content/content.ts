@@ -27,7 +27,6 @@ export const initLocale = () =>{
   i18n.use(initReactI18next).init(config);
 };
 
-
 chrome.storage.sync.get('anki-card-wizard-configure-store', (result) => {
   const store = result['anki-card-wizard-configure-store'];
   if (store && store.state && store.state.language) {

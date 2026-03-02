@@ -1,18 +1,10 @@
 import { createRoot, Root } from "react-dom/client";
 import App from "@/content/App";
 import { CssSelectorGeneratorOptionsInput } from "css-selector-generator/types/types";
+import { EXTENSION_UI_ID, InspectionMode } from "./constants";
 
 let root : Root;
 let contentPort: chrome.runtime.Port | null = null; // 포트 연결 상태 관리;
-
-export enum InspectionMode {
-  TAG_EXTRACTION = 'TAG_EXTRACTION',
-  FIELD_EXTRACTION = 'FIELD_EXTRACTION',
-  TEXT_EXTRACTION = 'TEXT_EXTRACTION',
-}
-
-export const EXTENSION_UI_ID = 'extension-ui-container';
-
 // -----------------------------------------------------------------------------
 // 2. UI 생성 로직 (Overlay, Tooltip, Menu)
 // -----------------------------------------------------------------------------

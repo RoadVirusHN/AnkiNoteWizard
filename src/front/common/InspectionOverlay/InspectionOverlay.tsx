@@ -1,10 +1,9 @@
 import SimpleButton from "../SimpleButton/SimpleButton";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
 import inspectionOverlayStyle from "./InspectionOverlay.module.css";
-import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import useLocale from "@/front/utils/useLocale";
 
-const InspectionOverlay = ({cancleInspectionMode, mode}:{cancleInspectionMode:()=>void, mode: InspectionMode}) => {
+const InspectionOverlay = ({mode, cancleInspectionMode}:{ mode: InspectionMode, cancleInspectionMode:()=>void}) => {
   const tl = useLocale('component.InspectionOverlay');
   return <>
     <div className={inspectionOverlayStyle.overlay} onClick={cancleInspectionMode}>  
@@ -43,7 +42,6 @@ const InspectionOverlay = ({cancleInspectionMode, mode}:{cancleInspectionMode:()
         <span className={inspectionOverlayStyle['left-pointer']}>◀</span>
       </div>
      </div>
-    <SimpleButton title="Extract Text" src={MagicIcon} onClick={async ()=>{}}/> 
   </> ;
 };
 export default InspectionOverlay;

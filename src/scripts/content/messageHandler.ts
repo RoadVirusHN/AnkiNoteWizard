@@ -1,9 +1,10 @@
 import { Template } from '@/front/utils/useTemplates';
 import { Message, MessageType } from '../background/messageHandler';
 import { getExtractedFromPage } from './content';
-import { activateInspectionMode, deactivateInspectionMode, InspectionMode } from './tagExtraction2';
+import { activateInspectionMode, deactivateInspectionMode } from './tagExtraction2';
 import { PortNames } from '../background/connectHandler';
 import { CssSelectorGeneratorOptionsInput } from 'css-selector-generator/types/types';
+import { InspectionMode } from './constants';
 
 export const messageHandler = async (
   message: Message,

@@ -4,13 +4,16 @@ import { useParams } from "react-router";
 import { useState } from "react";
 import Tags from "@/front/common/Tags/Tags";
 import { Editor } from "@monaco-editor/react";
-import InspectionButton from "@/front/common/InspectionOverlay/InspectionOverlay";
+import InspectionOverlay from "@/front/common/InspectionOverlay/InspectionOverlay";
 import Preview from "@/front/common/Preview/Preview";
 import PreviewHeader from "./PreviewHeader/PreviewHeader";
 import { PreviewContext } from "./PreviewContext";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
 import ModelInput from "@/front/common/Inputs/ModelInput/ModelInput";
 import useConfigure, { Theme } from "@/front/utils/useConfigure";
+import useInspection from "@/front/utils/useInspection";
+import MagicIcon from "@/public/Icon/Icon-Magic.svg";
+import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 
 const PreviewCard = ({}) => {
   const {index} = useParams();
@@ -20,7 +23,8 @@ const PreviewCard = ({}) => {
   const {curNote, isModifying, isChanged} = contextValue; 
   const [curText, setCurText] = useState('');
   const {themeOption} = useConfigure();
-  const setResult = (text:string) => {setCurText(text);};
+  const onResult = (text:string) => setCurText(text);
+  const {enterInspectionMode,cancleInspectionMode,isInspectionMode} = useInspection(InspectionMode.TEXT_EXTRACTION, 'body',{});
 
   return (<div>
     <PreviewContext.Provider value={{contextValue,setContextValue}}>
@@ -46,7 +50,7 @@ const PreviewCard = ({}) => {
             curNote: {...curNote, tags: curNote.tags.filter(t=>t!==tag)},
             isChanged:true});
         }}/>
-        <h3>front preview {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={setResult}/> : ''}</h3>
+        <h3>front preview {isModifying ?? <SimpleButton title="Extract Text" src={MagicIcon} onClick={()=>enterInspectionMode(onResult)}/>}</h3>
         {
           isModifying ?
           (<Editor
@@ -69,7 +73,7 @@ const PreviewCard = ({}) => {
             />) :
             <Preview html={curNote.fields.Front}/>
         }
-        <h3>back preview {isModifying ? <InspectionButton mode={InspectionMode.TEXT_EXTRACTION} setResult={setResult}/> : ''}</h3>
+        <h3>back preview {isModifying ?? <SimpleButton title="Extract Text" src={MagicIcon} onClick={()=>enterInspectionMode(onResult)}/> }</h3>
         {
           isModifying ? 
           (<Editor
@@ -94,6 +98,7 @@ const PreviewCard = ({}) => {
         }
       </section>      
     }
+    {isInspectionMode && <InspectionOverlay mode={InspectionMode.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
   </div>);
 };
 export default PreviewCard;

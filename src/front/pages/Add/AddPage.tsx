@@ -20,6 +20,8 @@ import DeckInput from "@/front/common/StatusBar/DeckInput/DeckInput";
 import useLocale from "@/front/utils/useLocale";
 import Icon from "@/front/common/Icon/Icon";
 import useConfigure, { Theme } from "@/front/utils/useConfigure";
+import useInspection from "@/front/utils/useInspection";
+import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();
@@ -30,6 +32,7 @@ const AddPage = ({}) => {
   const tl = useLocale('pages.AddPage');
   const tlC = useLocale('common');
   const {themeOption} = useConfigure();
+  const {enterInspectionMode,cancleInspectionMode,isInspectionMode} = useInspection();
   return <div>
     <div className={addPageStyle.header}>     
       <h2>{tl('Add Note to Anki')}</h2>
@@ -55,6 +58,7 @@ const AddPage = ({}) => {
       </div>
     </div>
       {<section className={addPageStyle.previewPage}>
+        <InspectionOverlay mode={InspectionMode.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>
         <DeckInput onChange={(deck:string)=>{setCurNote({...curNote, deckName: deck})}}/>
         <TemplateInput defaultTemplate={curNote.templateName} setTemplate={(template:string)=>{
           setCurNote({...curNote, templateName: template});
@@ -73,7 +77,7 @@ const AddPage = ({}) => {
           setIsChanged(true);
           setCurNote({...curNote, tags: curNote.tags.filter(t=>t!==tag)});
         }}/>
-        <h3>{tlC('front') +' '+tlC('preview')} {isModifying ? <InspectionOverlay mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}} rootSelector=""/> : ''}</h3>
+        <h3>{tlC('front') +' '+tlC('preview')} {isModifying ?? <SimpleButton title="Extract Field Css Selector" src={MagicIcon} onClick={()=>enterInspectionMode()}/> }</h3>
         {
           isModifying ?
           (<Editor
@@ -95,7 +99,7 @@ const AddPage = ({}) => {
             />) :
             <Preview html={curNote.fields.Front}/>
         }
-        <h3>{tlC('back') +' ' + tlC('preview')} {isModifying ? <InspectionOverlay mode={InspectionMode.TEXT_EXTRACTION} setResult={()=>{}}/> : ''}</h3>
+        <h3>{tlC('back') +' ' + tlC('preview')} {isModifying ?? <SimpleButton title="Extract Field Css Selector" src={MagicIcon} onClick={()=>enterInspectionMode()}/>}</h3>
         {
           isModifying ? 
           (<Editor

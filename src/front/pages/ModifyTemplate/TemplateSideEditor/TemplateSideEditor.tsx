@@ -1,11 +1,15 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import Editor from "@monaco-editor/react";
 import styles from "../modifyTemplate.module.css";
 import { Template, TemplateField, TemplateFieldDataType } from "@/front/utils/useTemplates";
 import useLocale from "@/front/utils/useLocale";
 import useConfigure, { Theme } from "@/front/utils/useConfigure";
-import InspectionButton from "@/front/common/InspectionOverlay/InspectionOverlay";
+import MagicIcon from "@/public/Icon/Icon-Magic.svg";
+import InspectionOverlay from "@/front/common/InspectionOverlay/InspectionOverlay";
 import { InspectionMode } from "@/scripts/content/tagExtraction";
+import useInspection from "@/front/utils/useInspection";
+import { uniqueCssSelectorOptions } from "@/content/App";
+import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 
 interface SideData {
   html: string;
@@ -19,7 +23,12 @@ interface Props {
   setData: (data: SideData) => void;
 }
 
-const TemplateSideEditor: React.FC<Props> = ({ side, template, data, setData }) => {
+const TemplateSideEditor = ({ side, template, data, setData } : Props) => {
+  const {
+    enterInspectionMode,
+    cancleInspectionMode,
+    isInspectionMode
+  } = useInspection(InspectionMode.TAG_EXTRACTION, template.rootTag, uniqueCssSelectorOptions);
   
   // -- Handlers --
   const handleHtmlChange = (val: string | undefined) => {
@@ -99,6 +108,7 @@ const TemplateSideEditor: React.FC<Props> = ({ side, template, data, setData }) 
       <div className={styles.fieldsList}>
         {data.fields.map((field, i) => {
           const locked = isLockedField(field.name);
+          const onResult = (sel:string) => handleFieldChange(i, "content", sel);
           return (
             <div key={i} className={styles.fieldRow}>
               {/* Field Name */}
@@ -119,7 +129,7 @@ const TemplateSideEditor: React.FC<Props> = ({ side, template, data, setData }) 
                   placeholder={tl("CSS Selector")}
                   onChange={(e) => handleFieldChange(i, "content", e.target.value)}
                 />
-                <InspectionButton setResult={() => ((sel:string) => handleFieldChange(i, "content", sel))} mode={InspectionMode.FIELD_EXTRACTION} rootSelector={template.rootTag}></InspectionButton>
+                <SimpleButton title="Extract Field Css Selector" src={MagicIcon} onClick={()=>enterInspectionMode(onResult)}/> 
               </div>
 
               {/* Data Type */}
@@ -160,6 +170,7 @@ const TemplateSideEditor: React.FC<Props> = ({ side, template, data, setData }) 
           );
         })}
       </div>
+      {isInspectionMode ?? <InspectionOverlay mode={InspectionMode.TAG_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
     </div>
   );
 };
