@@ -4,7 +4,7 @@ import Tags from "@/front/common/Tags/Tags";
 import { useRef } from "react";
 import useLocale from "@/front/utils/useLocale";
 import InspectionOverlay from "@/front/common/InspectionOverlay/InspectionOverlay";
-import { InspectionMode } from "@/scripts/content/tagExtraction";
+import { InspectionMode } from "@/scripts/content/tagExtraction_bak";
 import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import useInspection from "@/front/utils/useInspection";

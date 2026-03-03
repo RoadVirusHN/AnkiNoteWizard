@@ -8,7 +8,7 @@ import InspectionOverlay from "@/front/common/InspectionOverlay/InspectionOverla
 import Preview from "@/front/common/Preview/Preview";
 import PreviewHeader from "./PreviewHeader/PreviewHeader";
 import { PreviewContext } from "./PreviewContext";
-import { InspectionMode } from "@/scripts/content/tagExtraction";
+import { InspectionMode } from "@/scripts/content/tagExtraction_bak";
 import ModelInput from "@/front/common/Inputs/ModelInput/ModelInput";
 import useConfigure, { Theme } from "@/front/utils/useConfigure";
 import useInspection from "@/front/utils/useInspection";

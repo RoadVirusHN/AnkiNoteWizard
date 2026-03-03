@@ -13,7 +13,7 @@ import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
 import ModelInput from "@/front/common/Inputs/ModelInput/ModelInput";
 import { useState } from "react";
 import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
-import { InspectionMode } from "@/scripts/content/tagExtraction";
+import { InspectionMode } from "@/scripts/content/tagExtraction_bak";
 import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 import TemplateInput from "@/front/common/Inputs/TemplatInput/TemplateInput";
 import DeckInput from "@/front/common/StatusBar/DeckInput/DeckInput";
