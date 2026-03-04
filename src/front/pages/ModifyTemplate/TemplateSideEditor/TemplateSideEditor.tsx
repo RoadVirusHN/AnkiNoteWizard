@@ -6,10 +6,10 @@ import useLocale from "@/front/utils/useLocale";
 import useConfigure, { Theme } from "@/front/utils/useConfigure";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import InspectionOverlay from "@/front/common/InspectionOverlay/InspectionOverlay";
-import { InspectionMode } from "@/scripts/content/tagExtraction_bak";
 import useInspection from "@/front/utils/useInspection";
 import { uniqueCssSelectorOptions } from "@/content/App";
 import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
+import { InspectionMode } from "@/scripts/content/constants";
 
 interface SideData {
   html: string;

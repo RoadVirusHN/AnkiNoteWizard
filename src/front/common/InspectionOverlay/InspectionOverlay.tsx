@@ -1,5 +1,4 @@
-import SimpleButton from "../SimpleButton/SimpleButton";
-import { InspectionMode } from "@/scripts/content/tagExtraction_bak";
+import { InspectionMode } from "@/scripts/content/constants";
 import inspectionOverlayStyle from "./InspectionOverlay.module.css";
 import useLocale from "@/front/utils/useLocale";
 

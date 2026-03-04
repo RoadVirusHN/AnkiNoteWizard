@@ -13,7 +13,6 @@ import useAnkiConnectionStore from "@/front/utils/useAnkiConnectionStore";
 import ModelInput from "@/front/common/Inputs/ModelInput/ModelInput";
 import { useState } from "react";
 import useGlobalVarStore from "@/front/utils/useGlobalVarStore";
-import { InspectionMode } from "@/scripts/content/tagExtraction_bak";
 import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 import TemplateInput from "@/front/common/Inputs/TemplatInput/TemplateInput";
 import DeckInput from "@/front/common/StatusBar/DeckInput/DeckInput";
@@ -22,6 +21,7 @@ import Icon from "@/front/common/Icon/Icon";
 import useConfigure, { Theme } from "@/front/utils/useConfigure";
 import useInspection from "@/front/utils/useInspection";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
+import { InspectionMode } from "@/scripts/content/constants";
 
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();

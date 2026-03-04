@@ -74,7 +74,7 @@ const App = ({mode, port, cssSelectorOptions}:{mode:InspectionMode, port:chrome.
      // 메뉴 표시 후 클릭 이벤트가 메뉴 외부에서 발생하면 메뉴 숨김
      const handleClickOutside = (e: MouseEvent) => {
       if (!e.target || !(e.target instanceof HTMLElement)) return;
-      if (!e.target.closest(`.${commonStyles.menu}`)) { // TODO : 오류 해결
+      if (!e.target.closest(`div.${CSS.escape(commonStyles.menu)}`)) { // TODO : 오류 해결
         setState(InspectionState.HIGHLIGHT);
       }
     };

@@ -8,12 +8,12 @@ import InspectionOverlay from "@/front/common/InspectionOverlay/InspectionOverla
 import Preview from "@/front/common/Preview/Preview";
 import PreviewHeader from "./PreviewHeader/PreviewHeader";
 import { PreviewContext } from "./PreviewContext";
-import { InspectionMode } from "@/scripts/content/tagExtraction_bak";
 import ModelInput from "@/front/common/Inputs/ModelInput/ModelInput";
 import useConfigure, { Theme } from "@/front/utils/useConfigure";
 import useInspection from "@/front/utils/useInspection";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
+import { InspectionMode } from "@/scripts/content/constants";
 
 const PreviewCard = ({}) => {
   const {index} = useParams();
