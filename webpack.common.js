@@ -69,7 +69,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: path.resolve(__dirname, 'src/manifest.json'), to: 'manifest.json' },
-        { from: path.resolve(__dirname, 'src/icons'), to: 'icons' }
+        { from: path.resolve(__dirname, 'src/public/chrome'), to: 'icons' }
       ]
     }),
     new MonacoWebpackPlugin({
