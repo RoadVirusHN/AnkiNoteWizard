@@ -43,14 +43,18 @@ export const isValidElement = (element: HTMLElement) => {
     element.className.includes(commonStyles.menu)  ||
     element.className.includes(commonStyles.header)  ||
     element.id === EXTENSION_UI_ID
-  )
+  ){
     return false;
+  }
   return true;
 };
 
+const tagToText = (tag: HTMLElement) => {
+  return `<${tag.tagName.toLowerCase()}> ${((tag.textContent&&tag.textContent.length > 15 ? tag.textContent?.trim().slice(0,12) + "..." : tag.textContent) )|| ''}`;
+};
 //TODO: App doing to much, split to multiple components
 // ex) App: manage state, container: position, Highlight: highlight logic, Menu: menu logic, Tooltip: tooltip logic
-const App = ({mode, port, cssSelectorOptions}:{mode:InspectionMode, port:chrome.runtime.Port, cssSelectorOptions:CssSelectorGeneratorOptionsInput}) => {
+const App = ({mode, port, cssSelectorOptions, deactivate}:{mode:InspectionMode, port:chrome.runtime.Port, cssSelectorOptions:CssSelectorGeneratorOptionsInput, deactivate:()=>void}) => {
   const [state, setState] = useState(InspectionState.HIGHLIGHT);
   const [text, setText] = useState('');
   const [{x,y}, setPosition] = useState({x:0, y:0});  
@@ -61,8 +65,9 @@ const App = ({mode, port, cssSelectorOptions}:{mode:InspectionMode, port:chrome.
     setState(InspectionState.TOOLTIP);
     setText(text);
     setPosition({ x, y });
+    port.postMessage({ type: MessageType.SEND_INSPECTION_DATA_FROM_CONTENT, data: text });
     setTimeout(() => {
-      port.postMessage({ type: MessageType.SEND_INSPECTION_DATA_FROM_CONTENT, data: text });
+      deactivate();
     }, 2000); // 2초 후에 툴팁 숨김
   };
 
@@ -74,7 +79,7 @@ const App = ({mode, port, cssSelectorOptions}:{mode:InspectionMode, port:chrome.
      // 메뉴 표시 후 클릭 이벤트가 메뉴 외부에서 발생하면 메뉴 숨김
      const handleClickOutside = (e: MouseEvent) => {
       if (!e.target || !(e.target instanceof HTMLElement)) return;
-      if (!e.target.closest(`div.${CSS.escape(commonStyles.menu)}`)) { // TODO : 오류 해결
+      if (!e.target.closest(`div.${CSS.escape(commonStyles.menu)}`)) {
         setState(InspectionState.HIGHLIGHT);
       }
     };
@@ -123,9 +128,7 @@ const App = ({mode, port, cssSelectorOptions}:{mode:InspectionMode, port:chrome.
       }}
     ]
   };
-  const tagToText = (tag: HTMLElement) => {
-    return `<${tag.tagName.toLowerCase()}> ${((tag.textContent.length > 15 ? tag.textContent?.trim().slice(0,12) + "..." : tag.textContent) )|| ''}`;
-  };
+
   const onHighlightClicked = (e:MouseEvent) =>{
     if (state !== InspectionState.HIGHLIGHT) return;
     e.preventDefault();
@@ -139,7 +142,7 @@ const App = ({mode, port, cssSelectorOptions}:{mode:InspectionMode, port:chrome.
         rect.left, rect.top,
         tagToText(target));
     } else {
-      copyToClipboard(target.textContent.trim(), rect.left, rect.top, port);
+      copyToClipboard((target.textContent ?? "").trim(), rect.left, rect.top, port);
     }
   };
   return <>

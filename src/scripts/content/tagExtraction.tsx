@@ -41,10 +41,9 @@ function createUIComponents(inspectionMode: InspectionMode, port: chrome.runtime
 
   root = createRoot(container);
   document.body.appendChild(container);
-  root.render(<App mode={inspectionMode} port={port} cssSelectorOptions={cssSelectorOptions}/>); // React 앱 렌더링
+  root.render(<App mode={inspectionMode} port={port} cssSelectorOptions={cssSelectorOptions} deactivate={deactivateInspectionMode}/>); // React 앱 렌더링
 }
 
-// 활성화 시 모드를 인자로 받을 수 있도록 변경 (default: TEXT)
 export const activateInspectionMode = (mode: InspectionMode = InspectionMode.TEXT_EXTRACTION, port: chrome.runtime.Port, cssSelectorOptions: CssSelectorGeneratorOptionsInput) => {
   console.log(`Activate InspectionMode: ${mode}`);
   createUIComponents(mode, port, cssSelectorOptions); // UI 준비
