@@ -20,9 +20,6 @@ interface TooltipWrapperProps {
   textStyles?:React.CSSProperties,
   tooltipDirection?: TooltipDirection,
 }
-// TODO:
-// Observer를 이용해 화면 밖으로 나갈 시 방향 전환
-
 const TooltipWrapper = (
   {children, classes, text, textStyles, styles, tooltipDirection=TooltipDirection.TOP}:TooltipWrapperProps
 ) => {

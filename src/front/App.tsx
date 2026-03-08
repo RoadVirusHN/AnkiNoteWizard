@@ -18,9 +18,9 @@ const App = ({}) => {
       i18n.changeLanguage(language);
     }
     // set theme based on system preference if userSetting is system-based or none.
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (themeOption.userSetting === ThemeSetting.SYSTEM_LIGHT ||themeOption.userSetting===ThemeSetting.SYSTEM_DARK||themeOption.userSetting===ThemeSetting.NONE) {
-      setThemeSetting(isDark ? ThemeSetting.SYSTEM_DARK : ThemeSetting.SYSTEM_LIGHT);
+      setThemeSetting(isSystemDark ? ThemeSetting.SYSTEM_DARK : ThemeSetting.SYSTEM_LIGHT);
     }
     if (themeOption.theme===Theme.DARK) {
       document.documentElement.setAttribute('data-theme', 'dark');

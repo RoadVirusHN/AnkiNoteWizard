@@ -15,7 +15,6 @@ enum InspectionState{
   MENU= 'MENU',
   TOOLTIP= 'TOOLTIP'
 }
-//TODO : two modes(TAG_EXTRACTION : Non-Unique, FEILD_EXTRACTION : Unique)
 export const getUniqueSelector = (el: HTMLElement, cssSelectorOptions:CssSelectorGeneratorOptionsInput): string[] => {
   return Array.from(cssSelectorGenerator(el, cssSelectorOptions));
 };
