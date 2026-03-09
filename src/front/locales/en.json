@@ -124,6 +124,14 @@
           "Add Field": "Add Field"   
         }
       }
+    },
+    "Error": {
+      "An error occurred": "An error occurred.",
+      "Please try again": "Please try again.",
+      "Unknown error": "Unknown error",
+      "Bad Request": "Bad Request",
+      "Not Found": "Not Found",
+      "Unauthorized": "Unauthorized"
     }
   }
 }

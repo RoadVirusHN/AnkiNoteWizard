@@ -12,6 +12,7 @@ const router = (currentUrl: string)=> createMemoryRouter([
   {
     path: '/',
     element: <Main/>,
+    ErrorBoundary: ErrorPage,
     children: [
       {
         index: true,
@@ -42,7 +43,6 @@ const router = (currentUrl: string)=> createMemoryRouter([
         element: <PreviewCard/>
       }
     ],
-    errorElement: <ErrorPage/>
   },
 ], {initialEntries: [currentUrl]});
 
