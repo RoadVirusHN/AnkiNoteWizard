@@ -129,9 +129,19 @@
       "An error occurred": "An error occurred.",
       "Please try again": "Please try again.",
       "Unknown error": "Unknown error",
+      "An unexpected error has occured.": "An unexpected error has occurred.",
       "Bad Request": "Bad Request",
+      "The server could not understand the request due to invalid syntax": "The server could not understand the request due to invalid syntax.",
       "Not Found": "Not Found",
-      "Unauthorized": "Unauthorized"
+      "The requested resource could not be found": "The requested resource could not be found.",
+      "Unauthorized": "Unauthorized",
+      "Authentication is required and has failed or has not yet been provided": "Authentication is required and has failed or has not yet been provided.",
+      "Forbidden": "Forbidden",
+      "The client does not have access rights to the content": "The client does not have access rights to the content.",
+      "Internal Server Error": "Internal Server Error",
+      "The server has encountered a situation it doesn't know how to handle": "The server has encountered a situation it doesn't know how to handle.",
+      "Timeout": "Timeout",
+      "The server timed out waiting for the request": "The server timed out waiting for the request."
     }
   }
 }
