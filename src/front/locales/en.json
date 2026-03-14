@@ -126,22 +126,39 @@
       }
     },
     "Error": {
-      "An error occurred": "An error occurred.",
-      "Please try again": "Please try again.",
-      "Unknown error": "Unknown error",
-      "An unexpected error has occured.": "An unexpected error has occurred.",
-      "Bad Request": "Bad Request",
-      "The server could not understand the request due to invalid syntax": "The server could not understand the request due to invalid syntax.",
-      "Not Found": "Not Found",
-      "The requested resource could not be found": "The requested resource could not be found.",
-      "Unauthorized": "Unauthorized",
-      "Authentication is required and has failed or has not yet been provided": "Authentication is required and has failed or has not yet been provided.",
-      "Forbidden": "Forbidden",
-      "The client does not have access rights to the content": "The client does not have access rights to the content.",
-      "Internal Server Error": "Internal Server Error",
-      "The server has encountered a situation it doesn't know how to handle": "The server has encountered a situation it doesn't know how to handle.",
-      "Timeout": "Timeout",
-      "The server timed out waiting for the request": "The server timed out waiting for the request."
+      "statusText":{
+        "400": "Bad Request",
+        "401": "Unauthorized",
+        "402": "Too Many Requests",
+        "403": "Forbidden",
+        "404": "Not Found",
+        "408": "Request Timeout",
+        "500": "Internal Server Error",
+        "Storage Error": "Storage Error",
+        "Unknown Error": "Unknown Error"
+      },
+      "description":{
+        "400": "The server could not understand the request due to invalid syntax.",
+        "401": "Authentication is required and has failed or has not yet been provided.",
+        "402": "The user has sent too many requests in a given amount of time.",
+        "403": "The client does not have access rights to the content.",
+        "404": "The requested resource could not be found.",
+        "408": "The server timed out waiting for the request.",
+        "500": "The server has encountered a situation it doesn't know how to handle.",
+        "Storage Error": "An error occurred while accessing the storage.",
+        "Unknown Error": "An unknown error has occurred."
+      },
+      "solution":{
+          "400": "Please check the request and try again.",
+          "401": "Please provide valid authentication credentials.",
+          "402": "Please wait before sending more requests.",
+          "403": "Please check your permissions and try again.",
+          "404": "Please check the URL and try again.",
+          "408": "Please try again later.",
+          "500": "Please try again later or contact support if the issue persists.",
+          "Storage Error": "Please check your storage settings and try again.",
+          "Unknown Error": "Please try again or contact support if the issue persists."
+      }
     }
   }
 }
