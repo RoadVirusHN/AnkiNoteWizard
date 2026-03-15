@@ -1,3 +1,4 @@
+import useLocale from "@/front/utils/useLocale";
 import { isRouteErrorResponse, useNavigate, useRouteError } from "react-router";
 
 
@@ -8,23 +9,45 @@ const ERROR_MESSAGES: Record<string, string> = {
   "Forbidden": "You do not have permission to access this resource. Please contact support if you believe this is an error.",
   // Add more status codes and messages as needed
 };
-const ERROR_NAME_TO_ERROR_CODE: Record<string, string> = {
-  "Bad Request": "400",
-  "Unauthorized": "401",
-  "Forbidden": "403",
-  "Not Found": "404",
-  "Request Timeout": "408",
-  "Internal Server Error": "500"
+
+interface ErrorGuide {
+  status: string;
+  statusText: string;
+  description: string;
+  solution: string;
+};
+
+const ERROR_GUIDE: Record<string, ErrorGuide> = {
+  "400": {status:"", statusText:"", description:"", solution:""},
+  "401": {status:"", statusText:"", description:"", solution:""},
+  "403": {status:"", statusText:"", description:"", solution:""},
+  "404": {status:"", statusText:"", description:"", solution:""},
+  "408": {status: "", statusText: "", description:"", solution:""},
+  "500": {status:"", statusText: "", description:"", solution:""},
+  "StorageError": {status:"Storage Error", statusText: "Failed to access storage", description:"An error occurred while trying to access the storage. This may be due to insufficient permissions or a problem with the storage system.", solution:"Please check your permissions and try again. If the problem persists, contact support."},
+  "DEFAULT": {
+    status: "DEFAULT",
+    statusText: "Unknown Error",
+    description:"An unexpected error occurred.",
+    solution:"Please try again"
+  }
+};
+
+const getErrorGuid = (status:string,tl:(key: string, altKey?: string) => string)=>{
+  const altKey = "pages.ErrorPage.codes." + status;
+  return {status:status,statusText:tl("statusText",altKey),description: tl("description",altKey), solution: tl("solution",altKey)};
 };
 
 
-const normalizeError = (error: unknown): {status:string, data:any} => {
+const getErrorCode = (error: unknown): string => {
+  console.log("error: ",error);
   if (isRouteErrorResponse(error)) {
-    return {status: error.statusText, data: error.data};
+    console.log(error.data);
+    return String(error.status);
   } else if (error instanceof Error){
-    return {status: error.message, data: {name: error.name, stack: error.stack, message: error.message}};
+    return error.message;
   }
-  return {status: "Unknown Error", data: {name: "Unknown", error}};
+  return "DEFAULT";
 };
 
 // TODO
@@ -37,12 +60,15 @@ const normalizeError = (error: unknown): {status:string, data:any} => {
 // Maybe a button to report the error (copy error detail to clipboard and open github issue page)
 
 const ErrorPage = () => {
-  let error = normalizeError(useRouteError());
+  let error = getErrorCode(useRouteError());
+  const tl = useLocale('pages.ErrorPage');
+  const guide = getErrorGuid(error, tl);
   const navigate = useNavigate();
   return <div>
     ERROR PAGE!!!
-    <p>{error.status} {error.data.name}</p>
-    <pre>{JSON.stringify(error.data, null, 2)}</pre>
+    <p>{guide.status} {guide.statusText}</p>
+    <pre>{guide.description}</pre>
+    <pre>{guide.solution}</pre>
     <button onClick={()=>navigate('/')}>Go Home</button>
     <button onClick={()=>navigate(-1)}>Go Back</button>
   </div>
