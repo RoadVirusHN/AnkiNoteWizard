@@ -14,6 +14,7 @@ const config = {
     escapeValue: false,
     nsSeparator: false,  // 콜론(:)을 구분자로 쓰지 않음
   },
+  returnObjects: true, // 객체 반환 허용
 };
 // json rules
 // no special characters in keys.(just delete them)
