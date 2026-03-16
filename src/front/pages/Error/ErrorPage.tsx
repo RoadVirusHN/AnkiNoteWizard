@@ -1,43 +1,12 @@
 import useLocale from "@/front/utils/useLocale";
 import { isRouteErrorResponse, useNavigate, useRouteError } from "react-router";
-
-
-const ERROR_MESSAGES: Record<string, string> = {
-  "Not Found": "The requested resource was not found. Please check the URL or try again later.",
-  "Internal Server Error": "An unexpected error occurred on the server. Please try again later.",
-  "Unauthorized": "You are not authorized to access this resource. Please log in and try again.",
-  "Forbidden": "You do not have permission to access this resource. Please contact support if you believe this is an error.",
-  // Add more status codes and messages as needed
-};
-
-interface ErrorGuide {
-  status: string;
-  statusText: string;
-  description: string;
-  solution: string;
-};
-
-const ERROR_GUIDE: Record<string, ErrorGuide> = {
-  "400": {status:"", statusText:"", description:"", solution:""},
-  "401": {status:"", statusText:"", description:"", solution:""},
-  "403": {status:"", statusText:"", description:"", solution:""},
-  "404": {status:"", statusText:"", description:"", solution:""},
-  "408": {status: "", statusText: "", description:"", solution:""},
-  "500": {status:"", statusText: "", description:"", solution:""},
-  "StorageError": {status:"Storage Error", statusText: "Failed to access storage", description:"An error occurred while trying to access the storage. This may be due to insufficient permissions or a problem with the storage system.", solution:"Please check your permissions and try again. If the problem persists, contact support."},
-  "DEFAULT": {
-    status: "DEFAULT",
-    statusText: "Unknown Error",
-    description:"An unexpected error occurred.",
-    solution:"Please try again"
-  }
-};
+import errorPageStyle from "./errorPage.module.css";
+import SimpleButton from "@/front/common/SimpleButton/SimpleButton";
 
 const getErrorGuid = (status:string,tl:(key: string, altKey?: string) => string)=>{
   const altKey = "pages.ErrorPage.codes." + status;
-  return {status:status,statusText:tl("statusText",altKey),description: tl("description",altKey), solution: tl("solution",altKey)};
+  return {status:status,statusText:tl("statusText",altKey),description: tl("description",altKey), solutions: tl("solutions",altKey) as unknown as string[]};
 };
-
 
 const getErrorCode = (error: unknown): string => {
   console.log("error: ",error);
@@ -59,19 +28,38 @@ const getErrorCode = (error: unknown): string => {
 // Go Back button
 // Maybe a button to report the error (copy error detail to clipboard and open github issue page)
 
+// TODO: theme, fontsize, word break
 const ErrorPage = () => {
   let error = getErrorCode(useRouteError());
   const tl = useLocale('pages.ErrorPage');
   const guide = getErrorGuid(error, tl);
+  console.log(guide);
   const navigate = useNavigate();
-  return <div>
-    ERROR PAGE!!!
-    <p>{guide.status} {guide.statusText}</p>
-    <pre>{guide.description}</pre>
-    <pre>{guide.solution}</pre>
-    <button onClick={()=>navigate('/')}>Go Home</button>
-    <button onClick={()=>navigate(-1)}>Go Back</button>
-  </div>
+  return (
+<div className={errorPageStyle.container}>
+      <div className={errorPageStyle.content}>
+        <div className={errorPageStyle["error-icon"]}>⚠️</div>
+        <div className={errorPageStyle["error-status"]}>STATUS: {guide.status}</div>
+        <h1 className={errorPageStyle['error-status-text']}>{guide.statusText}</h1>
+        <p className={errorPageStyle['error-description']}>
+          {guide.description}
+        </p>
+        <div className={errorPageStyle['solution']}>
+          <span className={errorPageStyle['solution-title']}>💡 {tl('solutions')}</span>
+          <ul className={errorPageStyle['solution-list']}>
+            {guide.solutions.map((sol, index) => (
+              <li key={index}>{sol}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <SimpleButton onClick={()=>navigate(-1)}>Go Back</SimpleButton>
+      <SimpleButton onClick={()=>navigate('/')}>Go Home</SimpleButton>
+      <div className={errorPageStyle['contact-info']}>
+        <span className={errorPageStyle.email}>Contact : tempEmail@google.com</span>
+      </div>
+    </div>);
 
 };
 export default ErrorPage;
