@@ -3,7 +3,7 @@ html.font-small { font-size: 87.5%; }
 html.font-normal { font-size: 100%; }
 html.font-large { font-size: 112.5%; }
 html.font-very-large { font-size: 125%; }
-
+/* TODO Change padding px to rem for responsive design */
 
 :root {
   --color-primary: #2d4053;
