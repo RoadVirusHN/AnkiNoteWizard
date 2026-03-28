@@ -35,11 +35,11 @@ _폰트 크기, 테마, 국제화(한국어, 영어), AnkiConnect 연결 설정 
 - React : 확장 프로그램 frontend 구현, 컴포넌트화
 - zustand : 중앙 상태 관리, chrome storage와의 연동을 통해 앱 종료 혹은 기기 변경 시에도 일부 상태와 설정 유지를 통한 유저 경험 향상.
 - Typescript : 타입 지원
-- react-18next : 국제화 지원
+- react-i18next : 국제화 지원
 - Monaco Editor : 오프라인 웹 코드 에디터, 카드 및 템플릿 수정에 이용됨.
 - Webpack : 멀티엔트리 번들러, 
 
-대충 Chrome Extension "Anki Card Wizard" <=> AnkiConnect <=> Anki app 연결 사진.
+// 대충 Chrome Extension "Anki Card Wizard" <=> AnkiConnect <=> Anki app 연결 사진.
 
 ## 📦 Installation
 
@@ -54,11 +54,6 @@ npm install
 npm run build:dev # Generate files for testing build in the 'dist' folder
 npm run build:prod # Generate files for deploying build in the 'release' folder
 ```
-
-**카드**는 미리 설정한 템플릿에 따라 웹 페이지 내의 정보를 탐색 및 Note로 가공한 결과입니다.
-- 카드는 추가하기 전에 미리보기 후, 원한다면 내용을 수정하실 수 있습니다.
-
-추가된 템플릿을 이용해 페이지 내에서 일치하는 HTML 정보를 스캔해 Anki note로 추가할 수 있습니다.
 
 ## 📓 Usage
 
@@ -126,7 +121,7 @@ npm run build:prod # Generate files for deploying build in the 'release' folder
 - 자식 태그 선택 : HTML 태그의 자식 태그를 대상으로 추출합니다. (템플릿 수정 시에만 선택 가능) 
 
 ## 👷 RoadMap
-// 현재 상태 위주, Feature와 비슷하나 기능 보다는 코드에 초점 둬서
+
 ### Version Alpha
 
 #### 공통 기능
@@ -141,20 +136,27 @@ npm run build:prod # Generate files for deploying build in the 'release' folder
   - [x] 에러 페이지
   - [x] 런타임 에러 핸들링
 - [ ] 프리뷰 보안 기능 
+  - [ ] iframe 프리뷰 모드
+  - [ ] shadowDom 프리뷰 모드
+  - [ ] 테스트용 카드 & 템플릿
+- [ ] TDD?
 #### ✅ 감지 기능 
 - [x] 템플릿 별 선별 탐색
 - [x] Anki 연결 확인 및 재연결
 - [x] root tag 기반 탐색
-#### 추가 기능
+- [x] Unique Tag 탐색
+- [x] Non-Unique Tag 탐색
+#### 카드 추가 기능
 - [x] 카드 추가 기능
 - [x] 카드 내용 수정 기능
   - [x] 태그 수정 기능
 - [ ] 프리뷰 <-> 코드 모드 전환
 - [ ] 카드 프리뷰 기능
-
-- [x] 기본 템플릿
+#### 템플릿 관련 기능
+- [ ] 기본 템플릿
 - [x] 템플릿 수정
 - [x] 템플릿 추가
+- [ ] 템플릿 모델 지원
 #### 설정 기능
 - [x] 폰트 사이즈
 - [x] 테마
@@ -165,7 +167,6 @@ npm run build:prod # Generate files for deploying build in the 'release' folder
 
 #### 디자인
 - [ ] 반응형
-- [ ] 안깨지게 만들기
 - [ ] 템플릿 리스트
 - [ ] 카드 리스트
 - [x] 에러 페이지
@@ -173,20 +174,23 @@ npm run build:prod # Generate files for deploying build in the 'release' folder
 - [ ] 템플릿 수정 페이지
 - [ ] 카드 추가 페이지
 ### Version 1.0
-### 소리 필드 지원 (예정)
 
-### Xpath, JS Path 지원 (예정)
+#### 소리 필드 지원 (예정)
+
+#### Xpath, JS Path 지원 (예정)
 Template의 data Path로 CSS Selector 이외의 선택지를 고르실 수 있습니다.
 
-### 다양한 Anki Note 모델 지원 (예정) 
+#### 다양한 Anki Note 모델 지원 (예정) 
 - Cloze [ ]
 - Basic (and reversed card) [ ]
 - Image Occlusion [ ]
 
-### 카드 템플릿 공유 기능 (예정)
+#### 카드 템플릿 공유 기능 (예정)
 
 - 템플릿 데이터를 JSON, CSV 파일 형식으로 내보내기 혹은 가져오기 가능.
 
 
+## ❓FAQ
+// 기능 완성하고, 사용해보며 궁금할만한 점 추가 예정
 ## 🪪 License
 MIT License.
