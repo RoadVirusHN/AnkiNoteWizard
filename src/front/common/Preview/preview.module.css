@@ -1,16 +1,23 @@
+.previewContainer{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
 .previewWrapper{
   border-style: solid;
   border-radius: 12px;
   border-width: 1px;
   border-color: var(--color-secondary);
   width: 100%;  
-  height: fit-content;
-  margin: auto;
+  min-height: 200px;
+  overflow: auto;
+  resize: vertical;
 }
 .previewWrapper .preview{
-  transform: scale(0.85);
   width: 100%;
-  min-height: 20%; 
+  min-height: 200px; 
+  border: none;   
 }
 .safeMode{
   all: initial;
