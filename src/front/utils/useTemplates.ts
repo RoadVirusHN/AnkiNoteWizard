@@ -2,23 +2,22 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 //TODO : change cards to key value pair
-export interface Extracted{
-  Front : Record<string, string>;
-  Back : Record<string, string>;
-};
-export interface ExtractedMap{
+export interface Extracted {
+  [field: string]: Record<string, string>;
+}
+export interface ExtractedMap {
   [idx: number]: Extracted[];
-};
-export enum TemplateFieldDataType {
+}
+export enum TemplateItemDataType {
   TEXT = 'text',
   AUDIO = 'audio',
   IMAGE = 'image',
 }
 
-export interface TemplateField {
+export interface TemplateItem {
   name: string;
   content: string;
-  dataType: TemplateFieldDataType;
+  dataType: TemplateItemDataType;
   isOptional: boolean;
 }
 
@@ -51,14 +50,7 @@ export interface Template {
   modelName: string;
   urlPatterns: string[];
   rootTag: string;
-  Front: {
-    html: string;
-    fields: TemplateField[];
-  };
-  Back: {
-    html: string;
-    fields: TemplateField[];
-  };
+  Fields: { name: string; html: string; items: TemplateItem[] }[];
   tags: string[];
   audio?: {
     url: string;
@@ -78,24 +70,22 @@ interface TemplateState {
   updateNote: (idx: string, updates: { [key: string]: unknown }) => void;
   setNotes: (newNotes: { [idx: string]: Note }) => void;
   tags: { [name: string]: { color: string } };
-  addTag : (name: string, color: string) => void;
-  removeTag : (name: string) => void;
-  updateTag : (name: string, color: string) => void;
+  addTag: (name: string, color: string) => void;
+  removeTag: (name: string) => void;
+  updateTag: (name: string, color: string) => void;
   extractedMaps: ExtractedMap;
   setExtractedMaps: (newMaps: ExtractedMap) => void;
 }
 
 export enum TEMPLATE_CODE {
-  OK='OK',
-  INVALID_TEMPLATE_NAME='INVALID_TEMPLATE_NAME',
-  DUPLICATE_TEMPLATE_NAME='DUPLICATE_TEMPLATE_NAME',
-  INVALID_AUTHOR_NAME='INVALID_AUTHOR_NAME',
-  INVALID_MODEL_NAME='INVALID_MODEL_NAME',
-  INVALID_ROOT_TAG='INVALID_ROOT_TAG',
-  NO_SUCH_TEMPLATE='NO_SUCH_TEMPLATE',
-
+  OK = 'OK',
+  INVALID_TEMPLATE_NAME = 'INVALID_TEMPLATE_NAME',
+  DUPLICATE_TEMPLATE_NAME = 'DUPLICATE_TEMPLATE_NAME',
+  INVALID_AUTHOR_NAME = 'INVALID_AUTHOR_NAME',
+  INVALID_MODEL_NAME = 'INVALID_MODEL_NAME',
+  INVALID_ROOT_TAG = 'INVALID_ROOT_TAG',
+  NO_SUCH_TEMPLATE = 'NO_SUCH_TEMPLATE',
 }
-
 
 const isTemplateValid = (template: Template, curTemplates: Template[]): TEMPLATE_CODE => {
   if (!template.templateName || template.templateName.trim() === '') {
@@ -137,13 +127,13 @@ const useTemplate = create<TemplateState>()(
           });
           return {
             templates: state.templates.filter((info) => info.templateName !== name),
-            notes: newNotes
+            notes: newNotes,
           };
         });
       },
       modifyTemplate: (name: string, template: Template) => {
         const code = isTemplateValid(template, get().templates);
-        if (code === TEMPLATE_CODE.DUPLICATE_TEMPLATE_NAME){
+        if (code === TEMPLATE_CODE.DUPLICATE_TEMPLATE_NAME) {
           set((state) => ({
             templates: state.templates.map((c) => (c.templateName === name ? template : c)),
           }));
