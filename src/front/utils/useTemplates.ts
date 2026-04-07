@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 
 //TODO : change cards to key value pair
 export interface Extracted {
-  [field: string]: Record<string, string>;
+  [field: string]: { [item: string]: string };
 }
 export interface ExtractedMap {
   [idx: number]: Extracted[];
@@ -33,7 +33,7 @@ export interface Note {
   deckName: string;
   modelName: string;
   fields: {
-    [field:string]: string;
+    [fieldName: string]: string;
   };
   tags: string[];
   audio?: {
@@ -44,7 +44,10 @@ export interface Note {
   };
 }
 export interface Field {
-  name: string; html: string; items: TemplateItem[], priority:number;
+  name: string;
+  html: string;
+  items: TemplateItem[];
+  priority: number;
 }
 export interface Template {
   meta: TemplateMeta;

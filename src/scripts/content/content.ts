@@ -1,9 +1,9 @@
 import {
-  TemplateItem,
   TemplateItemDataType,
   Template,
   ExtractedMap,
   Extracted,
+  Field,
 } from '@/front/utils/useTemplates';
 import { messageHandler } from './messageHandler';
 import i18n from '@/front/locales/i18n';
@@ -72,35 +72,38 @@ const checkUrlMatched = (customCard: Template): boolean => {
     })
   );
 };
-const extractFields = (root: Element, record: Record<string, string>) => (field: TemplateItem) => {
+const extractFields = (root: Element, field: Field)=> {
+  let record: { [item: string]: string } = {};
   try {
-    let element: Element | null = null;
-    element = root.querySelector(field.content);
-
-    if (element) {
-      switch (field.dataType) {
-        case TemplateItemDataType.TEXT:
-          record[field.name] = element.textContent || '';
-          break;
-        case TemplateItemDataType.IMAGE:
-          if (element instanceof HTMLImageElement) {
-            record[field.name] = element.src;
-          } else {
-            record[field.name] = (element as HTMLElement).getAttribute('src') || '';
-          }
-          break;
-        case TemplateItemDataType.AUDIO:
-          record[field.name] = (element as HTMLAudioElement).src || '';
-          break;
-        default:
-          record[field.name] = element.textContent || '';
+    for (const item of field.items){
+      let element: Element | null = null;
+      element = root.querySelector(item.content);
+      if (element) {
+        switch (item.dataType) {
+          case TemplateItemDataType.TEXT:
+            record[item.name] = element.textContent || '';
+            break;
+          case TemplateItemDataType.IMAGE:
+            if (element instanceof HTMLImageElement) {
+              record[item.name] = element.src;
+            } else {
+              record[item.name] = (element as HTMLElement).getAttribute('src') || '';
+            }
+            break;
+          case TemplateItemDataType.AUDIO:
+            record[item.name] =  (element as HTMLAudioElement).src || '';
+            break;
+          default:
+            record[field.name] = element.textContent || '';
+        }
+      } else {
+        record[field.name] = item.isOptional ? '' : 'Content does not exist : ' + item.name;
       }
-    } else {
-      record[field.name] = field.isOptional ? '' : 'Content does not exist : ' + field.name;
     }
   } catch (e) {
     console.warn(`Failed to extract field ${field.name}`, e);
   }
+  return record;
 };
 export const getExtractedFromPage = (customCards: Template[]): [ExtractedMap, number] => {
   const res: ExtractedMap = {};
@@ -110,15 +113,12 @@ export const getExtractedFromPage = (customCards: Template[]): [ExtractedMap, nu
     let roots = Array.from(document.querySelectorAll(card.rootTag));
     if (roots.length === 0) roots = Array.from(document.querySelectorAll('body'));
     roots.forEach((root) => {
-      const extracted: Extracted = {
-        Front: {},
-        Back: {},
-      };
+      const extracted: Extracted = {};
       // Front 필드 추출
       //TODO : strict mode : if there is no field info founded, discard it.
-      card.Front.fields.forEach(extractFields(root, extracted.Front));
-      // Back 필드 추출
-      card.Back.fields.forEach(extractFields(root, extracted.Back));
+      for (const field of card.fields) {
+        extracted[field.name] = extractFields(root, field);
+      }
       extracteds.push(extracted);
       cnt++;
     });
