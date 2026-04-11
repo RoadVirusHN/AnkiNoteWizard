@@ -19,7 +19,6 @@ interface FieldData {
 interface Props {
   fieldName: string;
   template: Template;
-  data: FieldData;
   setData: (data: FieldData) => void;
 }
 

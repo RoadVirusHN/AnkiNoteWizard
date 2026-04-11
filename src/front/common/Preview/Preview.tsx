@@ -5,6 +5,8 @@ import root from "react-shadow";
 import FilterIcon from "@/public/Icon/Icon-Filter.svg"
 import Icon from "../Icon/Icon";
 import useLocale from "@/front/utils/useLocale";
+import useConfigure from "@/front/utils/useConfigure";
+import { Template } from "@/front/utils/useTemplates";
 
 /*
   TODO:
@@ -31,12 +33,32 @@ const iFrameModeConfig = {
   FORCE_BODY: true,
   RETURN_TRUSTED_TYPE: true
 };
-const Preview = ({html} : {html:string}) => {
+//TODO : Abandon Shadow-dom mode just use iFrame mode with enhanced sanitization, as shadow-dom doesn't fully prevent script execution and has compatibility issues.
+const Preview = ({html, template} : {html:string, template:Template}) => {
   const [mode, setMode] = useState<PreviewMode>(PreviewMode.SAFE);
-  const sanitizedHtml = DOMPurify.sanitize(html, mode===PreviewMode.SAFE ? {
+  const {styles} = useConfigure();
+  const cardStyles = styles[template.model.name];
+  const styledHtml = `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        ${
+          Object.entries(cardStyles || {}).map(([key, value]) => {
+            return `.${key} { ${value} }`;
+          }).join("\n")
+        }
+      </style>
+    </head>
+    <body class="card card1">
+      ${html}
+    </body>
+  </html>`;
+  const sanitizedHtml = DOMPurify.sanitize(styledHtml, mode===PreviewMode.SAFE ? {
     RETURN_TRUSTED_TYPE: true,
   } : iFrameModeConfig);
-  const removed = DOMPurify.removed;
+  const removed = DOMPurify.removed || [];
   const tl = useLocale('component.Preview');
   const handleImageError : ReactEventHandler<HTMLDivElement>= (e) => {
     if (e.currentTarget.tagName === 'IMG') {
@@ -48,10 +70,7 @@ const Preview = ({html} : {html:string}) => {
   return (
   <div className={previewStyle.previewContainer}>
     <div className={previewStyle.modeSelector}>
-      {removed && removed.length > 0 && 
-        <Icon 
-          url={FilterIcon} // TODO : sucky icon! change it!
-          title={tl("Some elementsscriptstags were removed for security reasons.")}/>}
+      {removed && removed.length > 0 && ("*" + tl("Some elementsscriptstags were removed for security reasons."))}
       <form>
         <label>
           <input 
@@ -75,30 +94,21 @@ const Preview = ({html} : {html:string}) => {
         </label>
       </form>
     </div>
-      <root.div style={{width: '100%', display: mode===PreviewMode.SAFE ? 'block': 'none'}}>
-        <style>{`
-          :host {
-            display: block;
-            border: 1px solid #61758a;
-            border-radius: 12px;
-            width: 100%;
-            height: 200px;
-            overflow: auto;
-            transform: scale(0.85);
-          }
-          * { box-sizing: border-box; }
-        `}</style>
-        <div 
-        onErrorCapture={handleImageError}
-        dangerouslySetInnerHTML={{__html: sanitizedHtml}} 
+      <div className={previewStyle.previewWrapper} style={{display: mode===PreviewMode.SAFE ? 'block': 'none'}}>
+        <iframe 
+          className={previewStyle.preview} 
+          // credentialless="true" // 아직 typescript, 일부 브라우저 지원 안함 : 쿠키, 네트워크, 로컬 스토리지 접근 차단
+          // src={} // fallback url
+          srcDoc={sanitizedHtml} 
+          title="Preview Frame"
         />
-      </root.div> 
+      </div>
       <div className={previewStyle.previewWrapper} style={{display: mode===PreviewMode.ALLOW_JS ? 'block': 'none'}}>
         <iframe 
           className={previewStyle.preview} 
           // credentialless="true" // 아직 typescript, 일부 브라우저 지원 안함 : 쿠키, 네트워크, 로컬 스토리지 접근 차단
           // src={} // fallback url
-          srcDoc={html} 
+          srcDoc={styledHtml} 
           sandbox="allow-scripts allow-popups allow-forms"
           title="Preview Frame"
         />

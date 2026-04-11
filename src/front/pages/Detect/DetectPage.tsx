@@ -86,7 +86,7 @@ const DetectPage: React.FC = () => {
     return ({
             templateName: customCard.templateName,
             deckName: currentDeck || 'Default',
-            modelName: customCard.modelName || 'Basic',
+            modelName: customCard.model.name || 'Basic',
             fields,
             tags: customCard.tags || [],
             audio: customCard.audio ? {

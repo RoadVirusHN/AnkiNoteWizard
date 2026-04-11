@@ -35,7 +35,7 @@ interface ConfigureState {
   setFontSize: (fontSize: string) => void;
   setStyles: (modelName: string, key: string, newStyle: string) => void;
 }
-
+// TODO : Move style setting to local storage. 
 const DEFAULT_STYLE = `
   font-family: arial;
   font-size: 20px;

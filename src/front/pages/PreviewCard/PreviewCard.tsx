@@ -71,7 +71,7 @@ const PreviewCard = ({}) => {
               });
             }}
             />) :
-            <Preview html={curNote.fields.Front}/>
+            <Preview html={curNote.fields.Front} modelName={curNote.modelName}/>
         }
         <h3>back preview {isModifying ?? <SimpleButton title="Extract Text" src={MagicIcon} onClick={()=>enterInspectionMode(onResult)}/> }</h3>
         {
@@ -94,7 +94,7 @@ const PreviewCard = ({}) => {
               });
             }}
             />)
-          : <Preview html={curNote.fields.Back}/>
+          : <Preview html={curNote.fields.Back} modelName={curNote.modelName}/>
         }
       </section>      
     }
