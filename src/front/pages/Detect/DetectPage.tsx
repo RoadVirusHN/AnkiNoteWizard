@@ -1,6 +1,6 @@
 import detectPageStyle from '@/front/pages/Detect/detectPage.module.css';
 import { JSX, useState } from 'react';
-import useCustomCard, { Extracted, ExtractedMap, Note, Template, TemplateItemDataType } from '@/front/utils/useTemplates';
+import useCustomCard from '@/front/utils/useTemplates';
 import DetectedCard from './DetectedCard/DetectedCard';
 import DeckInput from '@/front/common/StatusBar/DeckInput/DeckInput';
 import AddIcon from '@/public/Icon/Icon-Add.svg';
@@ -10,6 +10,7 @@ import useGlobalVarStore from '@/front/utils/useGlobalVarStore';
 import useTemplate from '@/front/utils/useTemplates';
 import { MessageType } from 'types/chrome.types';
 import useLocale from '@/front/utils/useLocale';
+import { Extracted, ExtractedMap, Note, Template, TemplateItemDataType } from '@/types/scanRule.types';
 
 const buildField = (key: string, customCard: Template, extracted: Extracted) =>{
   let target = customCard.fields.find((v)=>v.name===key);

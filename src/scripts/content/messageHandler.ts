@@ -1,10 +1,9 @@
-import { Template } from '@/front/utils/useTemplates';
-import { Message, MessageType } from 'types/chrome.types';
+import { Message, MessageType, PortNames } from 'types/chrome.types';
 import { getExtractedFromPage } from './content';
 import { activateInspectionMode, deactivateInspectionMode } from './tagExtraction';
-import { PortNames } from '../background/connectHandler';
 import { CssSelectorGeneratorOptionsInput } from 'css-selector-generator/types/types';
 import { InspectionMode } from './constants';
+import { Template } from '@/types/scanRule.types';
 
 export const messageHandler = async (
   message: Message,
