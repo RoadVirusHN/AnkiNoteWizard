@@ -1,3 +1,4 @@
+import { TEMPLATE_CODE } from '@/types/app.types';
 import { ExtractedMap, Model, Note, Template } from '@/types/scanRule.types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -22,16 +23,6 @@ interface TemplateState {
   models: {[modelName: string]: Model};
   addModel: (model: Model) => void;
   removeModel: (modelName: string) => void;
-}
-
-export enum TEMPLATE_CODE {
-  OK = 'OK',
-  INVALID_TEMPLATE_NAME = 'INVALID_TEMPLATE_NAME',
-  DUPLICATE_TEMPLATE_NAME = 'DUPLICATE_TEMPLATE_NAME',
-  INVALID_AUTHOR_NAME = 'INVALID_AUTHOR_NAME',
-  INVALID_MODEL = 'INVALID_MODEL',
-  INVALID_ROOT_TAG = 'INVALID_ROOT_TAG',
-  NO_SUCH_TEMPLATE = 'NO_SUCH_TEMPLATE',
 }
 
 const isTemplateValid = (template: Template, curTemplates: Template[]): TEMPLATE_CODE => {

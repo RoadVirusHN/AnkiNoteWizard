@@ -1,28 +1,12 @@
+import { Language, Theme, ThemeSetting } from '@/types/app.types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-export enum Language {
-  EN = 'en',
-  KO = 'ko',
-}
 
 interface ThemeOption {
   theme: Theme;
   userSetting: ThemeSetting;
 }
 
-export enum ThemeSetting {
-  NONE = 'none',
-  SYSTEM_DARK = 'system-dark',
-  SYSTEM_LIGHT = 'system-light',
-  LIGHT = 'light',
-  DARK = 'dark',
-}
-
-export enum Theme {
-  LIGHT = 'light',
-  DARK = 'dark',
-}
 
 // WARN : less than 8kb per item in chrome.storage.sync, maximum 100kb total.
 interface ConfigureState {

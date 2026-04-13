@@ -1,14 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Note } from './useTemplates';
+import { Note } from 'types/scanRule.types';
+import { Tab } from '@/types/app.types';
 
-export enum Tab {
-  DETECT = 'DETECT',
-  ADD = 'ADD',
-  HISTORY = 'HISTORY',
-  TEMPLATES = 'TEMPLATES',
-  CONFIG = 'CONFIG',
-}
 
 interface GlobalVarState {
   currentUrl: string;

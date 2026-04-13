@@ -1,16 +1,7 @@
 import React, {ReactNode} from 'react';
 import tooltipStyle from './tooltip.module.css';
 import commonStyle from "@/front/common.module.css";
-export enum TooltipDirection{
-  TOP = 'tooltip-top',
-  BOTTOM  = 'tooltip-bottom',
-  LEFT = 'tooltip-left',
-  RIGHT = 'tooltip-right',
-  UP_LEFT = 'tooltip-up-left',
-  UP_RIGHT = 'tooltip-up-right',
-  BOTTOM_LEFT = 'tooltip-bottom-left',
-  BOTTOM_RIGHT = 'tooltip-bottom-right',
-}
+import { TooltipDirection } from '@/types/app.types';
 
 interface TooltipWrapperProps {
   children?:ReactNode,

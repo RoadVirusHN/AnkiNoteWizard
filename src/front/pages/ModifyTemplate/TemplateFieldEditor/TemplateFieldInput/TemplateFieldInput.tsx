@@ -1,7 +1,7 @@
 import { useState, forwardRef, useImperativeHandle } from "react";
-import { TemplateItemDataType, type TemplateItem } from "@/front/utils/useTemplates";
 import templateFieldStyle from "./templateFieldInput.module.css";
 import useLocale from "@/front/utils/useLocale";
+import { TemplateItem, TemplateItemDataType } from "@/types/scanRule.types";
 
 /**
  * 외부에 노출되는 ref 메서드들

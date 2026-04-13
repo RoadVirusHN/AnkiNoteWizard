@@ -1,9 +1,6 @@
+import { FetchAnkiRequestBody } from '@/types/app.types';
 import { create } from 'zustand';
 
-export interface FetchAnkiRequestBody {
-  action: string;
-  params?: Record<string, unknown>;
-}
 interface AnkiResponseBody<T = unknown> {
   result: T;
   error: string | null;

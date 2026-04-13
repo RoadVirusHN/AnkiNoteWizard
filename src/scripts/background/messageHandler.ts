@@ -33,7 +33,7 @@ export const messageHandler = (
         { type: MessageType.REQUEST_DETECTED_CARDS_TO_CONTENT, data: message.data },
         sendResponse
       );
-      break;    
+      break;
 }
 
   return shouldKeepChannelOpen;

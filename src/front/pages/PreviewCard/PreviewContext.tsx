@@ -1,4 +1,4 @@
-import { Note } from "@/front/utils/useTemplates";
+import { Note } from "types/scanRule.types";
 import { createContext, ReactNode, useState } from "react";
 
 export interface PreviewContextType {
