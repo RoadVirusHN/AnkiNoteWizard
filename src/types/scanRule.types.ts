@@ -46,6 +46,12 @@ export interface ScanRule {
   urlPatterns: string[];
   rootTag: string;
   tags: string[];
+  fields: {
+    [fieldName: string]: {
+      selector: string;
+      dataType: FieldDataType;
+    };
+  }
   audio?: {
     url: string;
     filename: string;
