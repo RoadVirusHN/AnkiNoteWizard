@@ -1,18 +1,18 @@
 import detectPageStyle from '@/panel/features/Detect/detectPage.module.css';
 import { JSX, useState } from 'react';
-import useCustomCard from '@/panel/stores/useTemplates';
-import DetectedCard from './DetectedCard/DetectedCard';
+import useCustomCard from '@/panel/stores/useScanRule';
+import DetectedDraft from './DetectedDraft/DetectedDraft';
 import DeckInput from '@/panel/components/StatusBar/DeckInput/DeckInput';
 import AddIcon from '@/public/Icon/Icon-Add.svg';
 import SimpleButton from '@/panel/components/SimpleButton/SimpleButton';
 import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import useGlobalVarStore from '@/panel/stores/useGlobalVarStore';
-import useTemplate from '@/panel/stores/useTemplates';
+import useScanRule from '@/panel/stores/useScanRule';
 import useLocale from '@/panel/hooks/useLocale';
-import { Extracted, ExtractedMap, Note, Template } from '@/types/scanRule.types';
+import { Extracted, ExtractedMap, Note, ScanRule } from '@/types/scanRule.types';
 import { MESSAGE_TYPE } from '@/types/chrome.types';
 
-const buildField = (key: string, customCard: Template, extracted: Extracted) =>{
+const buildField = (key: string, customCard: ScanRule, extracted: Extracted) =>{
   let target = customCard.fields.find((v)=>v.name===key);
   if (target!==undefined) {
     target.html.replaceAll(/\{\{(.*?)\}\}/g, (_, itemName) => {
@@ -36,23 +36,23 @@ const buildField = (key: string, customCard: Template, extracted: Extracted) =>{
 //TODO : MAKE Interfaces&Types FILE
 
 // REQUEST_DETECTED_CARDS : content script 에게 현재 페이지에서 추출된 카드 데이터를 요청
-// - customCards : 사용자가 정의한 카드 템플릿들
+// - customCards : 사용자가 정의한 카드 스캔 규칙들
 // SEND_DETECTED_CARDS : content script에서 감지된 카드 데이터를 CardPage로 전송
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
 const DetectPage: React.FC = () => {
-  const {templates} = useCustomCard();
+  const {scanRules: scanRules} = useCustomCard();
   const [isPending, setIsPending] = useState(false);
   const [selected, setSelected] = useState(new Set<string>());
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentDeck, setCurrentDetected} = useGlobalVarStore();
-  const {notes, extractedMaps, setNotes, setExtractedMaps} = useTemplate();
+  const {notes, extractedMaps, setNotes, setExtractedMaps} = useScanRule();
   
   const tl = useLocale('pages.DetectPage');  
   const requestExtracteds = async () => {
     setIsPending(true);
     chrome.runtime.sendMessage({
       type: MESSAGE_TYPE.REQUEST_DETECTED_CARDS_FROM_PANEL,
-      data: templates,
+      data: scanRules,
     }, (response) => {
         console.log("receive detected cards", response);
         const em = response[0] as ExtractedMap;
@@ -64,7 +64,7 @@ const DetectPage: React.FC = () => {
           const cardInfos = em[numberKey];
           cardInfos.forEach((extracted, idx)=>{
             const id = key + "-" + idx;
-            newNotes[id] = (getNote(templates[numberKey],extracted));
+            newNotes[id] = (getNote(scanRules[numberKey],extracted));
           });
         });
         setNotes(newNotes);
@@ -79,15 +79,15 @@ const DetectPage: React.FC = () => {
     setSelected(newSelected);
   }
 
-  const getNote = (customCard : Template, extracted : Extracted) =>{    
+  const getNote = (customCard : ScanRule, extracted : Extracted) =>{    
     let fields = {} as Note['fields'];
     for (const field of customCard.fields) {
       fields[field.name] = buildField(field.name, customCard, extracted);
     }
     return ({
-            templateName: customCard.templateName,
+            scanRuleName: customCard.scanRuleName,
             deckName: currentDeck || 'Default',
-            modelName: customCard.model.name || 'Basic',
+            modelId: customCard.modelId.name || 'Basic',
             fields,
             tags: customCard.tags || [],
             audio: customCard.audio ? {
@@ -137,11 +137,11 @@ const DetectPage: React.FC = () => {
               const id = key + "-" + idx;
               if (!notes[id]) return; // Skip if note doesn't exist
               cards.push(
-                <DetectedCard 
+                <DetectedDraft 
                 key={id}
                 idx={id}
                 extracted={extracted}
-                template={templates[numberKey]}
+                scanRule={scanRules[numberKey]}
                 checkAdd={checkAdd(id)}
                 />
               );

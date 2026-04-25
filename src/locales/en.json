@@ -3,7 +3,7 @@
   "tabs": {
     "detect": "Detect",
     "add": "Add",
-    "templates": "Templates",
+    "scanRules": "ScanRules",
     "config": "Config"
   },
   "background":{
@@ -17,8 +17,8 @@
   }, 
   "common":{
     "model": "Model",
-    "templates": "Templates",
-    "template": "Template",
+    "scanRules": "ScanRules",
+    "scanRule": "ScanRule",
     "deck": "Deck",
     "tags": "Tags",
     "empty": "Empty",
@@ -77,33 +77,33 @@
       "font size": "Font Size",
       "Apply": "Apply",
       "Cancle": "Cancle",
-      "Add Default Templates": "Add Default Templates",
+      "Add Default ScanRules": "Add Default ScanRules",
       "Default": "Default",
       "Reset to default settings": "Reset to default settings?"
     },
-    "ModifyTemplate":{
+    "ModifyScanRule":{
       "meta": "Meta",
       "common": "Common",
       "front": "Front",
       "back": "Back",
-      "modify template": "Modify Template",
-      "new template": "New Template",
-      "ModifyTemplateHeader": {
+      "modify scanRule": "Modify ScanRule",
+      "new scanRule": "New ScanRule",
+      "ModifyScanRuleHeader": {
         "Back to Empty": "Back to Empty"
       },
-      "TemplateCommonEditor": {
+      "ScanRuleCommonEditor": {
         "Model Name" : "Model Name",
         "URL Patterns": "URL Patterns",
         "Root Tag": "Root Tag",
         "Fields will be searched under the root tag": "Fields will be searched under the root tag."
       },
-      "TemplateMetaEditor": {
-        "Template Name": "Template Name",
+      "ScanRuleMetaEditor": {
+        "ScanRule Name": "ScanRule Name",
         "Author": "Author",
         "Version": "Version",
         "Description": "Description"
       },
-      "TemplateSideEditor": {
+      "ScanRuleSideEditor": {
         "Preview": "Preview",
         "HTML Code": "HTML Code",
         "Fields": "Fields",
@@ -117,7 +117,7 @@
         "Image": "Image",
         "Audio": "Audio",
         "is Optional": "is Optional?",
-        "TemplateFieldInput":{
+        "ScanRuleFieldInput":{
           "content": "Content",
           "Remove field": "Remove field",
           "Required": "Required",

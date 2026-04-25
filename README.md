@@ -145,6 +145,9 @@ npm run build:prod # Generate files for deploying build in the 'release' folder
 - [x] Non-Unique Tag 탐색
 #### 초안 추가 기능
 - [x] 초안 추가 기능
+- [ ] 이미지 추출 지원
+- [ ] 오디오 추출 지원
+- [ ] 동영상 추출 지원
 - [x] 초안 내용 수정 기능
   - [x] 태그 수정 기능
 #### 스캔 규칙 관련 기능

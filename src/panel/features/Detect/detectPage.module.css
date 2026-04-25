@@ -38,7 +38,7 @@
   background-color: var(--color-primary);
   color: var(--color-light);
 }
-.templateName {
+.scanRuleName {
   font-weight: bold;
   color: var(--color-hyperlink);
 }

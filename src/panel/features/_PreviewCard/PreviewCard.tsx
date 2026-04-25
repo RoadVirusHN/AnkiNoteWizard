@@ -1,4 +1,4 @@
-import useTemplate from "@/panel/stores/useTemplates";
+import useScanRule from "@/panel/stores/useScanRule";
 import previewCardStyle from "./previewCard.module.css";
 import { useParams } from "react-router";
 import { useState } from "react";
@@ -18,7 +18,7 @@ import { INSPECTION_MODE, THEME } from "@/types/app.types";
 const PreviewCard = ({}) => {
   const {index} = useParams();
   const idx = index ?? '0-0';
-  const {notes} = useTemplate();
+  const {notes} = useScanRule();
   const [contextValue, setContextValue] = useState({isChanged: false, isModifying : false,curNote: notes[idx], idx});
   const {curNote, isModifying, isChanged} = contextValue; 
   const [curText, setCurText] = useState('');
@@ -35,9 +35,9 @@ const PreviewCard = ({}) => {
         isModifying ? 
           (<ModelInput setModel={(modelName:string)=>setContextValue({
             ...contextValue,
-            curNote: {...curNote, modelName},
+            curNote: {...curNote, modelId: modelName},
             isChanged:true
-          })} defaultModel={curNote.modelName}/>) : 'Model :' + curNote.modelName
+          })} defaultModel={curNote.modelId}/>) : 'Model :' + curNote.modelId
       }
         <Tags givenTags={curNote.tags} isModifying={isModifying} 
         onAddTag={(tag)=>{
@@ -71,7 +71,7 @@ const PreviewCard = ({}) => {
               });
             }}
             />) :
-            <Preview html={curNote.fields.Front} modelName={curNote.modelName}/>
+            <Preview html={curNote.fields.Front} modelName={curNote.modelId}/>
         }
         <h3>back preview {isModifying ?? <SimpleButton title="Extract Text" src={MagicIcon} onClick={()=>enterInspectionMode(onResult)}/> }</h3>
         {
@@ -94,7 +94,7 @@ const PreviewCard = ({}) => {
               });
             }}
             />)
-          : <Preview html={curNote.fields.Back} modelName={curNote.modelName}/>
+          : <Preview html={curNote.fields.Back} modelName={curNote.modelId}/>
         }
       </section>      
     }

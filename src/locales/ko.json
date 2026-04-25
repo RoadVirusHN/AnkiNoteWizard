@@ -3,7 +3,7 @@
   "tabs": {
     "detect": "감지",
     "add": "추가",
-    "templates": "템플릿",
+    "scanRules": "스캔 규칙",
     "config": "설정"
   },
   "background":{
@@ -17,8 +17,8 @@
   }, 
   "common":{
     "model": "모델",
-    "templates": "템플릿",
-    "template": "템플릿",
+    "scanRules": "스캔 규칙",
+    "scanRule": "스캔 규칙",
     "deck": "덱",
     "tags": "태그",
     "empty": "없음",
@@ -77,33 +77,33 @@
       "font size": "폰트 사이즈",
       "Apply": "적용",
       "Cancle": "취소",
-      "Add Default Templates": "기본 템플릿 추가",
+      "Add Default ScanRules": "기본 스캔 규칙 추가",
       "Default": "기본값",
       "Reset to default settings": "기본 설정으로 재설정하시겠습니까?"
     },
-    "ModifyTemplate":{
+    "ModifyScanRule":{
       "meta": "메타 정보",
       "common": "공통",
       "front": "앞면",
       "back": "뒷면",
-      "modify template": "템플릿 수정",
-      "new template": "새 템플릿",
-      "ModifyTemplateHeader": {
+      "modify scanRule": "스캔 규칙 수정",
+      "new scanRule": "새 스캔 규칙",
+      "ModifyScanRuleHeader": {
         "Back to Empty": "내용 초기화"
       },
-      "TemplateCommonEditor": {
+      "ScanRuleCommonEditor": {
         "Model Name" : "모델명",
         "URL Patterns": "URL 패턴",
         "Root Tag": "탐색 태그",
         "Fields will be searched under the root tag": "필드는 탐색 태그 내에서만 검색됩니다."
       },
-      "TemplateMetaEditor": {
-        "Template Name": "템플릿 명",
+      "ScanRuleMetaEditor": {
+        "ScanRule Name": "스캔 규칙 명",
         "Author": "만든이",
         "Version": "버전",
         "Description": "설명"
       },
-      "TemplateSideEditor": {
+      "ScanRuleSideEditor": {
         "Preview": "미리보기",
         "HTML Code": "HTML 코드",
         "Fields": "요소",
@@ -117,7 +117,7 @@
         "Image": "이미지",
         "Audio": "오디오",
         "is Optional": "선택사항 여부",
-        "TemplateFieldInput":{
+        "ScanRuleFieldInput":{
           "content": "내용",
           "Remove field": "요소 삭제",
           "Required": "필수",

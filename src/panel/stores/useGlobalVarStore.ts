@@ -28,12 +28,12 @@ const useGlobalVarStore = create<GlobalVarState>()(
       isAddingCard: false,
       currentDetected: 0,
       currentAddingNote: {
-        templateName: '',
+        scanRuleName: '',
         deckName: '',
-        modelName: 'Basic',
+        modelId: 'Basic',
         fields: {
-          Front: '',
-          Back: '',
+          Front: 'Front sample',
+          Back: 'Back sample',
         },
         tags: [],
       },
@@ -49,7 +49,7 @@ const useGlobalVarStore = create<GlobalVarState>()(
       setIsAddingCard: (isAdding: boolean) => set({ isAddingCard: isAdding }),
     }),
     {
-      name: 'anki-card-wizard-global-var-store',
+      name: 'anki-note-wizard-global-var-store',
       storage: {
         getItem: async (name) => (await chrome.storage.local.get(name))[name],
         setItem: async (name, value) => await chrome.storage.local.set({ [name]: value }),

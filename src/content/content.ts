@@ -7,8 +7,8 @@ import {
   Extracted,
   ExtractedMap,
   Field,
-  Template,
-  TEMPLATE_ITEM_DATA_TYPES,
+  ScanRule,
+  FIELD_DATA_TYPES,
 } from '@/types/scanRule.types';
 
 console.log('✅ Content script loaded');
@@ -46,7 +46,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-const checkUrlMatched = (customCard: Template): boolean => {
+const checkUrlMatched = (customCard: ScanRule): boolean => {
   customCard.urlPatterns = customCard.urlPatterns || ['body'];
   return (
     // use wildcard to match urlPattern
@@ -78,17 +78,17 @@ const extractFields = (root: Element, field: Field) => {
       element = root.querySelector(item.content);
       if (element) {
         switch (item.dataType) {
-          case TEMPLATE_ITEM_DATA_TYPES.TEXT:
+          case FIELD_DATA_TYPES.TEXT:
             record[item.name] = element.textContent || '';
             break;
-          case TEMPLATE_ITEM_DATA_TYPES.IMAGE:
+          case FIELD_DATA_TYPES.IMAGE:
             if (element instanceof HTMLImageElement) {
               record[item.name] = element.src;
             } else {
               record[item.name] = (element as HTMLElement).getAttribute('src') || '';
             }
             break;
-          case TEMPLATE_ITEM_DATA_TYPES.AUDIO:
+          case FIELD_DATA_TYPES.AUDIO:
             record[item.name] = (element as HTMLAudioElement).src || '';
             break;
           default:
@@ -103,7 +103,7 @@ const extractFields = (root: Element, field: Field) => {
   }
   return record;
 };
-export const getExtractedFromPage = (customCards: Template[]): [ExtractedMap, number] => {
+export const getExtractedFromPage = (customCards: ScanRule[]): [ExtractedMap, number] => {
   const res: ExtractedMap = {};
   let cnt = 0;
   customCards.filter(checkUrlMatched).forEach((card, idx) => {

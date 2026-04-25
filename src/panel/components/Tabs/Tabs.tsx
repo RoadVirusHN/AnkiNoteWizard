@@ -22,17 +22,17 @@ const Tabs = ({}) => {
       case '/add':
         if (currentTab !== TAB.ADD) setCurrentTab(TAB.ADD);
         break;
-      case '/templates':
-        if (currentTab !== TAB.TEMPLATES) setCurrentTab(TAB.TEMPLATES);
+      case '/scanRules':
+        if (currentTab !== TAB.SCAN_RULES) setCurrentTab(TAB.SCAN_RULES);
         break;
       case '/config':
         if (currentTab !== TAB.CONFIG) setCurrentTab(TAB.CONFIG);
         break;
       case '/modify':
-        if (currentTab !== TAB.CONFIG) setCurrentTab(TAB.TEMPLATES);
+        if (currentTab !== TAB.CONFIG) setCurrentTab(TAB.SCAN_RULES);
         break;
       default:
-        if (location.pathname.match('/templates')!==null) setCurrentTab(TAB.TEMPLATES);
+        if (location.pathname.match('/scanRules')!==null) setCurrentTab(TAB.SCAN_RULES);
         // TODO: error handling for unknown path can be added here
         break;
     }
@@ -47,10 +47,10 @@ const Tabs = ({}) => {
       <p>{t('tabs.add')}</p>
       </NavLink>
     <NavLink 
-    className={`${tabsStyle.tab} ${currentTab==TAB.TEMPLATES? tabsStyle.selected : ''}`} 
-    to={'/templates'}>
+    className={`${tabsStyle.tab} ${currentTab==TAB.SCAN_RULES? tabsStyle.selected : ''}`} 
+    to={'/scanRules'}>
       <Icon url={CardTypeIcon}/>
-      <p>{t('tabs.templates')}</p>
+      <p>{t('tabs.scanRules')}</p>
     </NavLink>    
     <NavLink 
     className={`${tabsStyle.tab} ${currentTab==TAB.CONFIG? tabsStyle.selected : ''}`} 

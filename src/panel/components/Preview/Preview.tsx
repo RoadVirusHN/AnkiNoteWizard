@@ -6,7 +6,7 @@ import FilterIcon from "@/public/Icon/Icon-Filter.svg"
 import Icon from "../Icon/Icon";
 import useLocale from "@/panel/hooks/useLocale";
 import useConfigure from "@/panel/stores/useConfigure";
-import { Template } from "@/types/scanRule.types";
+import { ScanRule } from "@/types/scanRule.types";
 
 /*
   TODO:
@@ -34,10 +34,10 @@ const iFrameModeConfig = {
   RETURN_TRUSTED_TYPE: true
 };
 //TODO : Abandon Shadow-dom mode just use iFrame mode with enhanced sanitization, as shadow-dom doesn't fully prevent script execution and has compatibility issues.
-const Preview = ({html, template} : {html:string, template:Template}) => {
+const Preview = ({html, scanRule} : {html:string, scanRule:ScanRule}) => {
   const [mode, setMode] = useState<PreviewMode>(PreviewMode.SAFE);
   const {styles} = useConfigure();
-  const cardStyles = styles[template.model.name];
+  const cardStyles = styles[scanRule.modelId.name];
   const styledHtml = `
   <!DOCTYPE html>
   <html>

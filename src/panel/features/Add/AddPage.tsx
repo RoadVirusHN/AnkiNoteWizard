@@ -14,7 +14,7 @@ import ModelInput from "@/panel/components/Inputs/ModelInput/ModelInput";
 import { useState } from "react";
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import SimpleButton from "@/panel/components/SimpleButton/SimpleButton";
-import TemplateInput from "@/panel/components/Inputs/TemplatInput/TemplateInput";
+import ScanRuleInput from "@/panel/components/Inputs/TemplatInput/ScanRuleInput";
 import DeckInput from "@/panel/components/StatusBar/DeckInput/DeckInput";
 import useLocale from "@/panel/hooks/useLocale";
 import Icon from "@/panel/components/Icon/Icon";
@@ -62,12 +62,12 @@ const AddPage = ({}) => {
       {<section className={addPageStyle.previewPage}>
         {isInspectionMode ?? <InspectionOverlay mode={INSPECTION_MODE.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
         <DeckInput onChange={(deck:string)=>{setCurNote({...curNote, deckName: deck})}}/>
-        <TemplateInput defaultTemplate={curNote.templateName} setTemplate={(template:string)=>{
-          setCurNote({...curNote, templateName: template});
+        <ScanRuleInput defaultScanRule={curNote.scanRuleName} setScanRule={(scanRule:string)=>{
+          setCurNote({...curNote, scanRuleName: scanRule});
           setIsChanged(true);
         }}/>
-        <ModelInput defaultModel={curNote.modelName} setModel={(model:string)=>{
-          setCurNote({...curNote, modelName: model});
+        <ModelInput defaultModel={curNote.modelId} setModel={(model:string)=>{
+          setCurNote({...curNote, modelId: model});
           setIsChanged(true);
         }}/>
         <Tags givenTags={curNote.tags} isModifying={isModifying} 
@@ -99,7 +99,7 @@ const AddPage = ({}) => {
               });
             }}
             />) :
-            <Preview html={curNote.fields.Front} modelName={curNote.modelName}/>
+            <Preview html={curNote.fields.Front} modelName={curNote.modelId}/>
         }
         <h3>{tlC('back') +' ' + tlC('preview')} {isModifying ?? <SimpleButton title="Extract Field Css Selector" src={MagicIcon} onClick={()=>enterInspectionMode()}/>}</h3>
         {
@@ -121,7 +121,7 @@ const AddPage = ({}) => {
               });
             }}
             />)
-          : <Preview html={curNote.fields.Back} modelName={curNote.modelName}/>
+          : <Preview html={curNote.fields.Back} modelName={curNote.modelId}/>
         }
       </section> }
       <SimpleButton src={AddIcon} 

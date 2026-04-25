@@ -1,6 +1,6 @@
 import useConfigure from '@/panel/stores/useConfigure';
-import useTemplate from '@/panel/stores/useTemplates';
-import { defaultTemplates } from './constants';
+import useScanRule from '@/panel/stores/useScanRule';
+import { defaultScanRules } from './constants';
 import { LANGUAGE, THEME_SETTING } from '@/types/app.types';
 
 export const onInstalled = () => {
@@ -17,8 +17,8 @@ export const onInstalled = () => {
   if (!useConfigure.getState().fontSize) {
     useConfigure.getState().setFontSize('normal');
   }
-  for (const template of defaultTemplates) {
-    useTemplate.getState().addTemplate(template);
+  for (const scanRule of defaultScanRules) {
+    useScanRule.getState().addScanRule(scanRule);
   }
 };
 export const getCurrentTabId = async () => {

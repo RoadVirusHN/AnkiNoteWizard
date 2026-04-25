@@ -9,7 +9,7 @@ import { LANGUAGE, Language, THEME_SETTING, ThemeSetting } from '@/types/app.typ
 
 
 const ConfigPage: React.FC = () => {
-  // font size, about, javascript, default Anki Connect url, default setting, default templates 
+  // font size, about, javascript, default Anki Connect url, default setting, default scanRules 
   const [_t, i18n] = useTranslation();
   const tl = useLocale('pages.ConfigPage');
   const {
@@ -64,10 +64,10 @@ const ConfigPage: React.FC = () => {
         </select>
       </div>
       <SimpleButton onClick={()=>{
-        //Add default templates
+        //Add default scanRules
 
       }}>
-        {tl('Add Default Templates')}
+        {tl('Add Default ScanRules')}
       </SimpleButton>
       <div className={configPageStyle.floatingBtnContainer}>
         <SimpleButton onClick={()=>{

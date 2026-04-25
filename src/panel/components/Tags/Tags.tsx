@@ -1,5 +1,5 @@
 import tagsStyle from "./tags.module.css";
-import useTemplate from "@/panel/stores/useTemplates";
+import useScanRule from "@/panel/stores/useScanRule";
 import AddIcon from "@/public/Icon/Icon-Add.svg";
 import { getComplementaryColor, getRandomColor } from "@/panel/utils/functions";
 import { useTranslation } from "react-i18next";
@@ -14,7 +14,7 @@ interface TagsProps {
 }
 
 const Tags = ({givenTags, isModifying, onRemoveTag, onAddTag}:TagsProps) => {
-  const {tags, addTag} = useTemplate();
+  const {tags, addTag} = useScanRule();
   const {t} = useTranslation();
   const deleteTag = (e: React.MouseEvent, tag: string) => {
     e.stopPropagation();
