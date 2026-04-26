@@ -3,13 +3,7 @@ import i18n from '@/locales/i18n';
 import { initReactI18next } from 'react-i18next';
 import enTranslations from '@/locales/en.json';
 import koTranslations from '@/locales/ko.json';
-import {
-  Extracted,
-  ExtractedMap,
-  Field,
-  ScanRule,
-  FIELD_DATA_TYPES,
-} from '@/types/scanRule.types';
+import { ScanRule, FIELD_DATA_TYPES, FieldProperties, ExtractedInfos, ExtractedFields } from '@/types/scanRule.types';
 
 console.log('✅ Content script loaded');
 export const initLocale = () => {
@@ -70,59 +64,51 @@ const checkUrlMatched = (customCard: ScanRule): boolean => {
     })
   );
 };
-const extractFields = (root: Element, field: Field) => {
-  let record: { [item: string]: string } = {};
-  try {
-    for (const item of field.items) {
-      let element: Element | null = null;
-      element = root.querySelector(item.content);
-      if (element) {
-        switch (item.dataType) {
-          case FIELD_DATA_TYPES.TEXT:
-            record[item.name] = element.textContent || '';
-            break;
-          case FIELD_DATA_TYPES.IMAGE:
-            if (element instanceof HTMLImageElement) {
-              record[item.name] = element.src;
-            } else {
-              record[item.name] = (element as HTMLElement).getAttribute('src') || '';
-            }
-            break;
-          case FIELD_DATA_TYPES.AUDIO:
-            record[item.name] = (element as HTMLAudioElement).src || '';
-            break;
-          default:
-            record[field.name] = element.textContent || '';
-        }
-      } else {
-        record[field.name] = item.isOptional ? '' : 'Content does not exist : ' + item.name;
-      }
+const extractFields = (root: Element, field: FieldProperties) => {
+  let element: Element | null = null;
+  element = root.querySelector(field.selector);
+  if (
+    field.dataType === FIELD_DATA_TYPES.IMAGE ||
+    field.dataType === FIELD_DATA_TYPES.VIDEO ||
+    field.dataType === FIELD_DATA_TYPES.AUDIO
+  ) {
+    if (
+      element &&
+      (element instanceof HTMLImageElement ||
+        element instanceof HTMLVideoElement ||
+        element instanceof HTMLAudioElement) &&
+      element.src
+    ) {
+      return element.src;
+    } else {
+      return 'Image source not found or element is not an media element(img, video, audio)';
     }
-  } catch (e) {
-    console.warn(`Failed to extract field ${field.name}`, e);
+  } else {
+    if (element && element.textContent) {
+      return element.textContent;
+    } else {
+      return 'Content does not exist';
+    }
   }
-  return record;
 };
-export const getExtractedFromPage = (customCards: ScanRule[]): [ExtractedMap, number] => {
-  const res: ExtractedMap = {};
-  let cnt = 0;
-  customCards.filter(checkUrlMatched).forEach((card, idx) => {
-    const extracteds: Extracted[] = [];
-    let roots = Array.from(document.querySelectorAll(card.rootTag));
-    if (roots.length === 0) roots = Array.from(document.querySelectorAll('body'));
-    roots.forEach((root) => {
-      const extracted: Extracted = {};
-      // Front 필드 추출
-      //TODO : strict mode : if there is no field info founded, discard it.
-      for (const field of card.fields) {
-        extracted[field.name] = extractFields(root, field);
-      }
-      extracteds.push(extracted);
-      cnt++;
-    });
-    res[idx] = extracteds;
+
+export const getExtractedFromPage = (scanRules: ScanRule[]) => {
+  const res: ExtractedInfos = {};
+  scanRules.forEach((scanRule, idx) => {
+    res[idx] = [];
+    if (!checkUrlMatched(scanRule)) {
+      let roots = Array.from(document.querySelectorAll(scanRule.rootTag));
+      if (roots.length === 0) roots = Array.from(document.querySelectorAll('body'));
+      roots.forEach((root) => {
+        const extracteds: ExtractedFields = {};
+        for (const fieldName of Object.keys(scanRule.fields)) {
+          extracteds[fieldName] = extractFields(root, scanRule.fields[fieldName]);
+        }
+        res[idx].push(extracteds);
+      });
+    }
   });
-  return [res, cnt];
+  return res;
 };
 
 chrome.runtime.onMessage.addListener(messageHandler);

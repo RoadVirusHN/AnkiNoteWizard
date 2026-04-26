@@ -9,6 +9,16 @@ export const defaultScanRules: ScanRule[] = [
     modelId: Default_BASIC_MODEL.id,
     urlPatterns: ['*'],
     rootTag: 'body',
+    fields:{
+      Front: {
+        selector: '',
+        dataType: 'text',
+      },
+      Back: {
+        selector: '',
+        dataType: 'text',
+      },
+    },
     tags: [],
   },
 ];

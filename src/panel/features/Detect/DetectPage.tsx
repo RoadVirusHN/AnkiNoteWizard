@@ -9,29 +9,9 @@ import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import useGlobalVarStore from '@/panel/stores/useGlobalVarStore';
 import useScanRule from '@/panel/stores/useScanRule';
 import useLocale from '@/panel/hooks/useLocale';
-import { Extracted, ExtractedMap, Note, ScanRule } from '@/types/scanRule.types';
+import { ExtractedFields, ExtractedInfos,  FieldContent,  Note, ScanRule } from '@/types/scanRule.types';
 import { MESSAGE_TYPE } from '@/types/chrome.types';
 
-const buildField = (key: string, customCard: ScanRule, extracted: Extracted) =>{
-  let target = customCard.fields.find((v)=>v.name===key);
-  if (target!==undefined) {
-    target.html.replaceAll(/\{\{(.*?)\}\}/g, (_, itemName) => {
-      const itemInfo = target.items.find(i=>i.name === itemName);
-      if (itemInfo) {
-        switch (itemInfo.dataType) {
-          case 'image':
-            return `<img src="${extracted[key][itemName] || ''}" />`;
-          case 'audio':
-            return `[sound:${extracted[key][itemName] || ''}]`;
-          default:
-            return extracted[key][itemName] || '';
-        }
-      }
-      return ''; // Ensure a string is always returned
-    });        
-  }
-  return target ? target.html : '';
-}
 //TODO : Apply SCSS for css.
 //TODO : MAKE Interfaces&Types FILE
 
@@ -45,7 +25,7 @@ const DetectPage: React.FC = () => {
   const [selected, setSelected] = useState(new Set<string>());
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentDeck, setCurrentDetected} = useGlobalVarStore();
-  const {notes, extractedMaps, setNotes, setExtractedMaps} = useScanRule();
+  const {notes, setNotes} = useScanRule();
   
   const tl = useLocale('pages.DetectPage');  
   const requestExtracteds = async () => {
@@ -55,20 +35,20 @@ const DetectPage: React.FC = () => {
       data: scanRules,
     }, (response) => {
         console.log("receive detected cards", response);
-        const em = response[0] as ExtractedMap;
-        setCurrentDetected(response[1] as number);
+        const em = response as ExtractedInfos;
+        let cnt = 0;
         setIsPending(false);
         const newNotes = {} as typeof notes;
         Object.keys(em).map((key)=>{
           const numberKey = Number(key);
-          const cardInfos = em[numberKey];
-          cardInfos.forEach((extracted, idx)=>{
+          const extractedInfos = em[numberKey];
+          extractedInfos.forEach((extracted, idx)=>{
             const id = key + "-" + idx;
             newNotes[id] = (getNote(scanRules[numberKey],extracted));
           });
         });
+        setCurrentDetected(cnt);
         setNotes(newNotes);
-        setExtractedMaps(em);
     });
   };
 
@@ -79,22 +59,25 @@ const DetectPage: React.FC = () => {
     setSelected(newSelected);
   }
 
-  const getNote = (customCard : ScanRule, extracted : Extracted) =>{    
+  const getNote = (scanRule : ScanRule, extracted : ExtractedFields) =>{    
     let fields = {} as Note['fields'];
-    for (const field of customCard.fields) {
-      fields[field.name] = buildField(field.name, customCard, extracted);
+    for (const fieldName of Object.keys(scanRule.fields)) {
+      fields[fieldName] = {
+        value: extracted[fieldName],
+        dataType: scanRule.fields[fieldName].dataType,
+      }
     }
     return ({
-            scanRuleName: customCard.scanRuleName,
+            scanRuleName: scanRule.scanRuleName,
             deckName: currentDeck || 'Default',
-            modelId: customCard.modelId.name || 'Basic',
+            modelId: scanRule.modelId || 'Basic',
             fields,
-            tags: customCard.tags || [],
-            audio: customCard.audio ? {
-              url: customCard.audio.url,
-              filename: customCard.audio.filename,
-              skipHash: customCard.audio.skipHash,
-              fields: customCard.audio.fields,
+            tags: scanRule.tags || [],
+            audio: scanRule.audio ? {
+              url: scanRule.audio.url,
+              filename: scanRule.audio.filename,
+              skipHash: scanRule.audio.skipHash,
+              fields: scanRule.audio.fields,
             } : undefined,
           }) as Note;
   }
@@ -128,25 +111,17 @@ const DetectPage: React.FC = () => {
       </div>
 
       <div className={detectPageStyle.cardsWrapper}>
-        {extractedMaps && Object.keys(extractedMaps).length > 0 ? (
-          Object.keys(extractedMaps).flatMap((key) => {
-            const numberKey = Number(key);
-            const cardInfos = extractedMaps[numberKey];
-            const cards :JSX.Element[] = [];
-            cardInfos.forEach((extracted, idx)=>{
-              const id = key + "-" + idx;
-              if (!notes[id]) return; // Skip if note doesn't exist
-              cards.push(
-                <DetectedDraft 
-                key={id}
-                idx={id}
-                extracted={extracted}
-                scanRule={scanRules[numberKey]}
-                checkAdd={checkAdd(id)}
-                />
-              );
-            })
-            return cards;
+        {notes && Object.keys(notes).length > 0 ? (
+          Object.keys(notes).map((key) => { 
+            const note = notes[key];
+            return (
+              <DetectedDraft 
+                key={key} 
+                note={note} 
+                scanRuleName={note.scanRuleName} 
+                checkAdd={checkAdd(key)}
+              />
+            );
           })
         ) : (
           <div className={detectPageStyle.noCard}>{tl("No Note Detected")}</div>

@@ -1,9 +1,9 @@
-//TODO : change cards to key value pair
-export interface Extracted {
-  [field: string]: { [item: string]: string };
+export interface ExtractedInfos {
+  [scanRuleIdx: number]: ExtractedFields[];
 }
-export interface ExtractedMap {
-  [idx: number]: Extracted[];
+
+export interface ExtractedFields {
+  [fieldName: string]: string;
 }
 
 export const FIELD_DATA_TYPES = {
@@ -13,8 +13,7 @@ export const FIELD_DATA_TYPES = {
   VIDEO: 'video',
 } as const;
 
-export type FieldDataType =
-  (typeof FIELD_DATA_TYPES)[keyof typeof FIELD_DATA_TYPES];
+export type FieldDataType = (typeof FIELD_DATA_TYPES)[keyof typeof FIELD_DATA_TYPES];
 
 export interface ScanRuleMeta {
   key?: string;
@@ -28,7 +27,7 @@ export interface Note {
   deckName: string;
   modelId: string;
   fields: {
-    [fieldName: string]: string;
+    [fieldName: string]: FieldContent;
   };
   tags: string[];
   audio?: {
@@ -49,6 +48,10 @@ export type SelectorType = (typeof SELECTOR_TYPES)[keyof typeof SELECTOR_TYPES];
 export interface FieldProperties {
   selector: string;
   selectorType?: SelectorType;
+  dataType: FieldDataType;
+}
+export interface FieldContent {
+  value: string;
   dataType: FieldDataType;
 }
 

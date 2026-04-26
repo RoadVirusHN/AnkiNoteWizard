@@ -1,5 +1,5 @@
 import { SCAN_RULE_CODE as SCAN_RULE_CODE } from '@/types/app.types';
-import { ExtractedMap, Note, ScanRule as ScanRule } from '@/types/scanRule.types';
+import { Note, ScanRule as ScanRule } from '@/types/scanRule.types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -18,8 +18,6 @@ interface ScanRuleState {
   addTag: (name: string, color: string) => void;
   removeTag: (name: string) => void;
   updateTag: (name: string, color: string) => void;
-  extractedMaps: ExtractedMap;
-  setExtractedMaps: (newMaps: ExtractedMap) => void;
 }
 
 const isScanRuleVaild = (scanRule: ScanRule, curScanRules: ScanRule[]): SCAN_RULE_CODE => {
@@ -124,12 +122,6 @@ const useScanRule = create<ScanRuleState>()(
             ...state.tags,
             [name]: { color },
           },
-        }));
-      },
-      extractedMaps: {},
-      setExtractedMaps: (newMaps) => {
-        set(() => ({
-          extractedMaps: newMaps,
         }));
       },
     }),
