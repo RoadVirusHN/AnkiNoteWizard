@@ -1,11 +1,14 @@
 import commonStyles from "./common.module.css";
+import useContentUI from "./util/useContentUI";
 
-const Tooltip = ({text, pos:{x,y}}:{text:string, pos:{x:number,y:number}}) => {
+const Tooltip = () => {
+  const {tooltip} = useContentUI();
   return <div className={commonStyles["extension-tooltip"]} style={{
-    top: y + 10,
-    left: x + 10,
+    top: tooltip.y + 10,
+    left: tooltip.x + 10,
+    display: tooltip.isShowing ? 'block' : 'none',
   }}>
-    {text}
+    {tooltip.text}
   </div>;
 };
 export default Tooltip;

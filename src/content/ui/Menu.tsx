@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import commonStyles from "./common.module.css";
+import useContentUI from "./util/useContentUI";
 
 export interface MenuItem {
   key: string;
@@ -8,20 +9,14 @@ export interface MenuItem {
   onMouseLeave?: (e:React.MouseEvent) => void;
   disable?: boolean;
 }
-interface MenuProps {
-  items: MenuItem[];
-  header: string;
-  deClick:() => void;
-  pos: {x:number, y:number};
-}
-
-const Menu = ({items, deClick, header,pos}:MenuProps) => {
+const Menu = () => {
+  const {menu} = useContentUI();
   const menuRef = useRef<HTMLDivElement>(null);
   useEffect(()=>{
     const handleClickOutside= (e:MouseEvent)=>{
       if(!e.target || !(e.target instanceof HTMLElement)) return;
       if (menuRef.current &&menuRef.current!==e.target&& !menuRef.current.contains(e.target)) {
-        deClick();
+        menu.deClick(e);
       };
     };
     document.addEventListener('click', handleClickOutside);
@@ -30,11 +25,11 @@ const Menu = ({items, deClick, header,pos}:MenuProps) => {
     };
   },[]);
   return <div className={commonStyles.menu} 
-    style={{left: pos.x, top: pos.y}}
+    style={{left: menu.x, top: menu.y, display: menu.isShowing ? 'block' : 'none'}}
     ref={menuRef}
   >
-    <div className={commonStyles.header}>{header}</div>
-    {items.map((item, index)=>(
+    <div className={commonStyles.header}>{menu.header}</div>
+    {menu.items.map((item, index)=>(
       <button key={index} onMouseOver={(e)=>{
         e.stopPropagation();
         if(item.onHover) item.onHover(e.nativeEvent as MouseEvent);

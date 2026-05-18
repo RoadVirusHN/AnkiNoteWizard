@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import commonStyles from "./common.module.css";
 import { isValidElement } from "../function";
+import useContentUI from "./util/useContentUI";
 
 interface HighlightRect {
   width: number;
@@ -8,39 +9,40 @@ interface HighlightRect {
   top: number;
   left: number;
 }
-const MouseHighlight = ({onClick}: {onClick:(e:MouseEvent)=>void}) => {
+const TagHighlight = () => {
+  const {tagHighlight} = useContentUI();
   const [rect, setRect] = useState<HighlightRect>({width: 0, height: 0, top: 0, left: 0}); 
-  const [isDisplay, setIsDisplay] = useState(true);
+
   useEffect(()=>{
     const onMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!isValidElement(target)) return;
-      setIsDisplay(true);
       const curRect = target.getBoundingClientRect();
       setRect({width:curRect.width, height:curRect.height, top:curRect.top, left:curRect.left});
     };
-    const onMouseOut = () => {
-      setIsDisplay(false);
-    };
+    // const onMouseOut = () => {
+    //   setIsDisplay(false);
+    // };
+
     document.addEventListener('mouseover', onMouseOver, true);
-    document.addEventListener('mouseout', onMouseOut, true);
-    document.addEventListener('scroll', onMouseOut, true);
-    document.addEventListener('click', onClick, true);
+    //document.addEventListener('mouseout', onMouseOut, true);
+    //document.addEventListener('scroll', onMouseOut, true);
+    document.addEventListener('click', tagHighlight.onClick, true);
     return () => {
       document.removeEventListener('mouseover', onMouseOver,true);
-      document.removeEventListener('mouseout', onMouseOut, true);
-      document.removeEventListener('scroll', onMouseOut, true);
-      document.removeEventListener('click', onClick, true);
+      //document.removeEventListener('mouseout', onMouseOut, true);
+      //document.removeEventListener('scroll', onMouseOut, true);
+      document.removeEventListener('click', tagHighlight.onClick, true);
     }
   },[]);
   return <div
     className={commonStyles.highlight} 
     style={
       {top: rect.top, left: rect.left, width: rect.width, height: rect.height, 
-      display: isDisplay ? 'block' : 'none',
+      display: tagHighlight.isShowing ? 'block' : 'none',
       /* inline styled to force !important style vs web page css. */
-      backgroundColor: 'rgba(173, 216, 230, 0.5) !important',
-      border: '2px solid var(--color-hyperlink) !important'
+      backgroundColor: tagHighlight.backgroundColor + ' !important',
+       border: '2px solid'+tagHighlight.borderColor +'!important'
     }}/>;
 };
-export default MouseHighlight;
+export default TagHighlight;
