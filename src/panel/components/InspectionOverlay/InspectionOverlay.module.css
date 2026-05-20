@@ -40,9 +40,11 @@
 }
 .instruction-box ul,ol{
   padding-inline-start: 15px;
+  color: var(--color-secondary);
 }
 .instruction-box h1,h2,h3,h4{
   margin: 5px 0;
+  color: var(--color-primary);
 }
 
 @keyframes moveLeftAndBack {
