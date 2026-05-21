@@ -12,20 +12,26 @@ export interface MenuItem {
 const Menu = () => {
   const {menu} = useContentUI();
   const menuRef = useRef<HTMLDivElement>(null);
-  useEffect(()=>{
-    const handleClickOutside= (e:MouseEvent)=>{
-      if(!e.target || !(e.target instanceof HTMLElement)) return;
-      if (menuRef.current &&menuRef.current!==e.target&& !menuRef.current.contains(e.target)) {
-        menu.deClick(e);
-      };
+  // console.log("menu rendered with items:", menu.items);
+  const handleClickOutside= (e:MouseEvent)=>{
+    console.log("handleClickOutside called with target:", e.target);
+    if(!e.target || !(e.target instanceof HTMLElement)) return;
+    if (menuRef.current &&menuRef.current!==e.target&& !menuRef.current.contains(e.target)) {
+      console.log("Click outside menu detected, hiding menu.", menu.deClick);
+      menu.deClick(e);
     };
-    document.addEventListener('click', handleClickOutside);
+  };
+  document.addEventListener('click', handleClickOutside);
+  useEffect(()=>{
     return ()=>{
       document.removeEventListener('click', handleClickOutside);
     };
   },[]);
+
+  // WARN: MAKE SURE RETURN NULL AFTER HOOKS(useRef, useState, useEffect, etc) CALLED IN CONDITIONAL STATEMENT.
+  if (!menu.isShowing) return null;
   return <div className={commonStyles.menu} 
-    style={{left: menu.x, top: menu.y, display: menu.isShowing ? 'block' : 'none'}}
+    style={{left: menu.x, top: menu.y}}
     ref={menuRef}
   >
     <div className={commonStyles.header}>{menu.header}</div>

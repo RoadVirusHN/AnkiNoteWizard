@@ -93,22 +93,23 @@
   
   position: fixed;
   left: 50%;
-  bottom: 50%;
-  transform: translate(-50%, 50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
 
-  z-index: 1000000;
+  z-index: 1000002;
   padding: 5px 10px;
   
   background-color: var(--color-light) !important;
   color: var(--color-primary) !important;
   border-radius: 4px !important;
-  
-  pointer-events: none;
+ 
   max-width: 500px;
 
   font-size: 1em !important;
   white-space: nowrap;
   text-overflow: ellipsis;
+  
+  pointer-events: auto !important;
   
   overflow: hidden;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);

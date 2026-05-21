@@ -5,13 +5,17 @@ import useContentUI from "./util/useContentUI";
 
 
 const MyConfirm = () => {
-  const {myConfirm: confirm} = useContentUI();
+  const {myConfirm} = useContentUI();
   const tl = useLocale('background');
-  return <div className={commonStyles['my-confirm']} style={{display: confirm.isShowing ? 'block' : 'none'}}>
-      <p>{confirm.text}</p>
+  // WARN: MAKE SURE RETURN NULL AFTER HOOKS(useRef, useState, useEffect, etc) CALLED IN CONDITIONAL STATEMENT.
+  if (!myConfirm.isShowing) return null;
+  return <div className={commonStyles['my-confirm']}
+    onClick={(e)=>{e.stopPropagation();}}
+  >
+      <p>{myConfirm.text}</p>
       <div className={commonStyles.buttons}>
-        <SimpleButton text={tl("OK")} onClick={confirm.onConfirm}/>
-        <SimpleButton text={tl("Cancel")} onClick={confirm.onCancel}/>
+        <SimpleButton text={tl("OK")} onMouseEnter={()=>{console.log("whyyyyyyyyyyyyy")}} onClick={myConfirm.onConfirm}/>
+        <SimpleButton text={tl("Cancel")} onClick={myConfirm.onCancel}/>
       </div>
     </div>;
 };

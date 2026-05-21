@@ -1,6 +1,6 @@
 import { MenuItem } from '@/content/ui/Menu';
 import { create } from 'zustand';
-import { UIStates } from './Scenearios';
+import { UIStates } from './UIStates';
 
 interface ContentUIState {
   tagHighlight: {

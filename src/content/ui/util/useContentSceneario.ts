@@ -11,15 +11,8 @@ import { MenuItem } from '../Menu';
 import { MESSAGE_TYPE } from '@/types/chrome.types';
 import useLocale from '@/panel/hooks/useLocale';
 import { EXTENSION_UI_ID } from '@/content/constants';
-import { UIStates } from './Scenearios';
+import { UIStates } from './UIStates';
 import { useShallow } from 'zustand/react/shallow';
-// const INSPECTION_STATE = {
-//   HIGHLIGHT: 'HIGHLIGHT',
-//   MENU: 'MENU',
-//   TOOLTIP: 'TOOLTIP',
-//   SELECTOR_CONFIRM: 'SELECTOR_CONFIRM',
-// } as const;
-// type InspectionState = (typeof INSPECTION_STATE)[keyof typeof INSPECTION_STATE];
 
 export const useContentScenario = ({
   mode,
@@ -44,20 +37,25 @@ export const useContentScenario = ({
   );
   const tl = useLocale('background');
   const deClick = (e: MouseEvent) => {
+    // 메뉴 표시 후 클릭 이벤트가 메뉴 외부에서 발생하면 메뉴 숨김
+    console.log("deClick called with target:", e.target);
     if (!e.target || !(e.target instanceof HTMLElement)) return;
-    if (!e.target.closest(`div.${CSS.escape(commonStyles.menu)}`)) {
-      setTagHighlight(UIStates.initTagHighlight(onHighlightClick));
+    if (!e.target.closest(`div#${EXTENSION_UI_ID}`)) {
+      console.log("deClick called, hiding menu.");
+      init();
     }
   };
   const showMenu = (items: MenuItem[], x: number, y: number, header: string) => {
-    // 메뉴 표시 후 클릭 이벤트가 메뉴 외부에서 발생하면 메뉴 숨김
+    console.log("menu setted with", deClick);
     setMenu({ isShowing: true, items, x, y, header, deClick });
     setTagHighlight(UIStates.offTagHighlight());
   };
   const showTooltip = (text: string, x: number, y: number) => {
+    console.log(`Showing tooltip: ${text} at (${x}, ${y})`);
     setTooltip({ isShowing: true, text, x, y });
     port.postMessage({ type: MESSAGE_TYPE.SEND_INSPECTION_DATA_FROM_CONTENT, data: text });
     setTimeout(() => {
+      console.log(`Tooltip hidden after showing: ${text}`);
       deactivate();
     }, 2000); // 2초 후에 툴팁 숨김
   };
@@ -66,6 +64,7 @@ export const useContentScenario = ({
     navigator.clipboard
       .writeText(text)
       .then(() => {
+        console.log(`Copied to clipboard: ${text}`);
         showTooltip(text, x, y);
       })
       .catch((err) => console.error(err));
@@ -118,16 +117,21 @@ export const useContentScenario = ({
               key: s,
               onClick: () => {
                 const elements = document.querySelectorAll(s);
-                UIStates.setMultiHighlight(Array.from(elements) as HTMLElement[]);
+                setMultiHighlight(
+                  UIStates.setMultiHighlight(Array.from(elements) as HTMLElement[])
+                );
+                setMenu(UIStates.offMenu());
                 setMyConfirm({
                   isShowing: true,
                   text: tl('Does the selector correctly select the element?'),
                   onConfirm: () => {
+                    console.log('Selector confirmed: ', s);
                     copyToClipboard(s, x, y, port);
-                    setMultiHighlight(UIStates.setMultiHighlight([]));
+                    init();
                   },
                   onCancel: () => {
-                    setMultiHighlight(UIStates.setMultiHighlight([]));
+                    console.log('Selector cancled: ', s);
+                    init();
                   },
                 });
               },
@@ -172,11 +176,10 @@ export const useContentScenario = ({
           e.stopPropagation();
           const children = Array.from(target.children) as HTMLElement[];
           if (children.length === 0) return;
-          const rect = target.getBoundingClientRect();
           setMenu({
             isShowing: true,
-            x: rect.left,
-            y: rect.top,
+            x,
+            y,
             header: tagToText(target),
             deClick,
             items: [
@@ -185,11 +188,11 @@ export const useContentScenario = ({
                 onClick: () => {
                   setMenu({
                     isShowing: true,
-                    x: rect.left,
-                    y: rect.top,
+                    x,
+                    y,
                     header: tagToText(target),
                     deClick,
-                    items: createMenuItems(target, { x: rect.left, y: rect.top }),
+                    items: createMenuItems(target, { x, y }),
                   });
                 },
                 onHover: () => {
@@ -200,13 +203,12 @@ export const useContentScenario = ({
                 key: tagToText(child),
                 onClick: (e: MouseEvent) => {
                   e.stopPropagation();
-                  const rect = child.getBoundingClientRect();
                   setMenu({
                     isShowing: true,
-                    x: rect.x,
-                    y: rect.y,
+                    x: x,
+                    y: y,
                     header: tagToText(child),
-                    items: createMenuItems(child, { x: rect.x, y: rect.y }),
+                    items: createMenuItems(child, { x, y }),
                     deClick,
                   });
                   setMultiHighlight(UIStates.setMultiHighlight([child]));
@@ -249,5 +251,12 @@ export const useContentScenario = ({
       copyToClipboard((target.textContent ?? '').trim(), rect.left, rect.top, port);
     }
   };
-  setTagHighlight(UIStates.initTagHighlight(onHighlightClick));
+  const init = () => {
+    setMenu(UIStates.offMenu());
+    setMultiHighlight(UIStates.setMultiHighlight([]));
+    setMyConfirm(UIStates.offMyConfirm());
+    setTooltip(UIStates.offTooltip());
+    setTagHighlight(UIStates.initTagHighlight(onHighlightClick));
+  };
+  init();
 };

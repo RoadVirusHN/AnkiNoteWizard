@@ -5,7 +5,7 @@ import Tooltip from "./Tooltip";
 import MyConfirm from "./MyConfirm";
 import { useContentScenario } from "./util/useContentSceneario";
 import TagHighlight from "./TagHighlight";
-import { useEffect } from "react";
+import "./common.css";
 
 const App = ({mode, port, roots, deactivate}:{mode:InspectionMode, port:chrome.runtime.Port, roots:HTMLElement[], deactivate:()=>void}) => {
   useContentScenario({mode, port, roots, deactivate});
