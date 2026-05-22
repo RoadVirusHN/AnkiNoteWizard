@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import commonStyles from "./common.module.css";
 import useContentUI from "./util/useContentUI";
+import { useForceUpdate } from "@/panel/hooks/useForceUpdate";
 
 export interface MenuItem {
   key: string;
@@ -21,17 +22,20 @@ const Menu = () => {
       menu.deClick(e);
     };
   };
+  const forceUpdate = useForceUpdate();
+  document.addEventListener('scroll', forceUpdate, true);
   document.addEventListener('click', handleClickOutside);
   useEffect(()=>{
     return ()=>{
+      document.removeEventListener('scroll', forceUpdate, true);
       document.removeEventListener('click', handleClickOutside);
     };
-  },[]);
+  },[forceUpdate]);
 
   // WARN: MAKE SURE RETURN NULL AFTER HOOKS(useRef, useState, useEffect, etc) CALLED IN CONDITIONAL STATEMENT.
   if (!menu.isShowing) return null;
   return <div className={commonStyles.menu} 
-    style={{left: menu.x, top: menu.y}}
+    style={{left: menu.x-window.scrollX, top: menu.y-window.scrollY}}
     ref={menuRef}
   >
     <div className={commonStyles.header}>{menu.header}</div>
