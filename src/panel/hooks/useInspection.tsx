@@ -1,15 +1,6 @@
 import { useState } from "react";
-import { CssSelectorGeneratorOptionsInput } from "css-selector-generator/types/types";
 import { INSPECTION_MODE, InspectionMode } from "@/types/app.types";
 import { MESSAGE_TYPE, PORT_NAMES } from "@/types/chrome.types";
-
-interface _UseInspectionParams {  
-  mode: InspectionMode;
-  rootSelector: string;
-  cssSelectorOptions: CssSelectorGeneratorOptionsInput;
-  onResult: (text:string)=>void;
-  onEnter: ()=>void;
-}
 
 const useInspection = (
   mode = INSPECTION_MODE.TEXT_EXTRACTION as InspectionMode,

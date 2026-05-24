@@ -3,13 +3,25 @@ import tseslint from '@typescript-eslint/eslint-plugin';
 import parser from '@typescript-eslint/parser';
 import prettier from 'eslint-config-prettier';
 import pluginPrettier from 'eslint-plugin-prettier';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
 
 /** @type {import('eslint').FlatConfig.Config[]} */
 export default [
-
+  // React용 설정
+  {
+    files: ['**/*.{js,jsx}'],
+    ...reactPlugin.configs.flat.recommended,
+    ...reactPlugin.configs.flat['jsx-runtime'],
+  },
+  // React Hooks용 설정
+  {
+    files: ['**/*.{js,jsx}'],
+    ...reactHooks.configs.flat.recommended,
+  },
   // TypeScript용 설정
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.{ts,tsx}'], 
     languageOptions: {
       parser,
       parserOptions: {
@@ -21,6 +33,11 @@ export default [
       '@typescript-eslint': tseslint,
       prettier: pluginPrettier,
     },
+    settings:{
+      react: {
+        version: 'detect', // React 버전을 자동으로 감지
+      },
+    },
     rules: {
       ...tseslint.configs.recommended.rules,
       semi: ['error', 'always'],
@@ -31,6 +48,6 @@ export default [
     },
   },
 
-  // Prettier 충돌 방지 (항상 마지막에!)
+  // WARN : Prettier 충돌 방지 (항상 마지막에!)
   prettier,
 ];
