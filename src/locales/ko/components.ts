@@ -1,6 +1,12 @@
-import component from '../en/component';
+import components from '../en/components';
 
 export default {
+  tabs:{
+    detect: '감지',
+    add: '추가',
+    scanRules: '스캔 규칙',
+    config: '설정',
+  },
   modelInput: {
     ankiConnectionError: 'Anki 연결 오류',
   },
@@ -20,4 +26,4 @@ export default {
   preview: {
     removedCodeWarning: '보안상의 이유로 일부 요소(스크립트, 태그)가 제거되었습니다.',
   },
-} satisfies typeof component;
+} satisfies typeof components;

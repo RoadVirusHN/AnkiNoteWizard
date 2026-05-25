@@ -53,4 +53,53 @@ export default {
       ],
     },
   },
+  addNote: {
+    modelNotFoundError: {
+      statusText: 'Model Not Found',
+      description: 'The specified model could not be found.',
+      solutions: ['Please select a valid model for the note.'],
+    },
+    emptyModelError: {
+      statusText: 'Empty Model',
+      description: 'A model is required to add a note.',
+      solutions: ['Please select or create a model for the note.'],
+    },
+    emptyDeckError: {
+      statusText: 'Empty Deck',
+      description: 'A deck is required to add a note.',
+      solutions: ['Please select or create a deck for the note.'],
+    },
+    fieldModelMismatchError: {
+      statusText: 'Field-Model Mismatch',
+      description: 'The fields provided do not match the model.',
+      solutions: ['Please ensure the fields match the selected model.'],
+    },
+    duplicateNoteError: {
+      statusText: 'Duplicate Note',
+      description: 'A note with the same content already exists.',
+      solutions: ['Please modify the note content to make it unique.'],
+    },
+  },
+  scanRule:{
+    invallidScanRuleName: {
+      statusText: 'Invalid Scan Rule Name',
+      description: 'The scan rule name is invalid.',
+      solutions: ['Please enter a valid scan rule name.'],
+    },
+    duplicateScanRuleName: {
+      statusText: 'Duplicate Scan Rule Name',
+      description: 'A scan rule with the same name already exists.',
+      solutions: ['Please enter a unique scan rule name.'],
+    },
+    invalidModel: {
+      statusText: 'Invalid Model',
+      description: 'The specified model is invalid.',
+      solutions: ['Please select a valid model for the scan rule.'],
+    },
+    invalidRootTag: {
+      statusText: 'Invalid Root Tag',
+      description: 'The root tag is invalid.',
+      solutions: ['Please enter a valid root tag.'],
+    }
+  }
 };

@@ -14,6 +14,8 @@ export default {
     addNote: '노트 추가',
     addNoteSuccess: '노트가 성공적으로 추가되었습니다.',
     addNoteFail: '노트 추가 실패 :',
+    fieldContentPlaceholder: '필드 내용을 입력하세요',
+    changeModelFieldWarning: '모델을 변경하면 현재 입력한 요소가 초기화됩니다. 계속하시겠습니까?',  
   },
   configPage: {
     locale: '언어 설정',

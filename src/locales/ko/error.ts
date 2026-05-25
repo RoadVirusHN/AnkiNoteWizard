@@ -55,4 +55,53 @@ export default {
       ],
     },
   },
+  addNote: {
+    modelNotFoundError: {
+      statusText: '모델을 찾을 수 없음',
+      description: '노트에 지정된 모델이 Anki에 존재하지 않습니다.',
+      solutions: ['노트에 올바른 모델을 선택하거나 생성하세요.'],
+    },
+    emptyModelError: {
+      statusText: '모델이 비어 있음',
+      description: '노트를 추가하려면 모델이 필요합니다.',
+      solutions: ['노트에 모델을 선택하거나 생성하세요.'],
+    },
+    emptyDeckError: {
+      statusText: '덱이 비어 있음',
+      description: '노트를 추가하려면 덱이 필요합니다.',
+      solutions: ['노트에 덱을 선택하거나 생성하세요.'],
+    },
+    fieldModelMismatchError: {
+      statusText: '필드-모델 불일치',
+      description: '노트의 필드가 모델과 일치하지 않습니다.',
+      solutions: ['노트의 필드가 모델과 일치하는지 확인하세요.'],
+    },
+    duplicateNoteError: {
+      statusText: '중복된 노트',
+      description: 'Anki에 이미 동일한 노트가 존재합니다.',
+      solutions: ['노트 내용을 수정하여 중복을 피하세요.'],
+    },
+  },
+  scanRule:{
+    invallidScanRuleName: {
+      statusText: '잘못된 스캔 규칙 이름',
+      description: '스캔 규칙 이름이 유효하지 않습니다.',
+      solutions: ['유효한 스캔 규칙 이름을 입력하세요.'],
+    },
+    duplicateScanRuleName: {
+      statusText: '중복된 스캔 규칙 이름',
+      description: '동일한 이름의 스캔 규칙이 이미 존재합니다.',
+      solutions: ['고유한 스캔 규칙 이름을 입력하세요.'],
+    },
+    invalidModel: {
+      statusText: '잘못된 모델',
+      description: '스캔 규칙에 지정된 모델이 유효하지 않습니다.',
+      solutions: ['스캔 규칙에 유효한 모델을 선택하세요.'],
+    },
+    invalidRootTag: {
+      statusText: '잘못된 루트 태그',
+      description: '스캔 규칙에 지정된 루트 태그가 유효하지 않습니다.',
+      solutions: ['스캔 규칙에 유효한 루트 태그를 입력하세요.'],
+    }
+  }
 } satisfies typeof error;

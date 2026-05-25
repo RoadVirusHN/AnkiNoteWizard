@@ -1,4 +1,10 @@
 export default {
+  tabs:{
+    detect: 'Detect',
+    add: 'Add',
+    scanRules: 'ScanRules',
+    config: 'Config',
+  },
   modelInput: {
     ankiConnectionError: 'Anki Connection Error',
   },

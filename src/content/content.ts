@@ -1,8 +1,6 @@
 import { messageHandler } from './messageHandler';
-import i18n from '@/locales/i18n';
+import i18n, { i18nConfig } from '@/locales/i18n';
 import { initReactI18next } from 'react-i18next';
-import enTranslations from '@/locales/en.json';
-import koTranslations from '@/locales/ko.json';
 import {
   ScanRule,
   FIELD_DATA_TYPES,
@@ -13,18 +11,7 @@ import {
 
 console.log('✅ Content script loaded');
 export const initLocale = () => {
-  const config = {
-    resources: {
-      en: { translation: enTranslations },
-      ko: { translation: koTranslations },
-    },
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-      nsSeparator: false,
-    },
-  };
-  i18n.use(initReactI18next).init(config);
+  i18n.use(initReactI18next).init(i18nConfig);
 };
 
 chrome.storage.sync.get('anki-card-wizard-configure-store', (result) => {
