@@ -9,10 +9,10 @@ import {
 import commonStyles from '../common.module.css';
 import { MenuItem } from '../Menu';
 import { MESSAGE_TYPE } from '@/types/chrome.types';
-import useLocale from '@/panel/hooks/useLocale';
 import { EXTENSION_UI_ID } from '@/content/constants';
 import { UIStates } from './UIStates';
 import { useShallow } from 'zustand/react/shallow';
+import { useTranslation } from 'react-i18next';
 
 export const useContentScenario = ({
   mode,
@@ -27,7 +27,7 @@ export const useContentScenario = ({
 }) => {
   // const { setTagHighlight, setMultiHighlight, setMenu, setTooltip, setMyConfirm } = useContentUI();
   const { setTagHighlight, setMultiHighlight, setMenu, setTooltip, setMyConfirm } = useContentUI(
-    useShallow((state)=>({
+    useShallow((state) => ({
       setTagHighlight: state.setTagHighlight,
       setMultiHighlight: state.setMultiHighlight,
       setMenu: state.setMenu,
@@ -35,18 +35,19 @@ export const useContentScenario = ({
       setMyConfirm: state.setMyConfirm,
     }))
   );
-  const tl = useLocale('background');
+  const { t } = useTranslation('common');
+  const { t: tScript } = useTranslation('script');
   const deClick = (e: MouseEvent) => {
     // 메뉴 표시 후 클릭 이벤트가 메뉴 외부에서 발생하면 메뉴 숨김
-    console.log("deClick called with target:", e.target);
+    console.log('deClick called with target:', e.target);
     if (!e.target || !(e.target instanceof HTMLElement)) return;
     if (!e.target.closest(`div#${EXTENSION_UI_ID}`)) {
-      console.log("deClick called, hiding menu.");
+      console.log('deClick called, hiding menu.');
       init();
     }
   };
   const showMenu = (items: MenuItem[], x: number, y: number, header: string) => {
-    console.log("menu setted with", deClick);
+    console.log('menu setted with', deClick);
     setMenu({ isShowing: true, items, x, y, header, deClick });
     setTagHighlight(UIStates.offTagHighlight());
   };
@@ -75,14 +76,14 @@ export const useContentScenario = ({
     setMultiHighlight(UIStates.setMultiHighlight([target]));
     return [
       {
-        key: '📄 ' + tl('Extract Text'),
+        key: '📄 ' + t('extract{{word}}', { word: t('text') }),
         onClick: () => {
           const text = target.textContent?.trim() || '';
           copyToClipboard(text, x, y, port);
         },
       },
       {
-        key: '🎯 ' + tl('Extract Selector'),
+        key: '🎯 ' + t('extract{{word}}', { word: t('selector') }),
         onClick: () => {
           let selectors = [] as string[];
           if (mode === INSPECTION_MODE.TAG_EXTRACTION) {
@@ -99,10 +100,7 @@ export const useContentScenario = ({
                 break;
               }
             }
-            if (
-              !found &&
-              !confirm(tl('selected tag does not child of root, copy selector anyway?'))
-            ) {
+            if (!found && !confirm(tScript('targetTagNotInTheRootTagWarning'))) {
               return;
             }
           }
@@ -111,7 +109,7 @@ export const useContentScenario = ({
             isShowing: true,
             x,
             y,
-            header: tl('Extracted Selectors'),
+            header: tScript('extractedSelectors'),
             deClick,
             items: Array.from(selectors, (s) => ({
               key: s,
@@ -123,7 +121,7 @@ export const useContentScenario = ({
                 setMenu(UIStates.offMenu());
                 setMyConfirm({
                   isShowing: true,
-                  text: tl('Does the selector correctly select the element?'),
+                  text: tScript('checkSelectorConfirmation'),
                   onConfirm: () => {
                     console.log('Selector confirmed: ', s);
                     copyToClipboard(s, x, y, port);
@@ -142,7 +140,7 @@ export const useContentScenario = ({
       {
         key:
           '🧑🏽‍🍼 ' +
-          tl('Select Parent') +
+          t('select{{word}}', { word: tScript('parentElement') }) +
           ` (${!target.parentElement || target.tagName === 'BODY' ? 'No Parent' : ''})`,
         onClick: (e) => {
           e.stopPropagation();
@@ -171,7 +169,10 @@ export const useContentScenario = ({
         },
       },
       {
-        key: '📂 ' + tl('Select Children') + ` (${target.children.length ?? 'No Children'})`,
+        key:
+          '📂 ' +
+          t('select{{word}}', { word: tScript('childrenElement') }) +
+          ` (${target.children.length ?? tScript('noChildren')})`,
         onClick: (e) => {
           e.stopPropagation();
           const children = Array.from(target.children) as HTMLElement[];

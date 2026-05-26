@@ -1,7 +1,6 @@
 import modifyScanRuleStyle from "../modifyScanRule.module.css";
 import Tags from "@/panel/components/Tags/Tags";
 import { useRef } from "react";
-import useLocale from "@/panel/hooks/useLocale";
 import InspectionOverlay from "@/panel/components/InspectionOverlay/InspectionOverlay";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import useInspection from "@/panel/hooks/useInspection";
@@ -10,7 +9,8 @@ import { INSPECTION_MODE } from "@/types/app.types";
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import SimpleInput from "@/panel/components/Inputs/SimpleInput/SimpleInput";
-import SimpleSelect from "@/panel/components/Inputs/SimpleSelect/SimpleSelect";
+import { useTranslation } from "react-i18next";
+import ModelInput from "@/panel/components/Inputs/ModelInput/ModelInput";
 
 interface Props {
   scanRule : ScanRule;
@@ -20,7 +20,8 @@ interface Props {
 const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
 
   const rootTagInputRef = useRef<HTMLInputElement>(null);
-  const tl = useLocale('pages.ModifyScanRule.ScanRuleCommonEditor');
+  const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule.scanRuleCommonEditor'});
+  const {t:tCommon} = useTranslation('common');
   const onResult = (text: string)=>{
     setData({ ...scanRule, rootTag: text });
     if (rootTagInputRef.current){
@@ -32,21 +33,17 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
   
   const options = models
     ? Object.entries(models).map(([modelId, model]) => ({ key: model.name, val: modelId, isDisabled: false }))
-    : [{ key: tl("No Models Founded, Please Connect to Anki"), val: "", isDisabled: true }];
+    : [{ key: tCommon("ankiDisconnected"), val: "", isDisabled: true }];
   
   return (<div>
-    <SimpleSelect
-      label={tl("Model")} 
-      options={[
-        {key: scanRule.modelName, val: scanRule.modelId, isDisabled: false},
-      ].concat(options.filter(option => option.val !== scanRule.modelId))}   
-      defaultValue={scanRule.modelId} 
-      onChange={(e) => {
-        setData({ ...scanRule, modelId: e.target.value, modelName: models[e.target.value].name, fields: Object.fromEntries(models[e.target.value].fields.map((field:string) => [field, { selector: "", dataType: "text" }])) });
-      }}    
+    <ModelInput
+      defaultModelId={scanRule.modelId}
+      setModelId={(modelId) => {
+        setData({ ...scanRule, modelId, modelName: models[modelId].name, fields: Object.fromEntries(models[modelId].fields.map((field:string) => [field, { selector: "", dataType: "text" }])) });
+      }}
     />
     <SimpleInput 
-      label={tl("URL Patterns")} 
+      label={t("urlPatterns")} 
       placeholder={"*"} 
       defaultValue={scanRule.urlPatterns.join(", ")} 
       onChange={(e) => ({ ...scanRule, urlPatterns: e.target.value.split(",").map(s=>s.trim()) })}
@@ -63,7 +60,7 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
       }
     }/>
     <div className={modifyScanRuleStyle.formGroup}>
-      <label>{tl("Root Tag")} <span className={modifyScanRuleStyle.req}>*</span></label>
+      <label>{t("rootTag")} <span className={modifyScanRuleStyle.req}>*</span></label>
       <div className={modifyScanRuleStyle.inputWithBtn}>
         <input
           className={modifyScanRuleStyle.input}
@@ -74,7 +71,7 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
         />
       <SimpleButton title="Extract Tag Selector" src={MagicIcon} onClick={()=>enterInspectionMode(onResult)}/> 
      </div>
-      <p className={modifyScanRuleStyle.hint}>{tl("Fields will be searched under the root tag")}</p>
+      <p className={modifyScanRuleStyle.hint}>{t("rootTagDescription")}</p>
     </div>
     {isInspectionMode && <InspectionOverlay mode={INSPECTION_MODE.TAG_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
   </div>);

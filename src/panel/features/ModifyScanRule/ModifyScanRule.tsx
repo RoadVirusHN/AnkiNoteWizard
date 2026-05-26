@@ -6,10 +6,10 @@ import ScanRuleFieldEditor from "./ScanRuleFieldEditor/ScanRuleFieldEditor";
 import ScanRuleMetaEditor from "./ScanRuleMetaEditor/ScanRuleMetaEditor";
 import ScanRuleCommonEditor from "./ScanRuleCommonEditor/ScanRuleCommonEditor";
 import ModifyScanRuleHeader from "./ModifyScanRuleHeader/ModifyScanRuleHeader";
-import useLocale from "@/panel/hooks/useLocale";
 import { ScanRule, FIELD_DATA_TYPES } from "@/types/scanRule.types";
 import { Default_BASIC_MODEL, SCAN_RULE_CODE } from "@/types/app.types";
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
+import { useTranslation } from "react-i18next";
 
 const emptyScanRule: ScanRule = {
     scanRuleName: "",
@@ -33,8 +33,8 @@ const ModifyScanRule = () => {
   const { models } = useAnkiConnectionStore();
   const currentScanRule = isEditMode && idx !== undefined ? scanRules[idx] : emptyScanRule;
   const currentModel = models[currentScanRule.modelId];  
-  const tl = useLocale('pages.ModifyScanRule');
-  const tabs = ["meta", "common", "fields"];
+  const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule'});
+  const tabs = ["meta", "common", "fields"] as ("meta" | "common" | "fields")[];
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [scanRuleData, setScanRuleData] = useState<ScanRule>(currentScanRule);
   const [isChanged, setIsChanged] = useState<boolean>(false);
@@ -46,7 +46,7 @@ const ModifyScanRule = () => {
     const code = isEditMode && idx !== undefined ? 
     modifyScanRule(scanRules[idx].scanRuleName, scanRuleData) :
     addScanRule(scanRuleData);
-    if (code=== SCAN_RULE_CODE.OK) {
+    if (code.result === 'success') {
       setIsChanged(false);
     } else {
       alert(`Error occurred: ${code}`);
@@ -63,7 +63,7 @@ const ModifyScanRule = () => {
 return (
     <div className={modifyScanRuleStyle.container}>
       <ModifyScanRuleHeader 
-        title={isEditMode ? tl("modify scanRule") : tl("new scanRule")}
+        title={isEditMode ? t("modifyScanRule") : t("newScanRule")}
         isChanged={isChanged}
         onSave={handleSave}
         onCancle={handleCancle}
@@ -74,7 +74,7 @@ return (
             key={tab}
             className={`${modifyScanRuleStyle.tab} ${activeTab === tab ? modifyScanRuleStyle.activeTab : ""}`}
             onClick={() => setActiveTab(tab)}>
-            {tl(tab)}
+            {t(tab)}
           </button>)}
       </div>
       <div className={modifyScanRuleStyle.content}>        

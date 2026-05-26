@@ -7,13 +7,14 @@ import { useEffect } from "react";
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import DetectTab from "./DetectTab/DetectTab";
 import commonStyle from "@/panel/common.module.css";
-import { useTranslation } from "react-i18next";import Icon from "../Icon/Icon";
+import { useTranslation } from "react-i18next";
+import Icon from "../Icon/Icon";
 import { TAB } from "@/types/app.types";
 
 const Tabs = ({}) => {
   const location = useLocation();
   const {currentTab, setCurrentTab} = useGlobalVarStore();
-  const [t] = useTranslation();
+  const [t] = useTranslation('components', {keyPrefix: 'tabs'});
   useEffect(() => {
     switch (location.pathname) {
       case '/detect': case '/':
@@ -44,19 +45,19 @@ const Tabs = ({}) => {
     className={`${tabsStyle.tab} ${currentTab==TAB.ADD? tabsStyle.selected : ''}`} 
     to={'/add'}>
       <Icon url={AddCardIcon}/>
-      <p>{t('tabs.add')}</p>
+      <p>{t('add')}</p>
       </NavLink>
     <NavLink 
     className={`${tabsStyle.tab} ${currentTab==TAB.SCAN_RULES? tabsStyle.selected : ''}`} 
     to={'/scanRules'}>
       <Icon url={CardTypeIcon}/>
-      <p>{t('tabs.scanRules')}</p>
+      <p>{t('scanRules')}</p>
     </NavLink>    
     <NavLink 
     className={`${tabsStyle.tab} ${currentTab==TAB.CONFIG? tabsStyle.selected : ''}`} 
     to={'/config'}>
       <Icon url={ConfigIcon}/>
-      <p>{t('tabs.config')}</p>
+      <p>{t('config')}</p>
     </NavLink>
   </nav>
   );

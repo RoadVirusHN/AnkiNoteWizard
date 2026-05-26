@@ -12,7 +12,7 @@ import { TAB, TOOLTIP_DIRECTION } from "@/types/app.types";
 const DetectTab = ({}) => {
   const {currentTab, currentDetected } = useGlobalVarStore();
   const {isConnected, isPending, checkConnection} = useAnkiConnectionStore();
-  const [t] = useTranslation();
+  const [t] = useTranslation('components', {keyPrefix: 'tabs'});
   useEffect(()=>{
       if (isConnected) return;
       checkConnection();
@@ -33,7 +33,7 @@ const DetectTab = ({}) => {
           <span onClick={checkConnection} style={{cursor: 'pointer', color:isPending ? 'gray' : (isConnected ? 'greenyellow' : 'red')}}>●</span>
         </TooltipWrapper>
       </div>
-      <p>{t('tabs.detect')}</p>
+      <p>{t('detect')}</p>
   </NavLink>);
 };
 export default DetectTab;

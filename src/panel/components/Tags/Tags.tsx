@@ -15,7 +15,7 @@ interface TagsProps {
 
 const Tags = ({givenTags, isModifying=false, onRemoveTag=(t)=>{}, onAddTag=(t)=>{}}:TagsProps) => {
   const {tags, addTag} = useScanRule();
-  const {t} = useTranslation();
+  const {t} = useTranslation('common');
   const deleteTag = (e: React.MouseEvent, tag: string) => {
     e.stopPropagation();
     onRemoveTag(tag);
@@ -44,7 +44,7 @@ const Tags = ({givenTags, isModifying=false, onRemoveTag=(t)=>{}, onAddTag=(t)=>
       }
     )}
     {isModifying ? <>
-    <input id="tagInput" className={tagsStyle.tagInput} type='text' placeholder={t('common.new tag')} 
+    <input id="tagInput" className={tagsStyle.tagInput} type='text' placeholder={t('newTag')} 
     onKeyDown={(e)=>{if (e.key==='Enter') insertTag()}}/> 
     <Icon url={AddIcon} className={tagsStyle.tagAdder} handleClick={insertTag}/></>
     : null}

@@ -13,13 +13,14 @@ import { useState } from "react";
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import ScanRuleInput from "@/panel/components/Inputs/ScanRuleInput/ScanRuleInput";
 import DeckInput from "@/panel/components/Inputs/DeckInput/DeckInput";
-import useLocale from "@/panel/hooks/useLocale";
 import Icon from "@/panel/components/Icon/Icon";
 import useInspection from "@/panel/hooks/useInspection";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import { NavLink } from "react-router";
 import { INSPECTION_MODE } from "@/types/app.types";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
+import { useTranslation } from "react-i18next";
+import { isNoteValid } from "@/panel/utils/functions";
 
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();
@@ -28,12 +29,13 @@ const AddPage = ({}) => {
   const [isChanged, setIsChanged] = useState(false);
   const [isModifying, setIsModifying] = useState(true);
   
-  const tl = useLocale('pages.AddPage');
-  const tlC = useLocale('common');
+  const {models} = useAnkiConnectionStore();  
+  const {t} = useTranslation('page',{keyPrefix: 'addPage'});
+  const {t:tCommon} = useTranslation('common');
   const {enterInspectionMode,cancleInspectionMode,isInspectionMode} = useInspection();
   return <div className={addPageStyle.container}>
     <div className={addPageStyle.header}>     
-      <h2>{tl('Add Note to Anki')}</h2>
+      <h2>{t('addNoteToAnki')}</h2>
       <div className={commonStyle.toggle}>
         <div className={addPageStyle.modBtns} style={{visibility: isChanged ? "visible" : "hidden"}}>
           <Icon url={CancleIcon} handleClick={()=>{
@@ -51,15 +53,17 @@ const AddPage = ({}) => {
       {<section className={addPageStyle.content}>
         {isInspectionMode ?? <InspectionOverlay mode={INSPECTION_MODE.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
         <div className={addPageStyle.formGroup}>
-          <DeckInput label={tl('decks')} onChange={(deck:string)=>{setCurNote({...curNote, deckName: deck})}}/>
+          <DeckInput label={tCommon('deck')} onChange={(deck:string)=>{setCurNote({...curNote, deckName: deck})}}/>
         </div>
         <ScanRuleInput defaultScanRule={curNote.scanRuleName} setScanRule={(scanRule:string)=>{
           setCurNote({...curNote, scanRuleName: scanRule});
           setIsChanged(true);
         }}/>
         <ModelInput defaultModelId={curNote.modelId} setModelId={(modelId:string)=>{
-          setCurNote({...curNote, modelId});
-          setIsChanged(true);
+          if (confirm(t('changeModelFieldWarning'))){ 
+            setCurNote({...curNote, modelId, fields: models[modelId].fields.map((fieldName:string)=>({key: fieldName, content: ''}))});
+            setIsChanged(true);
+          }
         }}/>
         <Tags givenTags={curNote.tags} isModifying={isModifying} 
         onAddTag={(tag)=>{
@@ -84,7 +88,8 @@ const AddPage = ({}) => {
               <div className={addPageStyle.fieldContentWrapper}>
                 <input
                   className={`${addPageStyle.input} ${addPageStyle.fieldContent}`}
-                  placeholder={tl("Field Content")}
+                  placeholder={t("fieldContentPlaceholder")}
+                  value={content}
                   onChange={(e) => {
                     const newFields = [...curNote.fields];
                     newFields[idx] = {...newFields[idx], content: e.target.value};
@@ -104,6 +109,11 @@ const AddPage = ({}) => {
       <SimpleButton src={AddIcon} 
         className={addPageStyle.addBtn}
         onClick={()=>{
+          const res = isNoteValid(curNote, models[curNote.modelId]);
+          if (res.result!== 'success'){
+            alert(tCommon('error')+`: ${res.error}`);
+            return;
+          }
           const req = {
             action: 'addNote',
             params: {
@@ -114,10 +124,10 @@ const AddPage = ({}) => {
           fetchAnki(req).then((res)=>{
             setIsChanged(false);
             setCurNote(currentAddingNote);
-            alert(res.error ? tlC('error')+`: ${res.error}` : tl('Note added successfully'));
+            alert(res.error ? tCommon('error')+`: ${res.error}` : t('addNoteSuccess'));
             });
           }}
-        text={tl('Add Note')}
+        text={t('addNote')}
       />
   </div>;
 };

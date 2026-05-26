@@ -1,5 +1,5 @@
 import detectPageStyle from '@/panel/features/Detect/detectPage.module.css';
-import { JSX, useState } from 'react';
+import { useState } from 'react';
 import useCustomCard from '@/panel/stores/useScanRule';
 import DetectedDraft from './DetectedDraft/DetectedDraft';
 import DeckInput from '@/panel/components/Inputs/DeckInput/DeckInput';
@@ -7,10 +7,10 @@ import AddIcon from '@/public/Icon/Icon-Add.svg';
 import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import useGlobalVarStore from '@/panel/stores/useGlobalVarStore';
 import useScanRule from '@/panel/stores/useScanRule';
-import useLocale from '@/panel/hooks/useLocale';
 import { ExtractedFields, ExtractedInfos,  FIELD_DATA_TYPES,  Note, ScanRule } from '@/types/scanRule.types';
 import { MESSAGE_TYPE } from '@/types/chrome.types';
 import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
+import { useTranslation } from 'react-i18next';
 
 //TODO : Apply SCSS for css.
 //TODO : MAKE Interfaces&Types FILE
@@ -27,7 +27,7 @@ const DetectPage: React.FC = () => {
   const {currentDeck, setCurrentDetected} = useGlobalVarStore();
   const {notes, setNotes} = useScanRule();
   
-  const tl = useLocale('pages.DetectPage');  
+  const {t} = useTranslation('page', {keyPrefix: 'detectPage'});  
   const requestExtracteds = async () => {
     setIsPending(true);
     chrome.runtime.sendMessage({
@@ -97,10 +97,10 @@ const DetectPage: React.FC = () => {
       console.log(res);
       if (res.error) {
         console.error('Error adding note to Anki:', res.error);
-        alert(tl('Failed to add note') + res.error);
+        alert(t('addNoteFail') + res.error);
       } else {
         console.log('Note added to Anki with ID:', res.result);
-        alert(tl('Note added successfully'));
+        alert(t('addNoteSuccess'));
       }
     });
   }
@@ -110,10 +110,10 @@ const DetectPage: React.FC = () => {
         <DeckInput/> 
         <div className={detectPageStyle.headerButtons}>
           <SimpleButton disabled={isPending} className={detectPageStyle.redetectDraft} onClick={requestExtracteds}>
-            {isPending ? tl("Scanning") : '↺ '+tl("Scan")}
+            {isPending ? t("scanning") : '↺ '+t("scan")}
           </SimpleButton>
         </div>
-        <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `+ ${selected.size}` : tl('Add')}/>
+        <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `+ ${selected.size}` : t('add')}/>
       </div>
 
       <div className={detectPageStyle.draftsWrapper}>
@@ -130,7 +130,7 @@ const DetectPage: React.FC = () => {
             );
           })
         ) : (
-          <div className={detectPageStyle.noDrfat}>{tl("No Note Detected")}</div>
+          <div className={detectPageStyle.noDrfat}>{t("noDraftDetected")}</div>
         )}
       </div>
     </div>

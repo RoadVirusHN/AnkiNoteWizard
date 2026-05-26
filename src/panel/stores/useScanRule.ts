@@ -1,14 +1,14 @@
-import { SCAN_RULE_CODE as SCAN_RULE_CODE } from '@/types/app.types';
+import { ErrorMessage } from '@/types/app.types';
 import { Note, ScanRule as ScanRule } from '@/types/scanRule.types';
+import { useTranslation } from 'react-i18next';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-
 interface ScanRuleState {
   scanRules: ScanRule[];
-  addScanRule: (scanRule: ScanRule) => SCAN_RULE_CODE;
+  addScanRule: (scanRule: ScanRule) => ErrorMessage;
   removeScanRule: (name: string) => void;
-  modifyScanRule: (name: string, scanRule: ScanRule) => SCAN_RULE_CODE;
+  modifyScanRule: (name: string, scanRule: ScanRule) => ErrorMessage;
   notes: { [idx: string]: Note };
   addNote: (idx: string, note: Note) => void;
   removeNote: (idx: string) => void;
@@ -20,23 +20,42 @@ interface ScanRuleState {
   updateTag: (name: string, color: string) => void;
 }
 
-const isScanRuleVaild = (scanRule: ScanRule, curScanRules: ScanRule[]): SCAN_RULE_CODE => {
+const isScanRuleVaild: (scanRule: ScanRule, curScanRules: ScanRule[]) => ErrorMessage = (
+  scanRule: ScanRule,
+  curScanRules: ScanRule[]
+) => {
+  const {t} = useTranslation('error', {keyPrefix: 'scanRule'});
   if (!scanRule.scanRuleName || scanRule.scanRuleName.trim() === '') {
-    return SCAN_RULE_CODE.INVALID_SCAN_RULE_NAME;
+    return {
+      result: 'error',
+      error: t('invallidScanRuleName.statusText'),
+    };
   }
   if (curScanRules.filter((t) => t.scanRuleName === scanRule.scanRuleName).length > 0) {
-    return SCAN_RULE_CODE.DUPLICATE_SCAN_RULE_NAME;
+    return {
+      result: 'error',
+      error: t('duplicateScanRuleName.statusText'),
+    };
   }
   // if (!scanRule.meta.author || scanRule.meta.author.trim() === '') {
   //   return SCAN_RULE_CODE.INVALID_AUTHOR_NAME;
   // }
   if (!scanRule.modelId) {
-    return SCAN_RULE_CODE.INVALID_MODEL;
+    return {
+      result: 'error',
+      error: t('invalidModel.statusText'),
+    };
   }
   if (!scanRule.rootTag || scanRule.rootTag.trim() === '') {
-    return SCAN_RULE_CODE.INVALID_ROOT_TAG;
+    return {
+      result: 'error',
+      error: t('invalidRootTag.statusText'),
+    };
   }
-  return SCAN_RULE_CODE.OK;
+  return {
+    result: 'success',
+    error: null,
+  };
 };
 
 const useScanRule = create<ScanRuleState>()(
@@ -45,7 +64,7 @@ const useScanRule = create<ScanRuleState>()(
       scanRules: [],
       addScanRule: (scanRule: ScanRule) => {
         const code = isScanRuleVaild(scanRule, get().scanRules);
-        if (code === SCAN_RULE_CODE.OK)
+        if (code.result === 'success')
           set((state) => ({ scanRules: [...state.scanRules, scanRule] }));
         return code;
       },
@@ -65,14 +84,29 @@ const useScanRule = create<ScanRuleState>()(
         });
       },
       modifyScanRule: (name: string, scanRule: ScanRule) => {
+        const res = isScanRuleVaild(scanRule, get().scanRules);
+        if (res.result === 'error') {
+          return res;
+        }
+
         let founded = false;
         set((state) => ({
           scanRules: state.scanRules.map((c) => {
             founded = true;
-            return (c.scanRuleName === name ? scanRule : c)
+            return c.scanRuleName === name ? scanRule : c;
           }),
         }));
-        return founded ? SCAN_RULE_CODE.OK : SCAN_RULE_CODE.NO_SUCH_SCAN_RULE;
+        if (founded) {
+          return {
+            result: 'success',
+            error: null,
+          };
+        } else {
+          return {
+            result: 'error',
+            error: 'Scan rule not found',
+          };
+        }
       },
       notes: {},
       addNote: (idx, note) => {

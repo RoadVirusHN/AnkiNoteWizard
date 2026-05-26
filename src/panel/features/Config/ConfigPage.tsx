@@ -3,7 +3,6 @@ import configPageStyle from "./configPage.module.css";
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useConfigure from '@/panel/stores/useConfigure';
-import useLocale from '@/panel/hooks/useLocale';
 import { LOCALE, Locale, THEME_SETTING, ThemeSetting } from '@/types/app.types';
 import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
@@ -11,8 +10,7 @@ import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
 
 const ConfigPage: React.FC = () => {
   // font size, about, javascript, default Anki Connect url, default setting, default scanRules 
-  const [_t, i18n] = useTranslation();
-  const tl = useLocale('pages.ConfigPage');
+  const {t} = useTranslation('page', {keyPrefix: 'configPage'});
   const {
     locale,setLocale, 
     themeOption, setThemeSetting,
@@ -28,7 +26,7 @@ const ConfigPage: React.FC = () => {
   return (
     <div>
       <div>
-        <label htmlFor='locale-select'>{tl('Locale')}</label>
+        <label htmlFor='locale-select'>{t('locale')}</label>
         <select name='locale' id='locale-select' onChange={(e)=>{
           const selectedLocale = e.target.value as Locale;
           setLocale(selectedLocale); 
@@ -39,7 +37,7 @@ const ConfigPage: React.FC = () => {
         </select>
       </div>  
       <div>
-        <label htmlFor="theme-select">{tl('Theme')}</label>
+        <label htmlFor="theme-select">{t('theme')}</label>
         <select name="theme" id="theme-select" onChange={
           (e)=>{
             const selectedTheme = e.target.value as ThemeSetting;
@@ -48,13 +46,13 @@ const ConfigPage: React.FC = () => {
         }
         value={curThemeSetting}
         >
-          <option value={isUserSchemeDark ? THEME_SETTING.SYSTEM_DARK : THEME_SETTING.SYSTEM_LIGHT}>{isUserSchemeDark ?tl('SystemDark'):tl('SystemLight')}</option>
-          <option value={THEME_SETTING.LIGHT}>{tl('Light')}</option>
-          <option value={THEME_SETTING.DARK}>{tl('Dark')}</option>
+          <option value={isUserSchemeDark ? THEME_SETTING.SYSTEM_DARK : THEME_SETTING.SYSTEM_LIGHT}>{isUserSchemeDark ?t('themeSystemDark'):t('themeSystemLight')}</option>
+          <option value={THEME_SETTING.LIGHT}>{t('themeLight')}</option>
+          <option value={THEME_SETTING.DARK}>{t('themeDark')}</option>
         </select>
       </div>
       <div>
-        <label htmlFor="fontSizeSelect">{tl('font size')}</label>
+        <label htmlFor="fontSizeSelect">{t('fontSize')}</label>
         <select name="fontSizeSelect" id="fontSizeSelect" onChange={(e)=>{
           const selectedFontSize = e.target.value;
           setCurFontSize(selectedFontSize);
@@ -67,7 +65,7 @@ const ConfigPage: React.FC = () => {
         </select>
       </div>
       <div>
-        <label htmlFor="Anki-URL">{tl('Anki URL')}</label>
+        <label htmlFor="Anki-URL">{"Anki URL"}</label>
         <input type="text" name="Anki-URL" onChange={(e)=>{
           setCurAnkiUrl(e.target.value);
         }} value={curAnkiUrl} />
@@ -76,7 +74,7 @@ const ConfigPage: React.FC = () => {
         //TODO: Add default scanRules
 
       }}>
-        {tl('Add Default ScanRules')}
+        {t('addDefaultData')}
       </SimpleButton>
       <div className={configPageStyle.floatingBtnContainer}>
         <SimpleButton onClick={()=>{
@@ -87,7 +85,7 @@ const ConfigPage: React.FC = () => {
         }} 
           style={{display: hasChanges ? 'inline-block' : 'none'}}
         >
-          {tl('Apply')}
+          {t('apply')}
         </SimpleButton>
         <SimpleButton onClick={()=>{
           setCurLocale(locale);
@@ -96,10 +94,10 @@ const ConfigPage: React.FC = () => {
         }}
         style={{display: hasChanges ? 'inline-block' : 'none'}}
         >
-          {tl('Cancle')}
+          {t('cancle')}
         </SimpleButton>
         <SimpleButton onClick={()=>{
-          if (confirm(tl('Reset to default settings?'))) {
+          if (confirm(t('confirmResetToDefault'))) {
             const uiLocale = chrome.i18n.getUILanguage();
             const defaultLocale = uiLocale.startsWith('ko') ? LOCALE.KO : LOCALE.EN;
             setLocale(defaultLocale);
@@ -110,7 +108,7 @@ const ConfigPage: React.FC = () => {
             setCurFontSize('normal');
           }
         }}>
-          {tl('Default')}
+          {t('default')}
         </SimpleButton>
       </div>
 

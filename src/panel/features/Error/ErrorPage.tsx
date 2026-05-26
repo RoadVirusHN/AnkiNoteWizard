@@ -1,20 +1,31 @@
-import useLocale from "@/panel/hooks/useLocale";
 import { isRouteErrorResponse, useNavigate, useRouteError } from "react-router";
 import errorPageStyle from "./errorPage.module.css";
 import { FallbackProps } from "react-error-boundary";
-import i18n from "@/locales/i18n";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
+import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
+type Status = "400" | "401" | "402" | "403" | "404"|"408"|"500"|"storageError"|"unknownError" | string;
 
-const getErrorGuide = (infos:{status: string, message: string},tl:(key: string, altKey?: string) => string)=>{
-  let altKey = "pages.ErrorPage.codes." + infos.status;
-  let description = tl("description",altKey);
-  if (!i18n.exists(altKey)){
-    altKey = "pages.ErrorPage.codes.Unknown Error";
-    if (infos.message.length > 0){
-      description = infos.message; 
-    }
+const getErrorGuide = (infos:{status: Status, message: string},t:TFunction<"error", undefined>)=>{
+  let res = {
+    description: "",
+    statusText: "",
+    solutions: [] as string[],
+  } 
+  if (typeof infos.status === "string") {
+    infos.status = "unknownError";
   }
-  return {status:infos.status,statusText:tl("statusText",altKey),description, solutions: tl("solutions",altKey) as unknown as string[]};
+  let altKey = "codes." + infos.status;
+  //@ts-ignore
+  res.statusText = t(altKey + "statusText") as string; // Ignore type error
+  //@ts-ignore
+  res.solutions = t(altKey + "solutions") as unknown as string[]; // Ignore type error
+  //@ts-ignore
+  res.description = t(altKey + "description") as string; // Ignore type error
+  if (infos.message.length > 0){
+    res.description = infos.message; 
+  }  
+  return {status: infos.status, statusText: res.statusText, description: res.description, solutions: res.solutions};
 };
 
 const getErrorInfo = (error: unknown): {status: string, message: string} => {
@@ -31,8 +42,8 @@ const getErrorInfo = (error: unknown): {status: string, message: string} => {
 // TODO: Responsive, runtime error and route error handling
 const ErrorPage = ({ error: runtimeError, resetErrorBoundary }: Partial<FallbackProps>) => {
   let infos = getErrorInfo(runtimeError ?? useRouteError());
-  const tl = useLocale('pages.ErrorPage');
-  const guide = getErrorGuide(infos, tl);
+  const {t} = useTranslation('error');
+  const guide = getErrorGuide(infos, t);
   console.log(guide);
   const navigate = useNavigate();
   return (
@@ -45,7 +56,7 @@ const ErrorPage = ({ error: runtimeError, resetErrorBoundary }: Partial<Fallback
           {guide.description}
         </p>
         <div className={errorPageStyle['solution']}>
-          <span className={errorPageStyle['solution-title']}>💡 {tl('solutions')}</span>
+          <span className={errorPageStyle['solution-title']}>💡 {t('solutions')}</span>
           <ul className={errorPageStyle['solution-list']}>
             {guide.solutions.map((sol, index) => (
               <li key={index}>{sol}</li>

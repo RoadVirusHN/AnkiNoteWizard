@@ -1,10 +1,10 @@
 import ReturnIcon from "@/public/Icon/Icon-Return.svg";
 import modifyScanRuleStyle from "../modifyScanRule.module.css";
 import { useNavigate } from "react-router";
-import useLocale from "@/panel/hooks/useLocale";
 import Icon from "@/panel/components/Icon/Icon";
 import CancleIcon from "@/public/Icon/Icon-Reset.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   title: string;
@@ -14,7 +14,7 @@ interface Props {
 }
 const ModifyScanRuleHeader = ({title, isChanged, onSave, onCancle}: Props) => {
   const navigate = useNavigate();
-  const tl = useLocale('pages.ModifyScanRule.ModifyScanRuleHeader');
+  // const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule.modifyScanRuleHeader'});
  return (<div className={modifyScanRuleStyle.header}>
     <div className={modifyScanRuleStyle.headerLeft}>
       <img src={ReturnIcon} onClick={() => navigate("/scanRules")} />

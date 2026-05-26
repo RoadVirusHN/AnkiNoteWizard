@@ -1,48 +1,54 @@
 import { INSPECTION_MODE, InspectionMode } from "@/types/app.types";
 import inspectionOverlayStyle from "./InspectionOverlay.module.css";
-import useLocale from "@/panel/hooks/useLocale";
+import { useTranslation } from "react-i18next";
 
-const InspectionOverlay = ({mode, cancleInspectionMode}:{ mode: InspectionMode, cancleInspectionMode:()=>void}) => {
-  const tl = useLocale('component.InspectionOverlay');
-  return <>
-    <div className={inspectionOverlayStyle.overlay} onClick={cancleInspectionMode}>  
-      <div className={inspectionOverlayStyle['instruction-box']}>
-        <span className={inspectionOverlayStyle['left-pointer']}>◀</span>
-        <span className={inspectionOverlayStyle['left-pointer']}>◀</span>
-        <span className={inspectionOverlayStyle['left-pointer']}>◀</span>
-        <span className={inspectionOverlayStyle['left-pointer']}>◀</span>
-        {
-          mode==INSPECTION_MODE.TEXT_EXTRACTION ?(<>
-            <h1>{tl('Text Extraction Mode')}</h1>
-            <ol>
-                <li>{tl('Hover over the text')}</li>
-                <li>{tl('Click to copy into your clipboard')}</li>
-                <li>{tl('Paste the text where you want!')}</li>
-            </ol></>) : (<>
-              <h1>{tl('Tag Inspection Mode')}</h1>
+const InspectionOverlay = ({ mode, cancleInspectionMode }: { mode: InspectionMode; cancleInspectionMode: () => void }) => {
+  const { t } = useTranslation("components", { keyPrefix: "inspectionOverlay" });
+
+  return (
+    <>
+      <div className={inspectionOverlayStyle.overlay} onClick={cancleInspectionMode}>
+        <div className={inspectionOverlayStyle["instruction-box"]}>
+          <span className={inspectionOverlayStyle["left-pointer"]}>◀</span>
+          <span className={inspectionOverlayStyle["left-pointer"]}>◀</span>
+          <span className={inspectionOverlayStyle["left-pointer"]}>◀</span>
+          <span className={inspectionOverlayStyle["left-pointer"]}>◀</span>
+          {mode == INSPECTION_MODE.TEXT_EXTRACTION ? (
+            <>
+              <h1>{t("textModeTitle")}</h1>
               <ol>
-                  <li>{tl('Hover over the tag')}</li>
-                  <li>{tl('Click to pop up the menu')}
-                    <ul>
-                      <li>{tl('Extract text copy the text Content')}</li>
-                      <li>{tl('Extract Selector copy the CSS Selector')}</li>
-                      <li>{tl('Select Children change taget tag to a child')}</li>
-                    </ul>
-                  </li>
-                  <li>{tl('Click to copy into your clipboard')}</li>
-                  <li>{tl('Paste the text where you want!')}</li>
+                <li>{t("hoverText")}</li>
+                <li>{t("clickToCopy")}</li>
+                <li>{t("pasteAnywhere")}</li>
               </ol>
-            </>)
-        }
-        <h2>* {tl('Click here to exit mode')}</h2> 
-        <span className={inspectionOverlayStyle['left-pointer']}>◀</span>
-        <span className={inspectionOverlayStyle['left-pointer']}>◀</span>
-        <span className={inspectionOverlayStyle['left-pointer']}>◀</span>
-        <span className={inspectionOverlayStyle['left-pointer']}>◀</span>
+            </>
+          ) : (
+            <>
+              <h1>{t("tagModeTitle")}</h1>
+              <ol>
+                <li>{t("hoverTag")}</li>
+                <li>
+                  {t("clickToOpenMenu")}
+                  <ul>
+                    <li>{t("extractTextDescription")}</li>
+                    <li>{t("extractSelectorDescription")}</li>
+                    <li>{t("selectChildrenDescription")}</li>
+                  </ul>
+                </li>
+                <li>{t("clickToCopy")}</li>
+                <li>{t("pasteAnywhere")}</li>
+              </ol>
+            </>
+          )}
+          <h2>* {t("exitInstruction")}</h2>
+          <span className={inspectionOverlayStyle["left-pointer"]}>◀</span>
+          <span className={inspectionOverlayStyle["left-pointer"]}>◀</span>
+          <span className={inspectionOverlayStyle["left-pointer"]}>◀</span>
+          <span className={inspectionOverlayStyle["left-pointer"]}>◀</span>
+        </div>
       </div>
-     </div>
-  </> ;
+    </>
+  );
 };
-// TODO : mode에 따라 다른 instruction 보여주기
-// TODO : 모드가 실행되지 않을 시 새로고침 유도
+
 export default InspectionOverlay;

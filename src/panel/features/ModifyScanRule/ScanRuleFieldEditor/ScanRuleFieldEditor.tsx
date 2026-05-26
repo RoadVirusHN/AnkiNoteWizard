@@ -1,11 +1,11 @@
 import styles from "../modifyScanRule.module.css";
-import useLocale from "@/panel/hooks/useLocale";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import InspectionOverlay from "@/panel/components/InspectionOverlay/InspectionOverlay";
 import useInspection from "@/panel/hooks/useInspection";
 import { ScanRule, FieldProperties, FieldDataType, FIELD_DATA_TYPES } from "@/types/scanRule.types";
 import { INSPECTION_MODE } from "@/types/app.types";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   scanRule: ScanRule;
@@ -24,7 +24,7 @@ const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
     newItems[fieldName] = newData;
     setData({ ...scanRule, fields: newItems });
   };
-  const tl = useLocale('pages.ModifyScanRule.ScanRuleFieldEditor');
+  const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule.scanRuleFieldEditor'});
   
   // TODO : 예시 화면 추가 (ex. selector에 따라 추출되는 데이터 미리보기) 
   // TODO : Field 별로 여러 selector 등록 기능 (ex. title 필드의 경우 제목이 여러개일 수 있어서 우선순위에 따라 여러 selector 등록 가능하게)
@@ -33,7 +33,7 @@ const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
   return (
     <div className={styles.editorContainer}>
       <div className={styles.fieldHeader}>
-        <div className={styles.sectionTitle} style={{marginBottom:0}}>{tl('Fields')}</div>
+        <div className={styles.sectionTitle} style={{marginBottom:0}}>{t('fields')}</div>
       </div>
       
       <div className={styles.fieldsList}>
@@ -51,7 +51,7 @@ const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
                 <input
                   className={`${styles.input} ${styles.fieldSelector}`}
                   value={scanRule.fields[item].selector}
-                  placeholder={tl("CSS Selector")}
+                  placeholder={t("cssSelector")}
                   onChange={(e) => handleItemChange(item, {...scanRule.fields[item], selector: e.target.value})}
                 />
                 <SimpleButton title="Extract Field Css Selector" src={MagicIcon} onClick={()=>{
@@ -65,7 +65,7 @@ const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
               >
                 {
                   Object.keys(FIELD_DATA_TYPES).map(type=>(
-                    <option key={type} value={type}>{tl(type.toUpperCase())}</option>
+                    <option key={type} value={type}>{t((type).toLowerCase() as FieldDataType)}</option>
                   ))
                 }
               </select>

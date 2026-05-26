@@ -4,8 +4,13 @@ import { ScanRule } from '@/types/scanRule.types';
 export const STORAGE_KEY = 'anki-note-wizard-global-var-store';
 export const defaultScanRules: ScanRule[] = [
   {
-    meta: {},
-    scanRuleName: 'Default ScanRule',
+    meta: {
+      author: 'Admin',
+      description: 'This is a sample scan rule. You can edit or delete it.',
+      key: 'Sample ScanRule',
+      version: '1.0.0',
+    },
+    scanRuleName: 'Sample ScanRule',
     modelId: Default_BASIC_MODEL.id,
     modelName: Default_BASIC_MODEL.name,
     urlPatterns: ['*'],
@@ -20,6 +25,6 @@ export const defaultScanRules: ScanRule[] = [
         dataType: 'text',
       },
     },
-    tags: [],
+    tags: ["sample", "tutorial"],
   },
 ];

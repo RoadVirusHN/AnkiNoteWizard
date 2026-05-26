@@ -1,8 +1,7 @@
 import { ScanRule } from "@/types/scanRule.types";
 import modifyScanRuleStyle from "../modifyScanRule.module.css";
-import useLocale from "@/panel/hooks/useLocale";
-import SimpleSelect from "@/panel/components/Inputs/SimpleSelect/SimpleSelect";
 import SimpleInput from "@/panel/components/Inputs/SimpleInput/SimpleInput";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   data : ScanRule;
@@ -13,11 +12,10 @@ const ScanRuleMetaEditor = ({data, setData}:Props) => {
   const updateMeta = (key: string, value: unknown) => {
     setData({ ...data, meta: { ...data.meta, [key]: value } });
   };
-  const tl = useLocale('pages.ModifyScanRule.ScanRuleMetaEditor');
-  
+  const {t} = useTranslation('page', { keyPrefix: 'modifyScanRule.scanRuleMetaEditor' }); 
   return (<div className={modifyScanRuleStyle.settingsForm}>
     <SimpleInput 
-      label={<>{tl("ScanRule Name")} <span className={modifyScanRuleStyle.req}>*</span></>} 
+      label={<>{t("scanRuleName")} <span className={modifyScanRuleStyle.req}>*</span></>} 
       placeholder="e.g. eng-kor-words"
       defaultValue={data.scanRuleName}
       onChange={(e) => setData({ ...data, scanRuleName: e.target.value })}
@@ -25,12 +23,12 @@ const ScanRuleMetaEditor = ({data, setData}:Props) => {
 
   <div className={modifyScanRuleStyle.row}>
     <SimpleInput 
-      label={tl("Author")} 
+      label={t("author")} 
       defaultValue={data.meta.author || ""}
       onChange={(e) => updateMeta("author", e.target.value)}
     />
     <SimpleInput
-      label={tl("Version")}
+      label={t("version")}
       defaultValue={data.meta.version || ""}
       onChange={(e) => updateMeta("version", e.target.value)}
     />
@@ -38,7 +36,7 @@ const ScanRuleMetaEditor = ({data, setData}:Props) => {
     
   
   <div className={modifyScanRuleStyle.formGroup}>
-    <label>{tl("Description")}</label>
+    <label>{t("description")}</label>
     <textarea
       className={modifyScanRuleStyle.textarea}
       value={data.meta.description || ""}

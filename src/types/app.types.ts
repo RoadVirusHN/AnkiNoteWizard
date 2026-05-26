@@ -72,3 +72,8 @@ export const Default_BASIC_MODEL = {
   id: '1576165339',
   fields: ['Front', 'Back'],
 } as Model;
+
+export type ErrorMessage = {
+  result : 'error' | "success";
+  error: string | null;
+}
