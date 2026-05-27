@@ -29,6 +29,9 @@ export default {
     addDefaultData: 'Add Default Data',
     default: 'Default',
     confirmResetToDefault: 'Reset to default settings?',
+    '|count|addedDefaultDataCount': '{{count}} default scan rules have been added.(excluding those with duplicate names)',
+    importScanRules: 'Import ScanRules',
+    exportScanRules: 'Export ScanRules',
   },
   modifyScanRule: {
     meta: 'Meta',

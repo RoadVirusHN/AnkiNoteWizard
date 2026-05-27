@@ -1,6 +1,6 @@
 import { ErrorMessage } from '@/types/app.types';
 import { Note, ScanRule as ScanRule } from '@/types/scanRule.types';
-import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -24,7 +24,9 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: ScanRule[]) => ErrorMe
   scanRule: ScanRule,
   curScanRules: ScanRule[]
 ) => {
-  const {t} = useTranslation('error', {keyPrefix: 'scanRule'});
+  const t = (key: string) => {
+    return i18next.t(key, '', { ns: 'error', keyPrefix: 'scanRule' });
+  };
   if (!scanRule.scanRuleName || scanRule.scanRuleName.trim() === '') {
     return {
       result: 'error',

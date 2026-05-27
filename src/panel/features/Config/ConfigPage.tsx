@@ -6,6 +6,9 @@ import useConfigure from '@/panel/stores/useConfigure';
 import { LOCALE, Locale, THEME_SETTING, ThemeSetting } from '@/types/app.types';
 import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
+import useScanRule from '@/panel/stores/useScanRule';
+import { defaultScanRules } from '@/background/constants';
+import { ScanRule } from '@/types/scanRule.types';
 
 
 const ConfigPage: React.FC = () => {
@@ -16,6 +19,7 @@ const ConfigPage: React.FC = () => {
     themeOption, setThemeSetting,
     fontSize, setFontSize
   } = useConfigure();
+  const {scanRules, addScanRule} = useScanRule();
   const {ankiUrl, setAnkiUrl} = useAnkiConnectionStore();
   const [curLocale, setCurLocale] = useState(locale);
   const [curThemeSetting, setCurThemeSetting] = useState(themeOption.userSetting);
@@ -29,7 +33,7 @@ const ConfigPage: React.FC = () => {
         <label htmlFor='locale-select'>{t('locale')}</label>
         <select name='locale' id='locale-select' onChange={(e)=>{
           const selectedLocale = e.target.value as Locale;
-          setLocale(selectedLocale); 
+          setCurLocale(selectedLocale);
         }}
         value={curLocale}>
           <option value={LOCALE.EN}>English</option>
@@ -71,8 +75,15 @@ const ConfigPage: React.FC = () => {
         }} value={curAnkiUrl} />
       </div>
       <SimpleButton onClick={()=>{
-        //TODO: Add default scanRules
-
+        var addedScanruleCount = 0;
+        const copiedScanrules = [...scanRules];
+        for (const rule of defaultScanRules) {
+          if (!copiedScanrules.find(r => r.scanRuleName === rule.scanRuleName)) {
+            addScanRule(rule);
+            addedScanruleCount++;
+          }
+        }
+        alert(t('|count|addedDefaultDataCount', {count: addedScanruleCount}));
       }}>
         {t('addDefaultData')}
       </SimpleButton>
@@ -109,6 +120,53 @@ const ConfigPage: React.FC = () => {
           }
         }}>
           {t('default')}
+        </SimpleButton>
+        <SimpleButton onClick={()=>{
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'application/json';
+          input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              try {
+                console.log(event.target?.result);
+                const importedScanRules = JSON.parse(event.target?.result as string) as ScanRule[];
+                console.log(importedScanRules);
+
+                const copiedScanrules = [...scanRules];
+                if (Array.isArray(importedScanRules)) {
+                  var addedCount = 0;
+                  for (const rule of importedScanRules) {
+                    if (!copiedScanrules.find(r => r.scanRuleName === rule.scanRuleName)) {
+                      addScanRule(rule);
+                      addedCount++;
+                    }
+                  }
+                  alert(t('|count|addedDefaultDataCount', {count: addedCount}));
+                } else {
+                  alert('Invalid file format');
+                }
+              } catch (error) {
+                alert('Error reading file');
+              }
+            };
+            reader.readAsText(file);
+          };
+          input.click();
+        }}>
+          {t('importScanRules')}
+        </SimpleButton>
+        <SimpleButton onClick={()=>{
+          const blob = new Blob([JSON.stringify(scanRules, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'scanRules.json';
+          a.click();
+        }}>
+          {t('exportScanRules')}
         </SimpleButton>
       </div>
 

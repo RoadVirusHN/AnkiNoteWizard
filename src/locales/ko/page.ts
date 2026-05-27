@@ -31,6 +31,9 @@ export default {
     addDefaultData: '기본 스캔 규칙 추가',
     default: '기본값',
     confirmResetToDefault: '기본 설정으로 재설정하시겠습니까?',
+    '|count|addedDefaultDataCount': '{{count}}개의 기본 스캔 규칙이 추가되었습니다.(중복된 이름의 스캔 규칙 제외)',
+    importScanRules: '스캔 규칙 가져오기',
+    exportScanRules: '스캔 규칙 내보내기',
   },
   modifyScanRule: {
     meta: '메타 정보',
