@@ -122,6 +122,7 @@ const ConfigPage: React.FC = () => {
           {t('default')}
         </SimpleButton>
         <SimpleButton onClick={()=>{
+          // TODO : add selective import && export
           const input = document.createElement('input');
           input.type = 'file';
           input.accept = 'application/json';
