@@ -16,6 +16,10 @@ export const FIELD_DATA_TYPES = {
 
 export type FieldDataType = (typeof FIELD_DATA_TYPES)[keyof typeof FIELD_DATA_TYPES];
 
+export type FieldData = {
+  key: string;
+  content: string;
+}
 export interface ScanRuleMeta {
   key?: string;
   author?: string;
@@ -27,7 +31,7 @@ export interface Note {
   scanRuleName: string;
   deckName: string;
   modelId: string;
-  fields: {key: string; content: string;}[];
+  fields: FieldData[];
   tags: string[];
   audio?: {
     url: string;

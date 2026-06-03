@@ -93,7 +93,7 @@ export const processMediaInHtml = async (html: string) => {
   return doc.body.innerHTML;
 };
 
-const insertTextAtCursor = (input: HTMLInputElement, text: string) => {
+const insertTextAtCursor = (input: HTMLTextAreaElement, text: string) => {
   const start = input.selectionStart || 0;
   const end = input.selectionEnd || 0;
   const value = input.value;
@@ -101,14 +101,14 @@ const insertTextAtCursor = (input: HTMLInputElement, text: string) => {
   input.selectionStart = input.selectionEnd = start + text.length;
 };
 
-export const onPaste = async (event: React.ClipboardEvent<HTMLInputElement>) => {
+export const onFieldPaste = async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
   // 복사된 내용이 미디어(이미지, 비디오, 음성 등)일 경우 태그로 변환하여 입력
   event.preventDefault();
   const items = event.clipboardData.items;
   insertTextAtCursor(event.currentTarget, handleDataTransferItemsList(items));
 };
 
-export const onDrag = async (event: React.DragEvent<HTMLInputElement>) => {
+export const onFieldDrag = async (event: React.DragEvent<HTMLTextAreaElement>) => {
   // 드래그한 파일이 미디어(이미지, 비디오, 음성 등)일 경우 태그로 변환하여 입력
   event.preventDefault();
   const items = event.dataTransfer.items;

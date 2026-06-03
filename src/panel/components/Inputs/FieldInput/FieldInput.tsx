@@ -1,4 +1,12 @@
-const FieldInput = ({}) => {
+import useInspection from "@/panel/hooks/useInspection";
+import SimpleButton from "../SimpleButton/SimpleButton";
+import MagicIcon from "@/public/Icon/Icon-Magic.svg";
+import { FieldData } from "@/types/scanRule.types";
+import { useTranslation } from "react-i18next";
+import { onFieldDrag, onFieldPaste } from "@/panel/utils/functions";
+import { ChangeEventHandler } from "react";
+
+const FieldInput = ({field}:{field:FieldData,onChange:ChangeEventHandler<HTMLTextAreaElement>}) => {
   //TODO: Implement FieldInput component
   /*
     Features to implement:
@@ -7,8 +15,22 @@ const FieldInput = ({}) => {
     3. (Later) Simple Preview of the content being inputted (rendering HTML tags for media) with expand/collapse functionality.
     4. (Later) Anki template variables support (e.g., {{FieldName}}) with auto-suggestions based on the current note type's fields
   */
+  const {enterInspectionMode,cancleInspectionMode,isInspectionMode} = useInspection();
+  const {t} = useTranslation('components',{keyPrefix: 'fieldInput'});
+  const {key, content} = field;
   return <div>
-
+    <label>{key}</label>
+    <textarea  
+      placeholder={t("fieldContentPlaceholder")}
+      value={content}
+      onChange={(e)=>{}}
+      onPaste={onFieldPaste}
+      onDrag={onFieldDrag}
+      onDragOver={(e)=>{e.preventDefault()}}
+    />
+    <SimpleButton title="Extract Data" src={MagicIcon} onClick={()=>{
+      enterInspectionMode();
+      }}/> 
   </div>;
 };
 export default FieldInput;

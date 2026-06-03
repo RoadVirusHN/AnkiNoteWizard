@@ -20,7 +20,7 @@ import { NavLink } from "react-router";
 import { INSPECTION_MODE } from "@/types/app.types";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
-import { isNoteValid, onPaste } from "@/panel/utils/functions";
+import { isNoteValid, onFieldPaste } from "@/panel/utils/functions";
 
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();
@@ -96,7 +96,7 @@ const AddPage = ({}) => {
                     setCurNote({...curNote, fields: newFields});
                     setIsChanged(true);
                   }}
-                  onPaste={onPaste}
+                  onPaste={onFieldPaste}
                 />
                 <SimpleButton title="Extract Data" src={MagicIcon} onClick={()=>{
                   enterInspectionMode();
