@@ -10,12 +10,14 @@ interface GlobalVarState {
   isAddingCard: boolean;
   currentDetected: number;
   currentAddingNote: Note;
+  isInspectionMode: boolean;
   setCurrentUrl: (url: string) => void;
   setCurrentTab: (tab: Tab) => void;
   setCurrentDeck: (deck: string) => void;
   setCurrentDetected: (cnt: number) => void;
   setCurrentAddingNote: (note: Note) => void;
   setIsAddingCard: (isAdding: boolean) => void;
+  setIsInspectionMode: (isInspection: boolean) => void;
 }
 
 const useGlobalVarStore = create<GlobalVarState>()(
@@ -36,6 +38,7 @@ const useGlobalVarStore = create<GlobalVarState>()(
         ],
         tags: [],
       },
+      isInspectionMode: false,
       setCurrentUrl: (url: string) => {
         set({ currentUrl: url });
       },
@@ -46,6 +49,7 @@ const useGlobalVarStore = create<GlobalVarState>()(
       setCurrentDetected: (cnt: number) => set({ currentDetected: cnt }),
       setCurrentAddingNote: (note: Note) => set({ currentAddingNote: note }),
       setIsAddingCard: (isAdding: boolean) => set({ isAddingCard: isAdding }),
+      setIsInspectionMode: (isInspection: boolean) => set({ isInspectionMode: isInspection }),
     }),
     {
       name: 'anki-note-wizard-global-var-store',

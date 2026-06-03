@@ -20,7 +20,8 @@ import { NavLink } from "react-router";
 import { INSPECTION_MODE } from "@/types/app.types";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
-import { isNoteValid, onFieldPaste } from "@/panel/utils/functions";
+import { isNoteValid } from "@/panel/utils/functions";
+import FieldInput from "@/panel/components/Inputs/FieldInput/FieldInput";
 
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();
@@ -76,33 +77,13 @@ const AddPage = ({}) => {
         }}/>
         {
           curNote.fields.map((item, idx)=>{
-            const fieldName = item.key;
-            const content = item.content;
           return (            
-          <div key={item.key} className={addPageStyle.fieldRow}>
-              {/* Field Name */}
-              <div>
-                <div className={addPageStyle.fieldName}>{fieldName}</div>
-              </div>
-              
-              <div className={addPageStyle.fieldContentWrapper}>
-                <input
-                  className={`${addPageStyle.input} ${addPageStyle.fieldContent}`}
-                  placeholder={t("fieldContentPlaceholder")}
-                  value={content}
-                  onChange={(e) => {
-                    const newFields = [...curNote.fields];
-                    newFields[idx] = {...newFields[idx], content: e.target.value};
-                    setCurNote({...curNote, fields: newFields});
-                    setIsChanged(true);
-                  }}
-                  onPaste={onFieldPaste}
-                />
-                <SimpleButton title="Extract Data" src={MagicIcon} onClick={()=>{
-                  enterInspectionMode();
-                  }}/> 
-              </div>
-            </div>)
+            <FieldInput key={idx} field={item} onChange={(e)=>{
+              const newFields = [...curNote.fields];
+              newFields[idx] = {...newFields[idx], content: e.target.value};
+              setCurNote({...curNote, fields: newFields});
+              setIsChanged(true);
+            }}/>)
           })
         }
       </section> }

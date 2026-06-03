@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { INSPECTION_MODE, InspectionMode } from "@/types/app.types";
 import { MESSAGE_TYPE, PORT_NAMES } from "@/types/chrome.types";
+import useGlobalVarStore from "../stores/useGlobalVarStore";
 
 const useInspection = (
   mode = INSPECTION_MODE.TEXT_EXTRACTION as InspectionMode,
@@ -8,8 +9,7 @@ const useInspection = (
 ) => {
 
   const [panelPort, setPanelPort] = useState<chrome.runtime.Port|null>();
-  const [isInspectionMode, setIsInspectionMode] = useState(false);
-
+  const {isInspectionMode, setIsInspectionMode} = useGlobalVarStore();
   const enterInspectionMode = async (onResult=(text:string)=>{}, onCancle=()=>{}) => {
     if (panelPort!=null)  {
       console.log("disconnect previous port");

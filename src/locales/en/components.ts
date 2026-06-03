@@ -24,4 +24,7 @@ export default {
   preview: {
     removedCodeWarning: 'Some elements(scripts,tags) were removed for security reasons.',
   },
+  fieldInput: {
+    fieldContentPlaceholder: 'Enter content for this field. You can also paste or drag media files (images, audio, video) directly into this area.',
+  }
 };
