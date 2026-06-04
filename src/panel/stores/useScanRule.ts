@@ -25,7 +25,9 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: ScanRule[]) => ErrorMe
   curScanRules: ScanRule[]
 ) => {
   const t = (key: string) => {
-    return i18next.t(key, '', { ns: 'error', keyPrefix: 'scanRule' });
+    // return i18next.t(key, '', { ns: 'error', keyPrefix: 'scanRule' });
+    // @ts-expect-error i18next.t의 타입 정의가 keyPrefix를 지원하지 않아 발생하는 오류. 실제로는 keyPrefix 옵션이 적용되어 작동함.
+    return i18next.t(`error:scanRule.${key}`) as string;
   };
   if (!scanRule.scanRuleName || scanRule.scanRuleName.trim() === '') {
     return {

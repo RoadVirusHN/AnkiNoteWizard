@@ -1,6 +1,7 @@
 import { Model, Note } from '@/types/scanRule.types';
-import { useTranslation } from 'react-i18next';
 import useAnkiConnectionStore from '../stores/useAnkiConnectionStore';
+import { ChangeEventHandler } from 'react';
+import { TFunction } from 'i18next';
 
 export const getRandomColor = () => `hsl(${Math.random() * 360},50%, 50%)`;
 export const getComplementaryColor = (hsl: string) => {
@@ -14,23 +15,25 @@ export const getCurrentTabId = async () => {
   return tab.id;
 };
 
-export const isNoteValid = (note: Note, model: Model) => {
-  const { t } = useTranslation('error', { keyPrefix: 'addNote' });
+export const isNoteValid = (note: Note, model: Model, t: TFunction<"error", "addNote">) => {
   if (model === undefined)
     return {
       result: 'error',
       error: t('modelNotFoundError.statusText'),
     };
+  console.log('emptyModelError');
   if (note.modelId === '' || note.modelId === null)
     return {
       result: 'error',
       error: t('emptyModelError.statusText'),
     };
+  console.log('emptyDeckError');
   if (note.deckName === '' || note.deckName === null)
     return {
       result: 'error',
       error: t('emptyDeckError.statusText'),
     };
+  console.log('FieldModelMisMatchError')
   //check model fields == note fields
   const modelFieldNames = Object.keys(model.fields);
   const noteFieldNames = Object.keys(note.fields);
@@ -101,19 +104,39 @@ const insertTextAtCursor = (input: HTMLTextAreaElement, text: string) => {
   input.selectionStart = input.selectionEnd = start + text.length;
 };
 
-export const onFieldPaste = async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
-  // 복사된 내용이 미디어(이미지, 비디오, 음성 등)일 경우 태그로 변환하여 입력
-  event.preventDefault();
-  const items = event.clipboardData.items;
-  insertTextAtCursor(event.currentTarget, handleDataTransferItemsList(items));
-};
+export const onFieldPaste =
+  (onChange: ChangeEventHandler<HTMLTextAreaElement>) =>
+  async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    // 복사된 내용이 미디어(이미지, 비디오, 음성 등)일 경우 태그로 변환하여 입력
+    event.preventDefault();
+    const items = event.clipboardData.items;
+    console.log(items);
+    insertTextAtCursor(event.currentTarget, handleDataTransferItemsList(items));
+    const fakeEvent = {
+      ...event,
+      target: event.target,
+      currentTarget: event.currentTarget,
+    } as unknown as React.ChangeEvent<HTMLTextAreaElement>;
+  
+    onChange(fakeEvent); // Trigger onChange to update state
+  };
 
-export const onFieldDrag = async (event: React.DragEvent<HTMLTextAreaElement>) => {
-  // 드래그한 파일이 미디어(이미지, 비디오, 음성 등)일 경우 태그로 변환하여 입력
-  event.preventDefault();
-  const items = event.dataTransfer.items;
-  insertTextAtCursor(event.currentTarget, handleDataTransferItemsList(items));
-};
+export const onFieldDrop =
+  (onChange: ChangeEventHandler<HTMLTextAreaElement>) =>
+  async (event: React.DragEvent<HTMLTextAreaElement>) => {
+    // 드래그한 파일이 미디어(이미지, 비디오, 음성 등)일 경우 태그로 변환하여 입력
+    event.preventDefault();
+    const items = event.dataTransfer.items;
+    console.log(items);
+    insertTextAtCursor(event.currentTarget, handleDataTransferItemsList(items));
+    const fakeEvent = {
+    ...event,
+    target: event.target,
+    currentTarget: event.currentTarget,
+    } as unknown as React.ChangeEvent<HTMLTextAreaElement>;
+
+    onChange(fakeEvent); // Trigger onChange to update state
+  };
 
 export const handleDataTransferItemsList = (items: DataTransferItemList) => {
   let result = '';
