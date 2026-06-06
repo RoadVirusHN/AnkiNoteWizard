@@ -57,17 +57,11 @@
   background: var(--color-dark);
   box-sizing: border-box;
 }
-.fieldName { flex: 0 0 20%; min-width: 40px; }
-.fieldContentWrapper { flex: 1; display: flex; gap: 2px; }
-.fieldContent { flex: 1; background-color: var(--color-light); }
-.fieldRow {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--color-dark);
-  padding: 4px;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+.fakeLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  width: 100%;
 }
 .modBtns {
   display: flex;

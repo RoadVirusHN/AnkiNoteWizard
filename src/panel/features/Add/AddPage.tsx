@@ -33,7 +33,19 @@ const AddPage = ({}) => {
   const {models} = useAnkiConnectionStore();  
   const {t} = useTranslation('page',{keyPrefix: 'addPage'});
   const {t:tCommon} = useTranslation('common');
-  const {enterInspectionMode,cancleInspectionMode,isInspectionMode} = useInspection();
+  const {t:tError} = useTranslation('error',{keyPrefix: 'addNote'});
+  const {cancleInspectionMode,isInspectionMode} = useInspection();
+  
+  const setField = (fieldKey:string, content:string) => {
+    const newFields = curNote.fields.map(field=>{
+      if (field.key === fieldKey){
+        return {...field, content};
+      }
+      return field;
+    });
+    setCurNote({...curNote, fields: newFields});
+    setIsChanged(true);
+  };
   return <div className={addPageStyle.container}>
     <div className={addPageStyle.header}>     
       <h2>{t('addNoteToAnki')}</h2>
@@ -66,6 +78,7 @@ const AddPage = ({}) => {
             setIsChanged(true);
           }
         }}/>
+        <div className={addPageStyle.fakeLabel}>{t('tagsLabel')}</div>
         <Tags givenTags={curNote.tags} isModifying={isModifying} 
         onAddTag={(tag)=>{
           setIsChanged(true);
@@ -75,6 +88,7 @@ const AddPage = ({}) => {
           setIsChanged(true);
           setCurNote({...curNote, tags: curNote.tags.filter(t=>t!==tag)});
         }}/>
+        <div className={addPageStyle.fakeLabel}>{t('fieldsLabel')}</div>
         {
           curNote.fields.map((item, idx)=>{
           return (            
@@ -83,6 +97,7 @@ const AddPage = ({}) => {
               newFields[idx] = {...newFields[idx], content: e.target.value};
               setCurNote({...curNote, fields: newFields});
               setIsChanged(true);
+              console.log(e.target.value);
             }}/>)
           })
         }
@@ -90,8 +105,9 @@ const AddPage = ({}) => {
       <div style={{height:'45px'}}/> {/* for button space */} 
       <SimpleButton src={AddIcon} 
         className={addPageStyle.addBtn}
-        onClick={()=>{
-          const res = isNoteValid(curNote, models[curNote.modelId]);
+        onClick={async ()=>{
+          const res = isNoteValid(curNote, models[curNote.modelId], tError);
+          console.log(res);
           if (res.result!== 'success'){
             alert(tCommon('error')+`: ${res.error}`);
             return;
@@ -103,7 +119,7 @@ const AddPage = ({}) => {
             },
           };
           //TODO : AnkiConnect Media Actions 연구 및 적용. 현재는 media 필드도 그냥 note의 field로 보내고 있음.
-          fetchAnki(req).then((res)=>{
+          await fetchAnki(req).then((res)=>{
             setIsChanged(false);
             setCurNote(currentAddingNote);
             alert(res.error ? tCommon('error')+`: ${res.error}` : t('addNoteSuccess'));

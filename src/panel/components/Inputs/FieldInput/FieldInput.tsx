@@ -3,7 +3,7 @@ import SimpleButton from "../SimpleButton/SimpleButton";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import { FieldData } from "@/types/scanRule.types";
 import { useTranslation } from "react-i18next";
-import { onFieldDrag, onFieldPaste } from "@/panel/utils/functions";
+import { onFieldDrop, onFieldPaste } from "@/panel/utils/functions";
 import { ChangeEventHandler } from "react";
 import fieldInputStyle from "./fieldInput.module.css";
 
@@ -19,6 +19,7 @@ const FieldInput = ({field,onChange}:{field:FieldData,onChange:ChangeEventHandle
   const {enterInspectionMode} = useInspection();
   const {t} = useTranslation('components',{keyPrefix: 'fieldInput'});
   const {key, content} = field;
+
   return <div className={fieldInputStyle.container}>
     <div className={fieldInputStyle.header}>
       <label htmlFor={key} className={fieldInputStyle.fieldName}>{key}</label>
@@ -30,8 +31,8 @@ const FieldInput = ({field,onChange}:{field:FieldData,onChange:ChangeEventHandle
       placeholder={t("fieldContentPlaceholder")}
       value={content}
       onChange={onChange}
-      onPaste={onFieldPaste}
-      onDrag={onFieldDrag}
+      onPaste={onFieldPaste(onChange)}
+      onDrop={onFieldDrop(onChange)}
       onDragOver={(e)=>{e.preventDefault()}}
     />
   </div>;

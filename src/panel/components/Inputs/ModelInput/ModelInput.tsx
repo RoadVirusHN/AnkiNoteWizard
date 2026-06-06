@@ -18,7 +18,7 @@ const ModelInput = ({setModelId, defaultModelId}:{setModelId: (modelId:string)=>
       defaultValue={curVal} 
       options={
         Object.keys(models).length === 0 ? [{key:tModelInput('ankiConnectionError'), val:'', isDisabled: true}] :
-        [{key:t('select{{word}}',{word: t('model')}), val: '',isDisabled:true},...Object.keys(models).map((modelId) => ({key: modelId, val: models[modelId].name}))]
+        [{key:t('select{{word}}',{word: t('model')}), val: '',isDisabled:true},...Object.keys(models).map((modelId) => ({key: models[modelId].name, val: modelId}))]
       }
       onChange={(e)=>{onChangeModel(e.currentTarget.value); setCurVal(e.currentTarget.value);}}
       />
