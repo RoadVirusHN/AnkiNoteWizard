@@ -22,3 +22,11 @@
   background: var(--color-dark);
   box-sizing: border-box;
 }
+.input .error{
+  border:2px solid var(--color-danger);
+}
+.errorMessage{
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--color-danger);
+}

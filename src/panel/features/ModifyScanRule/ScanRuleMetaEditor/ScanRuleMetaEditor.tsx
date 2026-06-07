@@ -15,6 +15,8 @@ const ScanRuleMetaEditor = ({data, setData}:Props) => {
   const {t} = useTranslation('page', { keyPrefix: 'modifyScanRule.scanRuleMetaEditor' }); 
   return (<div className={modifyScanRuleStyle.settingsForm}>
     <SimpleInput 
+      inputId="scanRuleName"
+      isEssential={true}
       label={<>{t("scanRuleName")} <span className={modifyScanRuleStyle.req}>*</span></>} 
       placeholder="e.g. eng-kor-words"
       defaultValue={data.scanRuleName}
@@ -23,11 +25,13 @@ const ScanRuleMetaEditor = ({data, setData}:Props) => {
 
   <div className={modifyScanRuleStyle.row}>
     <SimpleInput 
+      inputId="author"
       label={t("author")} 
       defaultValue={data.meta.author || ""}
       onChange={(e) => updateMeta("author", e.target.value)}
     />
     <SimpleInput
+      inputId="version"
       label={t("version")}
       defaultValue={data.meta.version || ""}
       onChange={(e) => updateMeta("version", e.target.value)}

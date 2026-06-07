@@ -43,6 +43,7 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
       }}
     />
     <SimpleInput 
+      inputId="urlPatterns"
       label={t("urlPatterns")} 
       placeholder={"*"} 
       defaultValue={scanRule.urlPatterns.join(", ")} 
