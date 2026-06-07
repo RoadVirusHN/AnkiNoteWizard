@@ -18,6 +18,7 @@ const DeckInput = ({initDeck,onChange,label}:{initDeck? : string, onChange? : (d
       inputId= "deckInput"
       label={label}
       defaultValue={curDeck} 
+      isEssential={true}
       options={
         decks.length === 0 ? [{key:t('ankiDisconnected'), val:'', isDisabled: true}] :
         [{key:t('select{{word}}', {word: t('deck')}), val:'', isDisabled:true},...decks.map((deck) => ({key: deck, val: deck}))]

@@ -11,13 +11,15 @@ const ModelInput = ({setModelId, defaultModelId}:{setModelId: (modelId:string)=>
   }
   const {t} = useTranslation('common');
   const {t:tModelInput} = useTranslation('components', {keyPrefix: 'modelInput'});
+  console.log("models : ",models);
   return (
     <SimpleSelect 
       inputId="modelInput"
       label={t('model')} 
       defaultValue={curVal} 
+      isEssential={true}
       options={
-        Object.keys(models).length === 0 ? [{key:tModelInput('ankiConnectionError'), val:'', isDisabled: true}] :
+        Object.keys(models).length === 0 ? [{key:tModelInput('ankiConnectionError'), val:'', isDisabled: false}] :
         [{key:t('select{{word}}',{word: t('model')}), val: '',isDisabled:true},...Object.keys(models).map((modelId) => ({key: models[modelId].name, val: modelId}))]
       }
       onChange={(e)=>{onChangeModel(e.currentTarget.value); setCurVal(e.currentTarget.value);}}
