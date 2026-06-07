@@ -16,24 +16,19 @@ export const getCurrentTabId = async () => {
 };
 
 export const isNoteValid = (note: Note, model: Model, t: TFunction<"error", "addNote">) => {
-  if (model === undefined)
-    return {
-      result: 'error',
-      error: t('modelNotFoundError.statusText'),
-    };
-  console.log('emptyModelError');
-  if (note.modelId === '' || note.modelId === null)
-    return {
-      result: 'error',
-      error: t('emptyModelError.statusText'),
-    };
-  console.log('emptyDeckError');
-  if (note.deckName === '' || note.deckName === null)
-    return {
-      result: 'error',
-      error: t('emptyDeckError.statusText'),
-    };
-  console.log('FieldModelMisMatchError')
+  const res = {
+    result: 'error',
+    error: [] as string[],
+  };
+  if (model === undefined){
+    res.error.push(t('modelNotFoundError.code'));
+  }
+  if (note.modelId === '' || note.modelId === null){
+    res.error.push(t('emptyModelError.code'));
+  }
+  if (note.deckName === '' || note.deckName === null){
+    res.error.push(t('emptyDeckError.code'));
+  }
   //check model fields == note fields
   const modelFieldNames = Object.keys(model.fields);
   const noteFieldNames = Object.keys(note.fields);
@@ -41,16 +36,12 @@ export const isNoteValid = (note: Note, model: Model, t: TFunction<"error", "add
     modelFieldNames.length !== noteFieldNames.length ||
     !modelFieldNames.every((field) => noteFieldNames.includes(field))
   ) {
-    return {
-      result: 'error',
-      error: t('fieldModelMismatchError.statusText'),
-    };
+    res.error.push(t('fieldModelMismatchError.code'));
   }
-
-  return {
-    result: 'success',
-    error: null,
-  };
+  if (res.error.length === 0){
+    res.result = 'success';
+  }
+  return res;
 };
 
 // Anki에 노트 추가 시 미디어 파일이 포함된 경우, HTML 내의 미디어 태그를 Anki의 미디어 저장 방식에 맞게 변환하여 처리

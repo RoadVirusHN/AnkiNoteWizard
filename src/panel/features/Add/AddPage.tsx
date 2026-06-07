@@ -29,7 +29,10 @@ const AddPage = ({}) => {
   const [curNote, setCurNote] = useState(currentAddingNote);
   const [isChanged, setIsChanged] = useState(false);
   const [isModifying, setIsModifying] = useState(true);
-  
+  const [errorMessages, setErrorMessages] = useState<{[key:string]:string[]}>({
+    deck: [],
+    model: [],
+  });
   const {models} = useAnkiConnectionStore();  
   const {t} = useTranslation('page',{keyPrefix: 'addPage'});
   const {t:tCommon} = useTranslation('common');
@@ -66,7 +69,8 @@ const AddPage = ({}) => {
       {<section className={addPageStyle.content}>
         {isInspectionMode ?? <InspectionOverlay mode={INSPECTION_MODE.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
         <div className={addPageStyle.formGroup}>
-          <DeckInput label={tCommon('deck')} onChange={(deck:string)=>{setCurNote({...curNote, deckName: deck})}}/>
+          <DeckInput label={tCommon('deck')} onChange={(deck:string)=>{setCurNote({...curNote, deckName: deck})}}
+            errorMessages={errorMessages.deck}/>
         </div>
         <ScanRuleInput defaultScanRule={curNote.scanRuleName} setScanRule={(scanRule:string)=>{
           setCurNote({...curNote, scanRuleName: scanRule});
@@ -77,7 +81,9 @@ const AddPage = ({}) => {
             setCurNote({...curNote, modelId, fields: models[modelId].fields.map((fieldName:string)=>({key: fieldName, content: ''}))});
             setIsChanged(true);
           }
-        }}/>
+        }}
+          errorMessages={errorMessages.model}
+        />
         <div className={addPageStyle.fakeLabel}>{t('tagsLabel')}</div>
         <Tags givenTags={curNote.tags} isModifying={isModifying} 
         onAddTag={(tag)=>{
@@ -109,7 +115,20 @@ const AddPage = ({}) => {
           const res = isNoteValid(curNote, models[curNote.modelId], tError);
           console.log(res);
           if (res.result!== 'success'){
-            alert(tCommon('error')+`: ${res.error}`);
+            for (const code of res.error){
+              if(code === 'modelNotFoundError.code'){
+                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('modelNotFoundError.statusText')]});
+              } else if (code === 'emptyModelError.code'){
+                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('emptyModelError.statusText')]});
+              } else if (code === 'emptyDeckError.code'){
+                setErrorMessages({...errorMessages, deck: [...errorMessages.deck, tError('emptyDeckError.statusText')]});
+              } else if (code === 'fieldModelMismatchError.code'){
+                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('fieldModelMismatchError.statusText')]});
+              } else{
+                alert(tCommon('error')+`: ${res.error}`);
+              }            
+            }
+
             return;
           }
           const req = {
