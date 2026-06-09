@@ -1,11 +1,11 @@
 import { ErrorMessage } from '@/types/app.types';
-import { Note, ScanRule as ScanRule } from '@/types/scanRule.types';
+import { Note, ScanRule as ScanRule, Tag } from '@/types/scanRule.types';
 import i18next from 'i18next';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface ScanRuleState {
-  scanRules: ScanRule[];
+  scanRules: {[scanRuleName:string]:ScanRule};
   addScanRule: (scanRule: ScanRule) => ErrorMessage;
   removeScanRule: (name: string) => void;
   modifyScanRule: (name: string, scanRule: ScanRule) => ErrorMessage;
@@ -14,15 +14,15 @@ interface ScanRuleState {
   removeNote: (idx: string) => void;
   updateNote: (idx: string, updates: { [key: string]: unknown }) => void;
   setNotes: (newNotes: { [idx: string]: Note }) => void;
-  tags: { [name: string]: { color: string } };
+  tags: { [name: string]: Tag };
   addTag: (name: string, color: string) => void;
   removeTag: (name: string) => void;
   updateTag: (name: string, color: string) => void;
 }
 
-const isScanRuleVaild: (scanRule: ScanRule, curScanRules: ScanRule[]) => ErrorMessage = (
+const isScanRuleVaild: (scanRule: ScanRule, curScanRules: {[scanRuleName:string]:ScanRule}) => ErrorMessage = (
   scanRule: ScanRule,
-  curScanRules: ScanRule[]
+  curScanRules: {[scanRuleName:string]:ScanRule}
 ) => {
   const t = (key: string) => {
     // return i18next.t(key, '', { ns: 'error', keyPrefix: 'scanRule' });
@@ -35,7 +35,7 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: ScanRule[]) => ErrorMe
       error: t('invallidScanRuleName.statusText'),
     };
   }
-  if (curScanRules.filter((t) => t.scanRuleName === scanRule.scanRuleName).length > 0) {
+  if (curScanRules.hasOwnProperty(scanRule.scanRuleName)) {
     return {
       result: 'error',
       error: t('duplicateScanRuleName.statusText'),
@@ -44,7 +44,7 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: ScanRule[]) => ErrorMe
   // if (!scanRule.meta.author || scanRule.meta.author.trim() === '') {
   //   return SCAN_RULE_CODE.INVALID_AUTHOR_NAME;
   // }
-  if (!scanRule.modelId) {
+  if (!scanRule.model.id) {
     return {
       result: 'error',
       error: t('invalidModel.statusText'),
@@ -65,11 +65,11 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: ScanRule[]) => ErrorMe
 const useScanRule = create<ScanRuleState>()(
   persist(
     (set, get) => ({
-      scanRules: [],
+      scanRules: {},
       addScanRule: (scanRule: ScanRule) => {
         const code = isScanRuleVaild(scanRule, get().scanRules);
         if (code.result === 'success')
-          set((state) => ({ scanRules: [...state.scanRules, scanRule] }));
+          set((state) => ({ scanRules: { ...state.scanRules, [scanRule.scanRuleName]: scanRule } }));
         return code;
       },
       removeScanRule: (name: string) => {
@@ -77,12 +77,14 @@ const useScanRule = create<ScanRuleState>()(
           const newNotes = {} as { [idx: string]: Note };
           Object.keys(state.notes).forEach((idx) => {
             const note = state.notes[idx];
-            if (note.scanRuleName !== name) {
+            if (note.scanRule?.scanRuleName !== name) {
               newNotes[idx] = note;
             }
           });
+          const newScanRules = { ...state.scanRules };
+          delete newScanRules[name];
           return {
-            scanRules: state.scanRules.filter((info) => info.scanRuleName !== name),
+            scanRules: newScanRules,
             notes: newNotes,
           };
         });
@@ -93,14 +95,8 @@ const useScanRule = create<ScanRuleState>()(
           return res;
         }
 
-        let founded = false;
-        set((state) => ({
-          scanRules: state.scanRules.map((c) => {
-            founded = true;
-            return c.scanRuleName === name ? scanRule : c;
-          }),
-        }));
-        if (founded) {
+        if (get().scanRules.hasOwnProperty(scanRule.scanRuleName)) {
+          set((state) => ({scanRules: { ...state.scanRules, [scanRule.scanRuleName]: scanRule }}));
           return {
             result: 'success',
             error: null,
@@ -144,7 +140,7 @@ const useScanRule = create<ScanRuleState>()(
       tags: {},
       addTag: (name, color) => {
         set((state) => ({
-          tags: { ...state.tags, [name]: { color } },
+          tags: { ...state.tags, [name]: { name, color } },
         }));
       },
       removeTag: (name) => {
@@ -158,7 +154,7 @@ const useScanRule = create<ScanRuleState>()(
         set((state) => ({
           tags: {
             ...state.tags,
-            [name]: { color },
+            [name]: { name, color},
           },
         }));
       },

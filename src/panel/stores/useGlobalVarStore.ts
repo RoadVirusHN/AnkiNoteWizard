@@ -29,9 +29,9 @@ const useGlobalVarStore = create<GlobalVarState>()(
       isAddingCard: false,
       currentDetected: 0,
       currentAddingNote: {
-        scanRuleName: '',
-        deckName: '',
-        modelId: Default_BASIC_MODEL.id,
+        scanRule: null,
+        deck: { name: ''},
+        model: Default_BASIC_MODEL,
         fields: [
           { key: 'Front', content: '' },
           { key: 'Back', content: '' },

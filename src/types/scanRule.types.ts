@@ -27,12 +27,13 @@ export interface ScanRuleMeta {
   version?: string;
   url?: string;
 }
+// TODO : scanrule, deck, model to be identified by id instead of name to avoid confusion when there are multiple scanrules, decks or models with the same name. This requires some changes in the backend as well.
 export interface Note {
-  scanRuleName: string;
-  deckName: string;
-  modelId: string;
+  scanRule: ScanRule|null;
+  deck: Deck;
+  model: Model;
   fields: FieldData[];
-  tags: string[];
+  tags: Tag[];
   audio?: {
     url: string;
     filename: string;
@@ -54,11 +55,11 @@ export interface FieldProperties {
   dataType: FieldDataType;
 }
 
+// TODO : scanrule, model to be identified by id instead of name to avoid confusion when there are multiple scanrules, decks or models with the same name. This requires some changes in the backend as well.
 export interface ScanRule {
   meta: ScanRuleMeta;
   scanRuleName: string;
-  modelId: string;
-  modelName: string;
+  model: Model;
   urlPatterns: string[];
   rootTag: string;
   tags: string[];
@@ -78,3 +79,13 @@ export interface Model {
   fields: string[];
   style?: string;
 }
+
+export interface Deck {
+  name: string;
+}
+
+export interface Tag {
+  name: string;
+  color: string;
+}
+
