@@ -1,19 +1,19 @@
-import { ErrorMessage } from '@/types/app.types';
-import { Note, ScanRule as ScanRule, Tag } from '@/types/scanRule.types';
+import { EMPTY_MODEL, ErrorMessage } from '@/types/app.types';
+import { Draft, ScanRule as ScanRule, Tag } from '@/types/scanRule.types';
 import i18next from 'i18next';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface ScanRuleState {
-  scanRules: {[scanRuleName:string]:ScanRule};
+  scanRules: {[scanRuleId:string]:ScanRule};
   addScanRule: (scanRule: ScanRule) => ErrorMessage;
   removeScanRule: (name: string) => void;
   modifyScanRule: (name: string, scanRule: ScanRule) => ErrorMessage;
-  notes: { [idx: string]: Note };
-  addNote: (idx: string, note: Note) => void;
-  removeNote: (idx: string) => void;
-  updateNote: (idx: string, updates: { [key: string]: unknown }) => void;
-  setNotes: (newNotes: { [idx: string]: Note }) => void;
+  drafts: { [idx: string]: Draft };
+  addDraft: (idx: string, note: Draft) => void;
+  removeDraft: (idx: string) => void;
+  updateDraft: (idx: string, updates: { [key: string]: unknown }) => void;
+  setDrafts: (newDrafts: { [idx: string]: Draft }) => void;
   tags: { [name: string]: Tag };
   addTag: (name: string, color: string) => void;
   removeTag: (name: string) => void;
@@ -44,13 +44,13 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: {[scanRuleName:string]
   // if (!scanRule.meta.author || scanRule.meta.author.trim() === '') {
   //   return SCAN_RULE_CODE.INVALID_AUTHOR_NAME;
   // }
-  if (!scanRule.model.id) {
+  if (!scanRule.modelId || scanRule.modelId=== EMPTY_MODEL.id) {
     return {
       result: 'error',
       error: t('invalidModel.statusText'),
     };
   }
-  if (!scanRule.rootTag || scanRule.rootTag.trim() === '') {
+  if (!scanRule.rootTagSelector || scanRule.rootTagSelector.trim() === '') {
     return {
       result: 'error',
       error: t('invalidRootTag.statusText'),
@@ -72,20 +72,20 @@ const useScanRule = create<ScanRuleState>()(
           set((state) => ({ scanRules: { ...state.scanRules, [scanRule.scanRuleName]: scanRule } }));
         return code;
       },
-      removeScanRule: (name: string) => {
+      removeScanRule: (id: string) => {
         set((state) => {
-          const newNotes = {} as { [idx: string]: Note };
-          Object.keys(state.notes).forEach((idx) => {
-            const note = state.notes[idx];
-            if (note.scanRule?.scanRuleName !== name) {
-              newNotes[idx] = note;
+          const newDrafts = {} as { [idx: string]: Draft };
+          Object.keys(state.drafts).forEach((idx) => {
+            const draft = state.drafts[idx];
+            if (draft.scanRuleId !== id) {
+              newDrafts[idx] = draft;
             }
           });
           const newScanRules = { ...state.scanRules };
-          delete newScanRules[name];
+          delete newScanRules[id];
           return {
             scanRules: newScanRules,
-            notes: newNotes,
+            drafts: newDrafts,
           };
         });
       },
@@ -96,7 +96,7 @@ const useScanRule = create<ScanRuleState>()(
         }
 
         if (get().scanRules.hasOwnProperty(scanRule.scanRuleName)) {
-          set((state) => ({scanRules: { ...state.scanRules, [scanRule.scanRuleName]: scanRule }}));
+          set((state) => ({scanRules: { ...state.scanRules, [name]: scanRule }}));
           return {
             result: 'success',
             error: null,
@@ -108,33 +108,33 @@ const useScanRule = create<ScanRuleState>()(
           };
         }
       },
-      notes: {},
-      addNote: (idx, note) => {
+      drafts: {},
+      addDraft: (idx, note) => {
         set((state) => ({
-          notes: { ...state.notes, [idx]: note },
+          drafts: { ...state.drafts, [idx]: note },
         }));
       },
-      removeNote: (idx) => {
+      removeDraft: (idx) => {
         set((state) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { [idx]: _deleted, ...rest } = state.notes;
-          return { notes: rest };
+          const { [idx]: _deleted, ...rest } = state.drafts;
+          return { drafts: rest };
         });
       },
-      updateNote: (idx, updates) => {
+      updateDraft: (idx, updates) => {
         set((state) => ({
-          notes: {
-            ...state.notes,
+          drafts: {
+            ...state.drafts,
             [idx]: {
-              ...state.notes[idx],
+              ...state.drafts[idx],
               ...updates,
             },
           },
         }));
       },
-      setNotes: (newNotes) => {
+      setDrafts: (newDrafts) => {
         set(() => ({
-          notes: newNotes,
+          drafts: newDrafts,
         }));
       },
       tags: {},
@@ -154,7 +154,7 @@ const useScanRule = create<ScanRuleState>()(
         set((state) => ({
           tags: {
             ...state.tags,
-            [name]: { name, color},
+            [name]: { name, color },
           },
         }));
       },

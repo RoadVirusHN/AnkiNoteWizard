@@ -7,21 +7,20 @@ import ScanRuleMetaEditor from "./ScanRuleMetaEditor/ScanRuleMetaEditor";
 import ScanRuleCommonEditor from "./ScanRuleCommonEditor/ScanRuleCommonEditor";
 import ModifyScanRuleHeader from "./ModifyScanRuleHeader/ModifyScanRuleHeader";
 import { ScanRule, FIELD_DATA_TYPES } from "@/types/scanRule.types";
-import { Default_BASIC_MODEL, SCAN_RULE_CODE } from "@/types/app.types";
+import { EMPTY_MODEL, SCAN_RULE_CODE } from "@/types/app.types";
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
 import { useTranslation } from "react-i18next";
 
 const emptyScanRule: ScanRule = {
     scanRuleName: "",
     meta: { author: "", description: "", version: "0.0.1" },
-    modelId: Default_BASIC_MODEL.id,
-    modelName: Default_BASIC_MODEL.name,
+    modelId: EMPTY_MODEL.id,
     urlPatterns: ["*"],
-    rootTag: "div.word",
+    rootTagSelector: "div.word",
     fields: {
-      ...Object.fromEntries(Default_BASIC_MODEL.fields.map(field => [field, { selector: `div.${field.toLowerCase()}`, dataType: FIELD_DATA_TYPES.TEXT }]))
+      ...Object.fromEntries(EMPTY_MODEL.fields.map(field => [field, { selector: `div.${field.toLowerCase()}`, dataType: FIELD_DATA_TYPES.TEXT }]))
     },
-    tags: []
+    tagIds: []
   };
 
 
@@ -32,7 +31,7 @@ const ModifyScanRule = () => {
   const { scanRules, addScanRule, modifyScanRule } = useScanRules();
   const { models } = useAnkiConnectionStore();
   const currentScanRule = isEditMode && idx !== undefined ? scanRules[idx] : emptyScanRule;
-  const currentModel = models[currentScanRule.modelId];  
+  const currentModel = currentScanRule.modelId;  
   const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule'});
   const tabs = ["meta", "common", "fields"] as ("meta" | "common" | "fields")[];
   const [activeTab, setActiveTab] = useState(tabs[0]);

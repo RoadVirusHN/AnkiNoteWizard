@@ -7,7 +7,7 @@ import AddIcon from '@/public/Icon/Icon-Add.svg';
 import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import useGlobalVarStore from '@/panel/stores/useGlobalVarStore';
 import useScanRule from '@/panel/stores/useScanRule';
-import { ExtractedFields, ExtractedInfos,  FIELD_DATA_TYPES,  Note, ScanRule } from '@/types/scanRule.types';
+import { ExtractedFields, ExtractedInfos,  FIELD_DATA_TYPES,  Draft, ScanRule } from '@/types/scanRule.types';
 import { MESSAGE_TYPE } from '@/types/chrome.types';
 import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
 import { useTranslation } from 'react-i18next';
@@ -23,11 +23,13 @@ const DetectPage: React.FC = () => {
   const {scanRules: scanRules} = useCustomCard();
   const [isPending, setIsPending] = useState(false);
   const [selected, setSelected] = useState(new Set<string>());
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const {fetchAnki} = useAnkiConnectionStore();
-  const {currentDeck, setCurrentDetected} = useGlobalVarStore();
-  const {notes, setNotes} = useScanRule();
+  const {currentDeckId, setCurrentDetected, setCurrentDeckId} = useGlobalVarStore();
+  const {drafts, setDrafts} = useScanRule();
   
   const {t} = useTranslation('page', {keyPrefix: 'detectPage'});  
+  const {t:tError} = useTranslation('error', {keyPrefix: 'detectPage'});
   const requestExtracteds = async () => {
     setIsPending(true);
     chrome.runtime.sendMessage({
@@ -38,7 +40,7 @@ const DetectPage: React.FC = () => {
         const em = response as ExtractedInfos;
         let cnt = 0;
         setIsPending(false);
-        const newNotes = {} as typeof notes;
+        const newNotes = {} as typeof drafts;
         Object.keys(em).map((key)=>{
           const numberKey = Number(key);
           const extractedInfos = em[numberKey];
@@ -48,7 +50,7 @@ const DetectPage: React.FC = () => {
           });
         });
         setCurrentDetected(cnt);
-        setNotes(newNotes);
+        setDrafts(newNotes);
     });
   };
 
@@ -60,7 +62,7 @@ const DetectPage: React.FC = () => {
   }
 
   const getNote = (scanRule : ScanRule, extracted : ExtractedFields) =>{    
-    let fields = [] as Note['fields'];
+    let fields = [] as Draft['fields'];
     for (const fieldName of Object.keys(scanRule.fields)) {
       let value;
       if (scanRule.fields[fieldName].dataType === FIELD_DATA_TYPES.IMAGE) {
@@ -75,29 +77,34 @@ const DetectPage: React.FC = () => {
       fields.push({key: fieldName, content: value});
     }
     return ({
-            scanRuleName: scanRule.scanRuleName,
-            deckName: currentDeck || 'Default',
-            modelId: scanRule.modelId || 'Basic',
+            scanRuleId: scanRule.scanRuleName,
+            deckId: currentDeckId,
+            modelId: scanRule.modelId,
             fields,
-            tags: scanRule.tags || [],
+            tagIds: scanRule.tagIds || [],
             audio: scanRule.audio ? {
               url: scanRule.audio.url,
               filename: scanRule.audio.filename,
               skipHash: scanRule.audio.skipHash,
               fields: scanRule.audio.fields,
             } : undefined,
-          }) as Note;
+          }) as Draft;
   }
   const addSelected = ()=>{   
+    if (currentDeckId === null) {
+      console.log('No deck selected');
+      setErrorMessages([tError('selectDeckFirst.statusText')]);
+      return;
+    }
     fetchAnki({action: "addNotes",params: { notes : [...selected.keys()].map((i)=>({
-      ...notes[i],
-      deckName: currentDeck
+      ...drafts[i],
+      deckName: currentDeckId
     }))}})
     .then((res) => {
       console.log(res);
       if (res.error) {
         console.error('Error adding note to Anki:', res.error);
-        alert(t('addNoteFail') + res.error);
+        alert(tError('addNoteFail.statusText') + res.error);
       } else {
         console.log('Note added to Anki with ID:', res.result);
         alert(t('addNoteSuccess'));
@@ -107,7 +114,13 @@ const DetectPage: React.FC = () => {
   return (
     <div className={detectPageStyle.pageContainer}>
       <div className={detectPageStyle.header}>
-        <DeckInput/> 
+        <DeckInput
+          initDeckId={currentDeckId}
+          onChange={(e)=>{
+            setCurrentDeckId(e.target.value);
+          }}
+          errorMessages={errorMessages}
+        /> 
         <div className={detectPageStyle.headerButtons}>
           <SimpleButton disabled={isPending} className={detectPageStyle.redetectDraft} onClick={requestExtracteds}>
             {isPending ? t("scanning") : '↺ '+t("scan")}
@@ -117,14 +130,14 @@ const DetectPage: React.FC = () => {
       </div>
 
       <div className={detectPageStyle.draftsWrapper}>
-        {notes && Object.keys(notes).length > 0 ? (
-          Object.keys(notes).map((key) => { 
-            const note = notes[key];
+        {drafts && Object.keys(drafts).length > 0 ? (
+          Object.keys(drafts).map((key) => { 
+            const note = drafts[key];
             return (
               <DetectedDraft 
                 key={key} 
                 note={note} 
-                scanRuleName={note.scanRuleName} 
+                scanRuleId={note.scanRuleId} 
                 checkAdd={checkAdd(key)}
               />
             );

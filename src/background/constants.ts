@@ -1,4 +1,4 @@
-import { Default_BASIC_MODEL } from '@/types/app.types';
+import { EMPTY_MODEL } from '@/types/app.types';
 import { ScanRule } from '@/types/scanRule.types';
 
 export const STORAGE_KEY = 'anki-note-wizard-global-var-store';
@@ -11,10 +11,9 @@ export const defaultScanRules: ScanRule[] = [
       version: '1.0.0',
     },
     scanRuleName: 'Sample ScanRule',
-    modelId: Default_BASIC_MODEL.id,
-    modelName: Default_BASIC_MODEL.name,
+    modelId: EMPTY_MODEL.id,
     urlPatterns: ['*'],
-    rootTag: 'body',
+    rootTagSelector: 'body',
     fields: {
       Front: {
         selector: '',
@@ -25,6 +24,6 @@ export const defaultScanRules: ScanRule[] = [
         dataType: 'text',
       },
     },
-    tags: ["sample", "tutorial"],
+    tagIds: [],
   },
 ];

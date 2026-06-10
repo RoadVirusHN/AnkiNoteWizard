@@ -96,7 +96,7 @@ export const getExtractedFromPage = (scanRules: ScanRule[]) => {
   scanRules.forEach((scanRule, idx) => {
     res[idx] = [];
     if (!checkUrlMatched(scanRule)) {
-      let roots = Array.from(document.querySelectorAll(scanRule.rootTag));
+      let roots = Array.from(document.querySelectorAll(scanRule.rootTagSelector));
       if (roots.length === 0) roots = Array.from(document.querySelectorAll('body'));
       roots.forEach((root) => {
         const extracteds: ExtractedFields = {};

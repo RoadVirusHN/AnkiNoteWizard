@@ -22,10 +22,13 @@ import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
 import { isNoteValid } from "@/panel/utils/functions";
 import FieldInput from "@/panel/components/Inputs/FieldInput/FieldInput";
+import useScanRule from "@/panel/stores/useScanRule";
+import { Model } from "@/types/scanRule.types";
 
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();
-  const {currentAddingNote, setCurrentAddingNote} = useGlobalVarStore();
+  const {currentAddingDraft: currentAddingNote, setCurrentAddingDraft: setCurrentAddingNote} = useGlobalVarStore();
+  const {scanRules} = useScanRule();
   const [curNote, setCurNote] = useState(currentAddingNote);
   const [isChanged, setIsChanged] = useState(false);
   const [isModifying, setIsModifying] = useState(true);
@@ -69,30 +72,30 @@ const AddPage = ({}) => {
       {<section className={addPageStyle.content}>
         {isInspectionMode ?? <InspectionOverlay mode={INSPECTION_MODE.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
         <div className={addPageStyle.formGroup}>
-          <DeckInput label={tCommon('deck')} onChange={(deck:string)=>{setCurNote({...curNote, deckName: deck})}}
+          <DeckInput label={tCommon('deck')} onChange={(e)=>{setCurNote({...curNote, deckId: e.target.value}); setIsChanged(true);}} initDeckId={curNote.deckId}
             errorMessages={errorMessages.deck}/>
         </div>
-        <ScanRuleInput defaultScanRule={curNote.scanRuleName} setScanRule={(scanRule:string)=>{
-          setCurNote({...curNote, scanRuleName: scanRule});
+        <ScanRuleInput defaultScanRule={curNote.scanRuleId? curNote.scanRuleId : ''} setScanRule={(scanRuleName:string)=>{
+          setCurNote({...curNote, scanRuleId: scanRuleName});
           setIsChanged(true);
         }}/>
-        <ModelInput defaultModelId={curNote.modelId} setModelId={(modelId:string)=>{
+        <ModelInput defaultModelId={curNote.modelId} setModelId={(id:string)=>{
           if (confirm(t('changeModelFieldWarning'))){ 
-            setCurNote({...curNote, modelId, fields: models[modelId].fields.map((fieldName:string)=>({key: fieldName, content: ''}))});
+            setCurNote({...curNote, modelId:id, fields: models[id].fields.map((fieldName:string)=>({key: fieldName, content: ''}))});
             setIsChanged(true);
           }
         }}
           errorMessages={errorMessages.model}
         />
         <div className={addPageStyle.fakeLabel}>{t('tagsLabel')}</div>
-        <Tags givenTags={curNote.tags} isModifying={isModifying} 
+        <Tags givenTagIds={curNote.tagIds} isModifying={isModifying} 
         onAddTag={(tag)=>{
           setIsChanged(true);
-          setCurNote({...curNote, tags: [...curNote.tags, tag]});
+          setCurNote({...curNote, tagIds: [...curNote.tagIds, tag.name]});
         }} 
         onRemoveTag={(tag)=>{
           setIsChanged(true);
-          setCurNote({...curNote, tags: curNote.tags.filter(t=>t!==tag)});
+          setCurNote({...curNote, tagIds: curNote.tagIds.filter(t=>t !== tag.name)});
         }}/>
         <div className={addPageStyle.fakeLabel}>{t('fieldsLabel')}</div>
         {

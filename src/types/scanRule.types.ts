@@ -28,12 +28,12 @@ export interface ScanRuleMeta {
   url?: string;
 }
 // TODO : scanrule, deck, model to be identified by id instead of name to avoid confusion when there are multiple scanrules, decks or models with the same name. This requires some changes in the backend as well.
-export interface Note {
-  scanRule: ScanRule|null;
-  deck: Deck;
-  model: Model;
+export interface Draft {
+  scanRuleId: string;
+  deckId: string;
+  modelId: string;
   fields: FieldData[];
-  tags: Tag[];
+  tagIds: string[];
   audio?: {
     url: string;
     filename: string;
@@ -56,13 +56,14 @@ export interface FieldProperties {
 }
 
 // TODO : scanrule, model to be identified by id instead of name to avoid confusion when there are multiple scanrules, decks or models with the same name. This requires some changes in the backend as well.
+// TODO : 사용자 Anki 와의 불일치하는 deck, model 등의 문제 해결
 export interface ScanRule {
   meta: ScanRuleMeta;
   scanRuleName: string;
-  model: Model;
+  modelId: string;
   urlPatterns: string[];
-  rootTag: string;
-  tags: string[];
+  rootTagSelector: string;
+  tagIds: string[];
   fields: {
     [fieldName: string]: FieldProperties;
   };

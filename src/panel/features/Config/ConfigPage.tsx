@@ -76,7 +76,7 @@ const ConfigPage: React.FC = () => {
       </div>
       <SimpleButton onClick={()=>{
         var addedScanruleCount = 0;
-        const copiedScanrules = [...scanRules];
+        const copiedScanrules = [...Object.values(scanRules)];
         for (const rule of defaultScanRules) {
           if (!copiedScanrules.find(r => r.scanRuleName === rule.scanRuleName)) {
             addScanRule(rule);
@@ -136,7 +136,7 @@ const ConfigPage: React.FC = () => {
                 const importedScanRules = JSON.parse(event.target?.result as string) as ScanRule[];
                 console.log(importedScanRules);
 
-                const copiedScanrules = [...scanRules];
+                const copiedScanrules = [...Object.values(scanRules)];
                 if (Array.isArray(importedScanRules)) {
                   var addedCount = 0;
                   for (const rule of importedScanRules) {

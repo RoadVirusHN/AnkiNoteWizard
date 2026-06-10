@@ -23,8 +23,8 @@ const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: numbe
         {scanRule.meta.description?.slice(0,135)}{scanRule.meta.description && scanRule.meta.description.length > 135 ? '...' : ''}
       </div>
       <div className={scanRuleDetailStyle.info}>
-        <p>Model: {scanRule.modelName.slice(0,30)}{scanRule.modelName.length>30? "...":""}</p>
-        <Tags givenTags={scanRule.tags.slice(0,4)} />
+        <p>Model: {scanRule.modelId.slice(0,30)}{scanRule.modelId.length>30? "...":""}</p>
+        <Tags givenTagIds={scanRule.tagIds.slice(0,4)} />
       </div>
     </div> 
     <div className={scanRuleDetailStyle.buttonGroup}>

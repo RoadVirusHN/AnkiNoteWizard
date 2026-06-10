@@ -1,21 +1,21 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Note } from 'types/scanRule.types';
-import { Default_BASIC_MODEL, TAB, Tab } from '@/types/app.types';
+import { Draft } from 'types/scanRule.types';
+import { EMPTY_DECK, EMPTY_MODEL, EMPTY_SCANRULE, TAB, Tab } from '@/types/app.types';
 
 interface GlobalVarState {
   currentUrl: string;
   currentTab: Tab;
-  currentDeck: string;
+  currentDeckId: string;
   isAddingCard: boolean;
   currentDetected: number;
-  currentAddingNote: Note;
+  currentAddingDraft: Draft;
   isInspectionMode: boolean;
   setCurrentUrl: (url: string) => void;
   setCurrentTab: (tab: Tab) => void;
-  setCurrentDeck: (deck: string) => void;
+  setCurrentDeckId: (deckId: string) => void;
   setCurrentDetected: (cnt: number) => void;
-  setCurrentAddingNote: (note: Note) => void;
+  setCurrentAddingDraft: (note: Draft) => void;
   setIsAddingCard: (isAdding: boolean) => void;
   setIsInspectionMode: (isInspection: boolean) => void;
 }
@@ -25,18 +25,18 @@ const useGlobalVarStore = create<GlobalVarState>()(
     (set) => ({
       currentUrl: '/',
       currentTab: TAB.DETECT,
-      currentDeck: '',
+      currentDeckId: EMPTY_DECK.name,
       isAddingCard: false,
       currentDetected: 0,
-      currentAddingNote: {
-        scanRule: null,
-        deck: { name: ''},
-        model: Default_BASIC_MODEL,
+      currentAddingDraft: {
+        scanRuleId: EMPTY_SCANRULE.scanRuleName,
+        deckId: EMPTY_DECK.name,
+        modelId: EMPTY_MODEL.id,
         fields: [
           { key: 'Front', content: '' },
           { key: 'Back', content: '' },
         ],
-        tags: [],
+        tagIds: [],
       },
       isInspectionMode: false,
       setCurrentUrl: (url: string) => {
@@ -45,9 +45,9 @@ const useGlobalVarStore = create<GlobalVarState>()(
       setCurrentTab: (tab: Tab) => {
         set({ currentTab: tab });
       },
-      setCurrentDeck: (deck: string) => set({ currentDeck: deck }),
+      setCurrentDeckId: (deckId: string) => set({ currentDeckId: deckId }),
       setCurrentDetected: (cnt: number) => set({ currentDetected: cnt }),
-      setCurrentAddingNote: (note: Note) => set({ currentAddingNote: note }),
+      setCurrentAddingDraft: (draft: Draft) => set({ currentAddingDraft: draft }),
       setIsAddingCard: (isAdding: boolean) => set({ isAddingCard: isAdding }),
       setIsInspectionMode: (isInspection: boolean) => set({ isInspectionMode: isInspection }),
     }),

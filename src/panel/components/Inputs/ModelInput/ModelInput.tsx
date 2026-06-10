@@ -2,12 +2,12 @@ import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
 import { useState } from "react";
 import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
-const ModelInput = ({setModelId, defaultModelId,errorMessages}:{setModelId: (modelId:string)=>void, defaultModelId: string, errorMessages: string[]}) => {
+const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (modelId:string)=>void, defaultModelId: string, errorMessages: string[]}) => {
   const {models} = useAnkiConnectionStore();
   const [curVal, setCurVal] = useState(defaultModelId || models[0].id || ''); 
   const onChangeModel = (modelId:string) => {
     if (Object.keys(models).length===0) return;
-    setModelId(modelId);
+    setModelId(models[modelId].id);
   }
   const {t} = useTranslation('common');
   const {t:tModelInput} = useTranslation('components', {keyPrefix: 'modelInput'});

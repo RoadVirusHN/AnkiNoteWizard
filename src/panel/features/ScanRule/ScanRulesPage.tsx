@@ -19,7 +19,7 @@ const ScalnRulePage = ({}) => {
     style={{cursor: "pointer"}}
     title="Add Scan Rule"
     />  
-    {scanRules.map((scanRule,idx)=>
+    {Object.values(scanRules).map((scanRule,idx)=>
     <ScanRuleDetail key={scanRule.scanRuleName} idx={idx} scanRule={scanRule} onCheck={(e)=>{
       if (e.currentTarget.checked){
         setCheckedList([...checkedList, scanRule.scanRuleName]);

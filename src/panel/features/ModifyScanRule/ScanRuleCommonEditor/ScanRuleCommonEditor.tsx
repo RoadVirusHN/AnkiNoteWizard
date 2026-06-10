@@ -23,13 +23,13 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
   const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule.scanRuleCommonEditor'});
   const {t:tCommon} = useTranslation('common');
   const onResult = (text: string)=>{
-    setData({ ...scanRule, rootTag: text });
+    setData({ ...scanRule, rootTagSelector: text });
     if (rootTagInputRef.current){
       rootTagInputRef.current.value = text;
     };
   }
   const {models} = useAnkiConnectionStore();
-  const {enterInspectionMode, cancleInspectionMode, isInspectionMode} = useInspection(INSPECTION_MODE.TAG_EXTRACTION, scanRule.rootTag );
+  const {enterInspectionMode, cancleInspectionMode, isInspectionMode} = useInspection(INSPECTION_MODE.TAG_EXTRACTION, scanRule.rootTagSelector );
   
   const options = models
     ? Object.entries(models).map(([modelId, model]) => ({ key: model.name, val: modelId, isDisabled: false }))
@@ -37,27 +37,29 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
   
   return (<div>
     <ModelInput
+      errorMessages={[]}
       defaultModelId={scanRule.modelId}
-      setModelId={(modelId) => {
-        setData({ ...scanRule, modelId, modelName: models[modelId].name, fields: Object.fromEntries(models[modelId].fields.map((field:string) => [field, { selector: "", dataType: "text" }])) });
+      setModelId={(id) => {
+        setData({ ...scanRule, modelId: id, fields: Object.fromEntries(models[id].fields.map((field:string) => [field, { selector: "", dataType: "text" }])) });
       }}
     />
     <SimpleInput 
       inputId="urlPatterns"
+      isEssential={true}
       label={t("urlPatterns")} 
       placeholder={"*"} 
       defaultValue={scanRule.urlPatterns.join(", ")} 
       onChange={(e) => ({ ...scanRule, urlPatterns: e.target.value.split(",").map(s=>s.trim()) })}
     />
-    <Tags givenTags={scanRule.tags} isModifying={true} onAddTag={
+    <Tags givenTagIds={scanRule.tagIds} isModifying={true} onAddTag={
       (newTag) => {
-        if (!scanRule.tags.includes(newTag)) {
-          setData({ ...scanRule, tags: [...scanRule.tags, newTag] });
+        if (!scanRule.tagIds.includes(newTag.name)) {
+          setData({ ...scanRule, tagIds: [...scanRule.tagIds, newTag.name] });
         }
       }
     } onRemoveTag={
       (tagToRemove) => {
-        setData({ ...scanRule, tags: scanRule.tags.filter(tag => tag !== tagToRemove) });
+        setData({ ...scanRule, tagIds: scanRule.tagIds.filter(id => id !== tagToRemove.name) });
       }
     }/>
     <div className={modifyScanRuleStyle.formGroup}>
@@ -65,8 +67,8 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
       <div className={modifyScanRuleStyle.inputWithBtn}>
         <input
           className={modifyScanRuleStyle.input}
-          value={scanRule.rootTag}
-          onChange={(e) => setData({ ...scanRule, rootTag: e.target.value })}
+          value={scanRule.rootTagSelector}
+          onChange={(e) => setData({ ...scanRule, rootTagSelector: e.target.value })}
           ref={rootTagInputRef}
           placeholder="e.g. div.card-body"
         />

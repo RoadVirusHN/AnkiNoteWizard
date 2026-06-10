@@ -1,4 +1,4 @@
-import { Model } from './scanRule.types';
+import { Deck, Model, ScanRule } from './scanRule.types';
 
 export interface FetchAnkiRequestBody {
   action: string;
@@ -67,11 +67,27 @@ export const INSPECTION_MODE = {
 
 export type InspectionMode = (typeof INSPECTION_MODE)[keyof typeof INSPECTION_MODE];
 
-export const Default_BASIC_MODEL = {
-  name: 'Basic',
-  id: '1576165339',
+export const EMPTY_MODEL = {
+  name: 'NO MODEL',
+  id: '-1',
   fields: ['Front', 'Back'],
-} as Model;
+} satisfies Model;
+
+export const EMPTY_DECK = {
+  name: 'NO DECK',
+} satisfies Deck;
+export const EMPTY_SCANRULE = {
+  scanRuleName: "",
+  meta: { author: "", description: "", version: "0.0.1" },
+  modelId: EMPTY_MODEL.id,
+  urlPatterns: ["*"],
+  rootTagSelector: "div.word",
+  fields: {
+    Front: { selector: 'div.front', dataType: 'text' },
+    Back: { selector: 'div.back', dataType: 'text' },
+  },
+  tagIds: []
+} satisfies ScanRule;
 
 export type ErrorMessage = {
   result : 'error' | "success";

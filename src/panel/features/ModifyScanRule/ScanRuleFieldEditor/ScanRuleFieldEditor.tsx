@@ -17,7 +17,7 @@ const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
     enterInspectionMode,
     cancleInspectionMode,
     isInspectionMode
-  } = useInspection(INSPECTION_MODE.FIELD_EXTRACTION, scanRule.rootTag);
+  } = useInspection(INSPECTION_MODE.FIELD_EXTRACTION, scanRule.rootTagSelector);
 
   const handleItemChange = (fieldName:string, newData: FieldProperties) => {
     const newItems = {...scanRule.fields};

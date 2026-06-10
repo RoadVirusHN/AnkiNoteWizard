@@ -1,7 +1,8 @@
-import { Model, Note } from '@/types/scanRule.types';
+import { Model, Draft } from '@/types/scanRule.types';
 import useAnkiConnectionStore from '../stores/useAnkiConnectionStore';
 import { ChangeEventHandler } from 'react';
 import { TFunction } from 'i18next';
+import { EMPTY_DECK, EMPTY_MODEL } from '@/types/app.types';
 
 export const getRandomColor = () => `hsl(${Math.random() * 360},50%, 50%)`;
 export const getComplementaryColor = (hsl: string) => {
@@ -15,23 +16,23 @@ export const getCurrentTabId = async () => {
   return tab.id;
 };
 
-export const isNoteValid = (note: Note, model: Model, t: TFunction<"error", "addNote">) => {
+export const isNoteValid = (draft: Draft, model: Model, t: TFunction<"error", "addNote">) => {
   const res = {
     result: 'error',
     error: [] as string[],
   };
-  if (model === undefined){
+  if (model === undefined || model.id === EMPTY_MODEL.id) {
     res.error.push(t('modelNotFoundError.code'));
   }
-  if (note.modelId === '' || note.modelId === null){
+  if (draft.modelId === '' || draft.modelId === null || draft.modelId === EMPTY_MODEL.id){
     res.error.push(t('emptyModelError.code'));
   }
-  if (note.deckName === '' || note.deckName === null){
+  if (draft.deckId === '' || draft.deckId === null || draft.deckId === EMPTY_DECK.name){
     res.error.push(t('emptyDeckError.code'));
   }
   //check model fields == note fields
   const modelFieldNames = Object.keys(model.fields);
-  const noteFieldNames = Object.keys(note.fields);
+  const noteFieldNames = Object.keys(draft.fields);
   if (
     modelFieldNames.length !== noteFieldNames.length ||
     !modelFieldNames.every((field) => noteFieldNames.includes(field))
