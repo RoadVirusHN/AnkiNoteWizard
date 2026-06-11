@@ -121,5 +121,19 @@ export default {
       description: '스캔 규칙에 지정된 루트 태그가 유효하지 않습니다.',
       solutions: ['스캔 규칙에 유효한 루트 태그를 입력하세요.'],
     }
+  },
+  detectPage: {
+    selectDeckFirst: {
+      code: 'selectDeckFirst',
+      statusText: '먼저 덱을 선택하세요',
+      description: '노트를 추가하기 전에 덱을 선택해야 합니다.',
+      solutions: ['노트를 추가하기 전에 덱을 선택하세요.'],
+    },
+    addNoteFail: {
+      code: 'addNoteFail',
+      statusText: '노트 추가 실패',
+      description: 'Anki에 노트를 추가하는 동안 오류가 발생했습니다.',
+      solutions: ['다시 시도하세요.', 'Anki Note Wizard 또는 Chrome의 최신 버전으로 업데이트하세요.'],
+    },
   }
 } satisfies typeof error;

@@ -119,5 +119,19 @@ export default {
       description: 'The root tag is invalid.',
       solutions: ['Please enter a valid root tag.'],
     }
+  },
+  detectPage:{
+    selectDeckFirst: {
+      code: 'selectDeckFirst',
+      statusText: 'Select Deck First',
+      description: 'Please select a deck before adding notes.',
+      solutions: ['Please select a deck from the dropdown menu.'],
+    },
+    addNoteFail: {
+      code: 'addNoteFail',
+      statusText: 'Add Note Failed',
+      description: 'An error occurred while adding the note to Anki.',
+      solutions: ['Please try again.', 'Check your Anki connection.'],
+    },
   }
 };
