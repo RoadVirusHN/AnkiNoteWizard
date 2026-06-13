@@ -5,8 +5,6 @@ import DelIcon from "@/public/Icon/Icon-Dump.svg";
 import { useNavigate } from "react-router";
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import { Draft, ScanRule } from "@/types/scanRule.types";
-import { Editor } from "@monaco-editor/react";
-import { THEME } from "@/types/app.types";
 import useConfigure from "@/panel/stores/useConfigure";
 import FieldInput from "./FieldInput";
 
@@ -20,7 +18,7 @@ interface DetectedDraftProps {
 
 const DetectedDraft = ({key, note, scanRuleId: scanRuleId, checkAdd}:DetectedDraftProps) => {
    const navigate = useNavigate();
-   const {drafts, removeDraft,updateDraft} = useScanRule();
+   const {removeDraft,updateDraft} = useScanRule();
    const {setCurrentDetected, currentDetected} = useGlobalVarStore();
    const {themeOption} = useConfigure();
    return (  

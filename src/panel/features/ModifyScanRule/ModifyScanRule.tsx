@@ -27,11 +27,9 @@ const emptyScanRule: ScanRule = {
 const ModifyScanRule = () => {
   const { index } = useParams();
   const isEditMode = index !== undefined;
-  const idx = isEditMode ? parseInt(index) : undefined;
-  const { scanRules, addScanRule, modifyScanRule } = useScanRules();
-  const { models } = useAnkiConnectionStore();
-  const currentScanRule = isEditMode && idx !== undefined ? scanRules[idx] : emptyScanRule;
-  const currentModel = currentScanRule.modelId;  
+  const idx = isEditMode ? index : undefined;
+  const { addScanRule, getScanRule, modifyScanRule } = useScanRules();
+  const currentScanRule = isEditMode && idx !== undefined ? (getScanRule(idx)??emptyScanRule) : emptyScanRule;
   const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule'});
   const tabs = ["meta", "common", "fields"] as ("meta" | "common" | "fields")[];
   const [activeTab, setActiveTab] = useState(tabs[0]);
@@ -43,7 +41,7 @@ const ModifyScanRule = () => {
   };
   const handleSave = () => {
     const code = isEditMode && idx !== undefined ? 
-    modifyScanRule(scanRules[idx].scanRuleName, scanRuleData) :
+    modifyScanRule(idx, scanRuleData) :
     addScanRule(scanRuleData);
     if (code.result === 'success') {
       setIsChanged(false);

@@ -5,7 +5,7 @@ import LinkSvg from "@/public/Icon/Icon-Filter.svg";
 import { useNavigate } from "react-router";
 import { ScanRule } from "@/types/scanRule.types";
 import Tags from "@/panel/components/Tags/Tags";
-const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: number, onCheck: (e: React.MouseEvent<HTMLInputElement>) => void}) => {
+const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: string, onCheck: (e: React.MouseEvent<HTMLInputElement>) => void}) => {
   const navigate = useNavigate();
   // TODO : Add Link Functionality
   // TODO : Configurable elipsis for title and description by font size.

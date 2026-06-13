@@ -29,6 +29,7 @@ export interface ScanRuleMeta {
 }
 // TODO : scanrule, deck, model to be identified by id instead of name to avoid confusion when there are multiple scanrules, decks or models with the same name. This requires some changes in the backend as well.
 export interface Draft {
+  draftId: string;
   scanRuleId: string;
   deckId: string;
   modelId: string;

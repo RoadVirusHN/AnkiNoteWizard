@@ -19,7 +19,8 @@ const ConfigPage: React.FC = () => {
     themeOption, setThemeSetting,
     fontSize, setFontSize
   } = useConfigure();
-  const {scanRules, addScanRule} = useScanRule();
+  const {getScanRule,getScanRules, addScanRule} = useScanRule();
+  const scanRules = getScanRules();
   const {ankiUrl, setAnkiUrl} = useAnkiConnectionStore();
   const [curLocale, setCurLocale] = useState(locale);
   const [curThemeSetting, setCurThemeSetting] = useState(themeOption.userSetting);

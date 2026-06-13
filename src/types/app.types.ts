@@ -76,7 +76,7 @@ export const EMPTY_MODEL = {
 export const EMPTY_DECK = {
   name: 'NO DECK',
 } satisfies Deck;
-export const EMPTY_SCANRULE = {
+export const EMPTY_SCAN_RULE = {
   scanRuleName: "",
   meta: { author: "", description: "", version: "0.0.1" },
   modelId: EMPTY_MODEL.id,
@@ -88,7 +88,17 @@ export const EMPTY_SCANRULE = {
   },
   tagIds: []
 } satisfies ScanRule;
-
+export const DEFAULT_DRAFT = {
+  draftId: '',
+  scanRuleId: EMPTY_SCAN_RULE.scanRuleName,
+  deckId: EMPTY_DECK.name,
+  modelId: EMPTY_MODEL.id,
+  fields: [
+    { key: 'Front', content: '' },
+    { key: 'Back', content: '' },
+  ],
+  tagIds: [],
+}
 export type ErrorMessage = {
   result : 'error' | "success";
   error: string | null;

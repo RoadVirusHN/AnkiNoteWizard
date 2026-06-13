@@ -9,7 +9,7 @@ import { useNavigate } from "react-router";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 
 const ScalnRulePage = ({}) => {
-  const {scanRules, removeScanRule: removeScanRule} = useScanRule();  
+  const {removeScanRule, getScanRules } = useScanRule();  
   const navigate = useNavigate();
   const [checkedList, setCheckedList] = useState<string[]>([]);
   return (<div className={scanRulesStyle.container}>
@@ -19,8 +19,8 @@ const ScalnRulePage = ({}) => {
     style={{cursor: "pointer"}}
     title="Add Scan Rule"
     />  
-    {Object.values(scanRules).map((scanRule,idx)=>
-    <ScanRuleDetail key={scanRule.scanRuleName} idx={idx} scanRule={scanRule} onCheck={(e)=>{
+    {Object.values(getScanRules()).map((scanRule)=>
+    <ScanRuleDetail key={scanRule.scanRuleName} idx={scanRule.scanRuleName} scanRule={scanRule} onCheck={(e)=>{
       if (e.currentTarget.checked){
         setCheckedList([...checkedList, scanRule.scanRuleName]);
       } else {

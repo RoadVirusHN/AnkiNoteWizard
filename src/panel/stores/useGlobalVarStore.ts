@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Draft } from 'types/scanRule.types';
-import { EMPTY_DECK, EMPTY_MODEL, EMPTY_SCANRULE, TAB, Tab } from '@/types/app.types';
+import { EMPTY_DECK, EMPTY_MODEL, EMPTY_SCAN_RULE, TAB, Tab } from '@/types/app.types';
 
 interface GlobalVarState {
   currentUrl: string;
@@ -29,7 +29,8 @@ const useGlobalVarStore = create<GlobalVarState>()(
       isAddingCard: false,
       currentDetected: 0,
       currentAddingDraft: {
-        scanRuleId: EMPTY_SCANRULE.scanRuleName,
+        draftId: '',
+        scanRuleId: EMPTY_SCAN_RULE.scanRuleName,
         deckId: EMPTY_DECK.name,
         modelId: EMPTY_MODEL.id,
         fields: [

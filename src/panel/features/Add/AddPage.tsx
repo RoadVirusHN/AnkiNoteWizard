@@ -28,7 +28,6 @@ import { Model } from "@/types/scanRule.types";
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentAddingDraft: currentAddingNote, setCurrentAddingDraft: setCurrentAddingNote} = useGlobalVarStore();
-  const {scanRules} = useScanRule();
   const [curNote, setCurNote] = useState(currentAddingNote);
   const [isChanged, setIsChanged] = useState(false);
   const [isModifying, setIsModifying] = useState(true);
@@ -41,17 +40,6 @@ const AddPage = ({}) => {
   const {t:tCommon} = useTranslation('common');
   const {t:tError} = useTranslation('error',{keyPrefix: 'addNote'});
   const {cancleInspectionMode,isInspectionMode} = useInspection();
-  
-  const setField = (fieldKey:string, content:string) => {
-    const newFields = curNote.fields.map(field=>{
-      if (field.key === fieldKey){
-        return {...field, content};
-      }
-      return field;
-    });
-    setCurNote({...curNote, fields: newFields});
-    setIsChanged(true);
-  };
   return <div className={addPageStyle.container}>
     <div className={addPageStyle.header}>     
       <h2>{t('addNoteToAnki')}</h2>

@@ -15,7 +15,7 @@ interface TagsProps {
 }
 
 const Tags = ({givenTagIds, isModifying=false, onRemoveTag=(t)=>{}, onAddTag=(t)=>{}}:TagsProps) => {
-  const {tags, addTag} = useScanRule();
+  const {getTag, addTag} = useScanRule();
   const {t} = useTranslation('common');
   const deleteTag = (e: React.MouseEvent, tag: Tag) => {
     e.stopPropagation();
@@ -27,20 +27,22 @@ const Tags = ({givenTagIds, isModifying=false, onRemoveTag=(t)=>{}, onAddTag=(t)
     const newTagId = input.value;
     if(newTagId && !givenTagIds.find(id=>id === newTagId)){
       let randomColor = getRandomColor();
-      if(!tags[newTagId]){
+      const existingTag = getTag(newTagId);
+      if(!existingTag){
         addTag(newTagId, randomColor);
       }
-      onAddTag({name:newTagId, color: tags[newTagId] ? tags[newTagId].color : randomColor});
+      onAddTag({name:newTagId, color: existingTag ? existingTag.color : randomColor});
       input.value = '';
     }
   }
   return (<div className={tagsStyle.tags}>
       {givenTagIds.map((id)=>{
-        let tagColor = tags[id] ? tags[id].color : getRandomColor();
-        if (tags[id]===undefined) addTag(id, tagColor);
+        const tag = getTag(id);
+        let tagColor = tag ? tag.color : getRandomColor();
+        if (tag===null) addTag(id, tagColor);
         // TODO: Make Tag Component
-        return (<span key={id} className={tagsStyle.tag} style={{backgroundColor: tags[id].color, color: getComplementaryColor(tags[id].color)}}>{tags[id].name} 
-        {isModifying ? <span style={{cursor: 'pointer'}} onClick={(e)=>deleteTag(e,tags[id])}> ⨂</span> : ''}
+        return (<span key={id} className={tagsStyle.tag} style={{backgroundColor: tag!.color, color: getComplementaryColor(tag!.color)}}>{tag!.name} 
+        {isModifying ? <span style={{cursor: 'pointer'}} onClick={(e)=>deleteTag(e,tag!)}> ⨂</span> : ''}
         </span>);
       }
     )}

@@ -4,17 +4,23 @@ import i18next from 'i18next';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+// TODO: Make hooks for only exposing getter and setter functions
 interface ScanRuleState {
-  scanRules: {[scanRuleId:string]:ScanRule};
+  _scanRules: {[scanRuleId:string]:ScanRule};
+  getScanRules: () => ScanRule[];
+  getScanRule: (scanRuleId:string)=>ScanRule | null;
   addScanRule: (scanRule: ScanRule) => ErrorMessage;
   removeScanRule: (name: string) => void;
   modifyScanRule: (name: string, scanRule: ScanRule) => ErrorMessage;
-  drafts: { [idx: string]: Draft };
+  _drafts: { [idx: string]: Draft };
+  getDrafts: () => Draft[];
+  getDraft: (idx: string) => Draft | null;
   addDraft: (idx: string, note: Draft) => void;
   removeDraft: (idx: string) => void;
   updateDraft: (idx: string, updates: { [key: string]: unknown }) => void;
   setDrafts: (newDrafts: { [idx: string]: Draft }) => void;
-  tags: { [name: string]: Tag };
+  _tags: { [name: string]: Tag };
+  getTag: (name: string) => Tag | null;
   addTag: (name: string, color: string) => void;
   removeTag: (name: string) => void;
   updateTag: (name: string, color: string) => void;
@@ -65,38 +71,43 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: {[scanRuleName:string]
 const useScanRule = create<ScanRuleState>()(
   persist(
     (set, get) => ({
-      scanRules: {},
+      _scanRules: {},
+      getScanRules: () => Object.values(get()._scanRules),
+      getScanRule: (id: string) => {
+        const scanRule = get()._scanRules[id];
+        return scanRule ? scanRule : null;
+      },
       addScanRule: (scanRule: ScanRule) => {
-        const code = isScanRuleVaild(scanRule, get().scanRules);
+        const code = isScanRuleVaild(scanRule, get()._scanRules);
         if (code.result === 'success')
-          set((state) => ({ scanRules: { ...state.scanRules, [scanRule.scanRuleName]: scanRule } }));
+          set((state) => ({ _scanRules: { ...state._scanRules, [scanRule.scanRuleName]: scanRule } }));
         return code;
       },
       removeScanRule: (id: string) => {
         set((state) => {
           const newDrafts = {} as { [idx: string]: Draft };
-          Object.keys(state.drafts).forEach((idx) => {
-            const draft = state.drafts[idx];
+          Object.keys(state._drafts).forEach((idx) => {
+            const draft = state._drafts[idx];
             if (draft.scanRuleId !== id) {
               newDrafts[idx] = draft;
             }
           });
-          const newScanRules = { ...state.scanRules };
+          const newScanRules = { ...state._scanRules };
           delete newScanRules[id];
           return {
-            scanRules: newScanRules,
-            drafts: newDrafts,
+            _scanRules: newScanRules,
+            _drafts: newDrafts,
           };
         });
       },
       modifyScanRule: (name: string, scanRule: ScanRule) => {
-        const res = isScanRuleVaild(scanRule, get().scanRules);
+        const res = isScanRuleVaild(scanRule, get()._scanRules);
         if (res.result === 'error') {
           return res;
         }
 
-        if (get().scanRules.hasOwnProperty(scanRule.scanRuleName)) {
-          set((state) => ({scanRules: { ...state.scanRules, [name]: scanRule }}));
+        if (get()._scanRules.hasOwnProperty(scanRule.scanRuleName)) {
+          set((state) => ({_scanRules: { ...state._scanRules, [name]: scanRule }}));
           return {
             result: 'success',
             error: null,
@@ -108,25 +119,30 @@ const useScanRule = create<ScanRuleState>()(
           };
         }
       },
-      drafts: {},
+      _drafts: {},
+      getDrafts: () => Object.values(get()._drafts),
+      getDraft: (idx) => {
+        const draft = get()._drafts[idx];
+        return draft ? draft : null;
+      },
       addDraft: (idx, note) => {
         set((state) => ({
-          drafts: { ...state.drafts, [idx]: note },
+          _drafts: { ...state._drafts, [idx]: note },
         }));
       },
       removeDraft: (idx) => {
         set((state) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { [idx]: _deleted, ...rest } = state.drafts;
-          return { drafts: rest };
+          const { [idx]: _deleted, ...rest } = state._drafts;
+          return { _drafts: rest };
         });
       },
       updateDraft: (idx, updates) => {
         set((state) => ({
-          drafts: {
-            ...state.drafts,
+          _drafts: {
+            ...state._drafts,
             [idx]: {
-              ...state.drafts[idx],
+              ...state._drafts[idx],
               ...updates,
             },
           },
@@ -134,26 +150,30 @@ const useScanRule = create<ScanRuleState>()(
       },
       setDrafts: (newDrafts) => {
         set(() => ({
-          drafts: newDrafts,
+          _drafts: newDrafts,
         }));
       },
-      tags: {},
+      _tags: {},
+      getTag: (name) => {
+        const tag = get()._tags[name];
+        return tag ? tag : null;
+      },
       addTag: (name, color) => {
         set((state) => ({
-          tags: { ...state.tags, [name]: { name, color } },
+          _tags: { ...state._tags, [name]: { name, color } },
         }));
       },
       removeTag: (name) => {
         set((state) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { [name]: _deleted, ...rest } = state.tags;
-          return { tags: rest };
+          const { [name]: _deleted, ...rest } = state._tags;
+          return { _tags: rest };
         });
       },
       updateTag: (name, color) => {
         set((state) => ({
-          tags: {
-            ...state.tags,
+          _tags: {
+            ...state._tags,
             [name]: { name, color },
           },
         }));

@@ -1,6 +1,5 @@
 import detectPageStyle from '@/panel/features/Detect/detectPage.module.css';
 import { useState } from 'react';
-import useCustomCard from '@/panel/stores/useScanRule';
 import DetectedDraft from './DetectedDraft/DetectedDraft';
 import DeckInput from '@/panel/components/Inputs/DeckInput/DeckInput';
 import AddIcon from '@/public/Icon/Icon-Add.svg';
@@ -20,13 +19,14 @@ import { useTranslation } from 'react-i18next';
 // SEND_DETECTED_CARDS : content script에서 감지된 카드 데이터를 CardPage로 전송
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
 const DetectPage: React.FC = () => {
-  const {scanRules: scanRules} = useCustomCard();
   const [isPending, setIsPending] = useState(false);
   const [selected, setSelected] = useState(new Set<string>());
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentDeckId, setCurrentDetected, setCurrentDeckId} = useGlobalVarStore();
-  const {drafts, setDrafts} = useScanRule();
+  const {getDrafts, getDraft,setDrafts, getScanRules} = useScanRule();
+  const drafts = getDrafts();
+  const scanRules = getScanRules();
   
   const {t} = useTranslation('page', {keyPrefix: 'detectPage'});  
   const {t:tError} = useTranslation('error', {keyPrefix: 'detectPage'});
@@ -39,18 +39,18 @@ const DetectPage: React.FC = () => {
         console.log("receive detected cards", response);
         const em = response as ExtractedInfos;
         let cnt = 0;
+        let tempDrafts= {} as {[key:string]:Draft};
         setIsPending(false);
-        const newNotes = {} as typeof drafts;
         Object.keys(em).map((key)=>{
           const numberKey = Number(key);
           const extractedInfos = em[numberKey];
           extractedInfos.forEach((extracted, idx)=>{
             const id = key + "-" + idx;
-            newNotes[id] = (getNote(scanRules[numberKey],extracted));
+            tempDrafts[id] = (getNote(scanRules[numberKey],extracted));
           });
         });
         setCurrentDetected(cnt);
-        setDrafts(newNotes);
+        setDrafts(tempDrafts);
     });
   };
 
@@ -97,7 +97,7 @@ const DetectPage: React.FC = () => {
       return;
     }
     fetchAnki({action: "addNotes",params: { notes : [...selected.keys()].map((i)=>({
-      ...drafts[i],
+      ...getDraft(i),
       deckName: currentDeckId
     }))}})
     .then((res) => {
@@ -132,7 +132,8 @@ const DetectPage: React.FC = () => {
       <div className={detectPageStyle.draftsWrapper}>
         {drafts && Object.keys(drafts).length > 0 ? (
           Object.keys(drafts).map((key) => { 
-            const note = drafts[key];
+            const note = getDraft(key);
+            if (!note) return null;
             return (
               <DetectedDraft 
                 key={key} 
