@@ -36,6 +36,10 @@ export default {
     importScanRules: '스캔 규칙 가져오기',
     exportScanRules: '스캔 규칙 내보내기',
   },
+  scanRulesPage: {
+    'Deleting|count|scanRules': '{{count}}개의 스캔 규칙을 삭제하시겠습니까?', 
+    addScanRule: '스캔 규칙 추가',
+  },
   modifyScanRule: {
     meta: '메타 정보',
     common: '공통',

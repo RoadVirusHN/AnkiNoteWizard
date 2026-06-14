@@ -34,6 +34,10 @@ export default {
     importScanRules: 'Import ScanRules',
     exportScanRules: 'Export ScanRules',
   },
+  scanRulesPage: {
+    'Deleting|count|scanRules': 'Deleting {{count}} scan rules?', 
+    addScanRule: 'Add ScanRule',
+  },
   modifyScanRule: {
     meta: 'Meta',
     common: 'Common',
