@@ -83,8 +83,14 @@ export const EMPTY_SCAN_RULE = {
   urlPatterns: ["*"],
   rootTagSelector: "div.word",
   fields: {
-    Front: { selector: 'div.front', dataType: 'text' },
-    Back: { selector: 'div.back', dataType: 'text' },
+    Front: [{
+      content: 'div.front', dataType: 'text',
+      selectorType: 'css'
+    }],
+    Back: [
+      {content:'mean :', dataType: 'text', selectorType: 'literal'},
+      { content: 'div.back', dataType: 'text',selectorType: 'css' }
+    ],
   },
   tagIds: []
 } satisfies ScanRule;

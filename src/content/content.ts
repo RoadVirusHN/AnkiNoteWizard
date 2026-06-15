@@ -57,38 +57,57 @@ const checkUrlMatched = (customCard: ScanRule): boolean => {
     })
   );
 };
-const extractFields = (root: Element, field: FieldProperties) => {
-  let element: Element | null = null;
-  element = root.querySelector(field.selector);
-  if (
-    field.dataType === FIELD_DATA_TYPES.IMAGE ||
-    field.dataType === FIELD_DATA_TYPES.VIDEO ||
-    field.dataType === FIELD_DATA_TYPES.AUDIO
-  ) {
+const extractFields = (root: Element, field: FieldProperties[]) => {
+  let res = '';
+  field.forEach((fieldProp, idx) => {
+    if (fieldProp.selectorType === 'literal') {
+      res += fieldProp.content;
+      return;
+    }
+    let element: Element | null = null;
+    element = root.querySelector(fieldProp.content);
+    if (
+      fieldProp.dataType === FIELD_DATA_TYPES.IMAGE ||
+      fieldProp.dataType === FIELD_DATA_TYPES.VIDEO ||
+      fieldProp.dataType === FIELD_DATA_TYPES.AUDIO
+     ) {
     if (
       element &&
       (element instanceof HTMLImageElement ||
         element instanceof HTMLVideoElement ||
         element instanceof HTMLAudioElement) &&
-      element.src
-    ) {
-      return element.src;
+        element.src
+      ) {
+        
+        switch (fieldProp.dataType) {
+          case FIELD_DATA_TYPES.IMAGE:
+            res += `<img src='${element.src}' />`;
+            break;
+          case FIELD_DATA_TYPES.VIDEO:
+            res += `<video src='${element.src}' control/>`;
+            break;
+          case FIELD_DATA_TYPES.AUDIO:
+            res += `<audio src='${element.src}' control/>`;
+            break;
+        }
+      } else {
+        res += `{{Field Prop ${idx} has no src attribute or is not a media element}}`;
+      }
+    } else if (fieldProp.dataType === FIELD_DATA_TYPES.TEXT) {
+      if (element && element.textContent) {
+        res += element.textContent;
+      } else {
+        res += `Field Prop ${idx} does not exist or has no text content`;
+      }
     } else {
-      return 'Image source not found or element is not an media element(img, video, audio)';
+      if (element) {
+        res += element.innerHTML;
+      } else {
+        res += `Field Prop ${idx} does not exist or has no innerHTML content`;
+      }
     }
-  } else if (field.dataType === FIELD_DATA_TYPES.TEXT) {
-    if (element && element.textContent) {
-      return element.textContent;
-    } else {
-      return 'Content does not exist';
-    }
-  } else {
-    if (element) {
-      return element.innerHTML;
-    } else {
-      return 'Element does not exist';
-    }
-  }
+  });
+  return res;
 };
 
 export const getExtractedFromPage = (scanRules: ScanRule[]) => {

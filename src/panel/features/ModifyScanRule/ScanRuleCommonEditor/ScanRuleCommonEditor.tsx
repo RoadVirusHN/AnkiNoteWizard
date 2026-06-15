@@ -40,7 +40,9 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
       errorMessages={[]}
       defaultModelId={scanRule.modelId}
       setModelId={(id) => {
-        setData({ ...scanRule, modelId: id, fields: Object.fromEntries(models[id].fields.map((field:string) => [field, { selector: "", dataType: "text" }])) });
+        let newFields = {};
+        newFields = Object.fromEntries(models[id].fields.map((field:string) => [field, { selector: "", dataType: "text" }])); 
+        setData({ ...scanRule, modelId: id, fields: newFields});
       }}
     />
     <SimpleInput 

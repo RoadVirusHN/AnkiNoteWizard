@@ -15,14 +15,25 @@ export const defaultScanRules: ScanRule[] = [
     urlPatterns: ['*'],
     rootTagSelector: 'body',
     fields: {
-      Front: {
-        selector: '',
-        dataType: 'text',
-      },
-      Back: {
-        selector: '',
-        dataType: 'text',
-      },
+      Front: [
+        {
+          content: 'div.front',
+          selectorType: 'css',
+          dataType: 'text',
+        },
+      ],
+      Back: [
+        {
+          content: 'mean :',
+          selectorType: 'literal',
+          dataType: 'text',
+        },
+        {
+          content: 'div.back',
+          selectorType: 'css',
+          dataType: 'text',
+        },
+      ],
     },
     tagIds: [],
   },

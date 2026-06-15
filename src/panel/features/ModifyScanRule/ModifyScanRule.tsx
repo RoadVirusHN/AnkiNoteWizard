@@ -17,9 +17,7 @@ const emptyScanRule: ScanRule = {
     modelId: EMPTY_MODEL.id,
     urlPatterns: ["*"],
     rootTagSelector: "div.word",
-    fields: {
-      ...Object.fromEntries(EMPTY_MODEL.fields.map(field => [field, { selector: `div.${field.toLowerCase()}`, dataType: FIELD_DATA_TYPES.TEXT }]))
-    },
+    fields: {},
     tagIds: []
   };
 

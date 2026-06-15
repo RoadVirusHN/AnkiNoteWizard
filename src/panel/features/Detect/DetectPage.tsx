@@ -64,15 +64,9 @@ const DetectPage: React.FC = () => {
   const getNote = (scanRule : ScanRule, extracted : ExtractedFields) =>{    
     let fields = [] as Draft['fields'];
     for (const fieldName of Object.keys(scanRule.fields)) {
-      let value;
-      if (scanRule.fields[fieldName].dataType === FIELD_DATA_TYPES.IMAGE) {
-        value = '<img src=\"'+ extracted[fieldName] + '\"/>';
-      } else if (scanRule.fields[fieldName].dataType === FIELD_DATA_TYPES.AUDIO) {
-        value = '<audio src=\"' + extracted[fieldName] + '\" controls/>';
-      } else if (scanRule.fields[fieldName].dataType === FIELD_DATA_TYPES.VIDEO) {
-        value = '<video src=\"' + extracted[fieldName] + '\" controls/>';
-      } else {
-        value = extracted[fieldName];
+      let value = '';
+      for (const fieldProp of scanRule.fields[fieldName]) {   
+          value = extracted[fieldName];
       }
       fields.push({key: fieldName, content: value});
     }
