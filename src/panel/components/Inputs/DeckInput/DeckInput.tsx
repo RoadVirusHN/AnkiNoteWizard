@@ -14,7 +14,7 @@ const DeckInput = ({initDeckId,onChange,label, errorMessages}:{initDeckId? : str
       inputId= "deckInput"
       label={label}
       defaultValue={initDeckId||''} 
-      isEssential={true}
+      isEssential={label?true:false}
       errorMessage={errorMessage}
       options={
         Object.keys(decks).length === 0 ? [{key:t('ankiDisconnected'), val:'', isDisabled: true}] :

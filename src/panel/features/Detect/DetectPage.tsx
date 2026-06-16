@@ -85,7 +85,7 @@ const DetectPage: React.FC = () => {
           }) as Draft;
   }
   const addSelected = ()=>{   
-    if (currentDeckId === null) {
+    if (currentDeckId === null||currentDeckId === ''){
       console.log('No deck selected');
       setErrorMessages([tError('selectDeckFirst.statusText')]);
       return;

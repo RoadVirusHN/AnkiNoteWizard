@@ -9,6 +9,8 @@ import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
 import useScanRule from '@/panel/stores/useScanRule';
 import { defaultScanRules } from '@/background/constants';
 import { ScanRule } from '@/types/scanRule.types';
+import SimpleSelect from '@/panel/components/Inputs/SimpleSelect/SimpleSelect';
+import SimpleInput from '@/panel/components/Inputs/SimpleInput/SimpleInput';
 
 
 const ConfigPage: React.FC = () => {
@@ -30,52 +32,58 @@ const ConfigPage: React.FC = () => {
   const isUserSchemeDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   return (
     <div>
-      <div>
-        <label htmlFor='locale-select'>{t('locale')}</label>
-        <select name='locale' id='locale-select' onChange={(e)=>{
+      <SimpleSelect 
+        inputId='locale'
+        label={t('locale')}
+        onChange={(e)=>{
           const selectedLocale = e.target.value as Locale;
           setCurLocale(selectedLocale);
         }}
-        value={curLocale}>
-          <option value={LOCALE.EN}>English</option>
-          <option value={LOCALE.KO}>한국어</option>
-        </select>
-      </div>  
-      <div>
-        <label htmlFor="theme-select">{t('theme')}</label>
-        <select name="theme" id="theme-select" onChange={
-          (e)=>{
-            const selectedTheme = e.target.value as ThemeSetting;
-            setCurThemeSetting(selectedTheme);
-          }
-        }
-        value={curThemeSetting}
-        >
-          <option value={isUserSchemeDark ? THEME_SETTING.SYSTEM_DARK : THEME_SETTING.SYSTEM_LIGHT}>{isUserSchemeDark ?t('themeSystemDark'):t('themeSystemLight')}</option>
-          <option value={THEME_SETTING.LIGHT}>{t('themeLight')}</option>
-          <option value={THEME_SETTING.DARK}>{t('themeDark')}</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="fontSizeSelect">{t('fontSize')}</label>
-        <select name="fontSizeSelect" id="fontSizeSelect" onChange={(e)=>{
+        options={[
+          {key: 'English', val: LOCALE.EN},
+          {key: '한국어', val: LOCALE.KO}
+        ]}
+        defaultValue={curLocale}/>
+      <SimpleSelect
+        inputId='theme'
+        label={t('theme')}
+        onChange={(e)=>{
+          const selectedTheme = e.target.value as ThemeSetting;
+          setCurThemeSetting(selectedTheme);
+        }}
+        options={[
+          {key: isUserSchemeDark ? t('themeSystemDark') : t('themeSystemLight'), val: isUserSchemeDark ? THEME_SETTING.SYSTEM_DARK : THEME_SETTING.SYSTEM_LIGHT},
+          {key: t('themeLight'), val: THEME_SETTING.LIGHT},
+          {key: t('themeDark'), val: THEME_SETTING.DARK}
+        ]}
+        defaultValue={curThemeSetting}
+      />
+      <SimpleSelect
+        inputId='fontSize'
+        label={t('fontSize')}
+        onChange={(e)=>{
           const selectedFontSize = e.target.value;
           setCurFontSize(selectedFontSize);
         }} 
-        value={curFontSize}>
-          <option value="small">small</option>
-          <option value="normal">normal(default)</option>
-          <option value="large">large</option>
-          <option value="very-large">very large</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="Anki-URL">{"Anki URL"}</label>
-        <input type="text" name="Anki-URL" onChange={(e)=>{
+        options={[
+          {key: t('small'), val: 'small'},
+          {key: t('normal'), val: 'normal'},
+          {key: t('large'), val: 'large'},
+          {key: t('veryLarge'), val: 'very-large'}
+        ]}
+        defaultValue={curFontSize}
+      />
+      <SimpleInput
+        inputId='ankiUrl'
+        label='Anki-URL'
+        onChange={(e)=>{
           setCurAnkiUrl(e.target.value);
-        }} value={curAnkiUrl} />
-      </div>
-      <SimpleButton onClick={()=>{
+        }} 
+        defaultValue={curAnkiUrl}      
+      />
+      <SimpleButton 
+      style={{margin: '5px auto'}}
+      onClick={()=>{
         var addedScanruleCount = 0;
         const copiedScanrules = [...Object.values(scanRules)];
         for (const rule of defaultScanRules) {
