@@ -60,6 +60,7 @@ const AddPage = ({}) => {
       {<section className={addPageStyle.content}>
         {isInspectionMode ?? <InspectionOverlay mode={INSPECTION_MODE.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
         <div className={addPageStyle.formGroup}>
+          {/* TODO: fix style changing when error message popup. */}
           <DeckInput label={tCommon('deck')} onChange={(e)=>{setCurNote({...curNote, deckId: e.target.value}); setIsChanged(true);}} initDeckId={curNote.deckId}
             errorMessages={errorMessages.deck}/>
         </div>

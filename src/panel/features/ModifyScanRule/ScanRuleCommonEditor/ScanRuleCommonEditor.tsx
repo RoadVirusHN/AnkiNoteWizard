@@ -64,6 +64,7 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
         setData({ ...scanRule, tagIds: scanRule.tagIds.filter(id => id !== tagToRemove.name) });
       }
     }/>
+    {/* TODO: style 연구해서 개구린 기본 Simple 시리즈 개선 */}
     <div className={modifyScanRuleStyle.formGroup}>
       <label>{t("rootTag")} <span className={modifyScanRuleStyle.req}>*</span></label>
       <div className={modifyScanRuleStyle.inputWithBtn}>

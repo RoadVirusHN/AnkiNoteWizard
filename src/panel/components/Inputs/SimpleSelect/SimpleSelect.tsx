@@ -24,6 +24,7 @@ const SimpleSelect = ({inputId, label,placeholder,defaultValue,isEssential,error
   //TODO : Responsive design 
   // 1. when options are too many, make the select box scrollable and set a max height
   // 2. when width is too long, make the label and select box stack horizontally.
+  // Sucky width...
   const [errorMessageState, setErrorMessageState] = useState(errorMessage);
   return <div className={simpleSelectStyle.formGroup}>
     <label htmlFor={inputId+'-select'}>{isEssential? <span style={{color:'var(--color-danger)'}}>*</span>:null} {label}</label>

@@ -36,6 +36,7 @@ const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
       </div>
       
       <div className={styles.fieldsList}>
+        {/*TODO : warn or make this tab unaccessbile when no model selected*/}
         {Object.keys(scanRule.fields).map((item) => {
           const onResult = (sel:string) => {};
           return (

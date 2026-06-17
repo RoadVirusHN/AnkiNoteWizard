@@ -17,7 +17,7 @@ const ScanRuleMetaEditor = ({data, setData}:Props) => {
     <SimpleInput 
       inputId="scanRuleName"
       isEssential={true}
-      label={<>{t("scanRuleName")} <span className={modifyScanRuleStyle.req}>*</span></>} 
+      label={t("scanRuleName")} 
       placeholder="e.g. eng-kor-words"
       defaultValue={data.scanRuleName}
       onChange={(e) => setData({ ...data, scanRuleName: e.target.value })}

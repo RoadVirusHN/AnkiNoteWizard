@@ -86,8 +86,6 @@
   color: var(--color-primary);
 }
 
-.req { color: var(--color-danger); }
-
 .row {
   display: flex;
   gap: 10px;

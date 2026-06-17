@@ -96,40 +96,7 @@ const ConfigPage: React.FC = () => {
       }}>
         {t('addDefaultData')}
       </SimpleButton>
-      <div className={configPageStyle.floatingBtnContainer}>
-        <SimpleButton onClick={()=>{
-          setLocale(curLocale);
-          setThemeSetting(curThemeSetting);
-          setFontSize(curFontSize);  
-          setAnkiUrl(curAnkiUrl);
-        }} 
-          style={{display: hasChanges ? 'inline-block' : 'none'}}
-        >
-          {t('apply')}
-        </SimpleButton>
-        <SimpleButton onClick={()=>{
-          setCurLocale(locale);
-          setCurThemeSetting(themeOption.userSetting);
-          setCurFontSize(fontSize);
-        }}
-        style={{display: hasChanges ? 'inline-block' : 'none'}}
-        >
-          {t('cancle')}
-        </SimpleButton>
-        <SimpleButton onClick={()=>{
-          if (confirm(t('confirmResetToDefault'))) {
-            const uiLocale = chrome.i18n.getUILanguage();
-            const defaultLocale = uiLocale.startsWith('ko') ? LOCALE.KO : LOCALE.EN;
-            setLocale(defaultLocale);
-            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (themeOption.userSetting === THEME_SETTING.SYSTEM_LIGHT ||themeOption.userSetting===THEME_SETTING.SYSTEM_DARK||themeOption.userSetting===THEME_SETTING.NONE) {
-              setCurThemeSetting(isDark ? THEME_SETTING.SYSTEM_DARK : THEME_SETTING.SYSTEM_LIGHT);
-            }
-            setCurFontSize('normal');
-          }
-        }}>
-          {t('default')}
-        </SimpleButton>
+      <div style={{display:'flex', justifyContent:'center', gap:'10px', marginTop:'10px'}}>
         <SimpleButton onClick={()=>{
           // TODO : add selective import && export
           const input = document.createElement('input');
@@ -177,6 +144,41 @@ const ConfigPage: React.FC = () => {
           a.click();
         }}>
           {t('exportScanRules')}
+        </SimpleButton>
+      </div>
+      <div className={configPageStyle.floatingBtnContainer}>
+        <SimpleButton onClick={()=>{
+          setLocale(curLocale);
+          setThemeSetting(curThemeSetting);
+          setFontSize(curFontSize);  
+          setAnkiUrl(curAnkiUrl);
+        }} 
+          style={{display: hasChanges ? 'inline-block' : 'none'}}
+        >
+          {t('apply')}
+        </SimpleButton>
+        <SimpleButton onClick={()=>{
+          setCurLocale(locale);
+          setCurThemeSetting(themeOption.userSetting);
+          setCurFontSize(fontSize);
+        }}
+        style={{display: hasChanges ? 'inline-block' : 'none'}}
+        >
+          {t('cancle')}
+        </SimpleButton>
+        <SimpleButton onClick={()=>{
+          if (confirm(t('confirmResetToDefault'))) {
+            const uiLocale = chrome.i18n.getUILanguage();
+            const defaultLocale = uiLocale.startsWith('ko') ? LOCALE.KO : LOCALE.EN;
+            setLocale(defaultLocale);
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (themeOption.userSetting === THEME_SETTING.SYSTEM_LIGHT ||themeOption.userSetting===THEME_SETTING.SYSTEM_DARK||themeOption.userSetting===THEME_SETTING.NONE) {
+              setCurThemeSetting(isDark ? THEME_SETTING.SYSTEM_DARK : THEME_SETTING.SYSTEM_LIGHT);
+            }
+            setCurFontSize('normal');
+          }
+        }}>
+          {t('default')}
         </SimpleButton>
       </div>
 
