@@ -3,11 +3,12 @@ import { useState } from "react";
 import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
 const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (modelId:string)=>void, defaultModelId: string, errorMessages: string[]}) => {
-  const {models} = useAnkiConnectionStore();
-  const [curVal, setCurVal] = useState(defaultModelId || models[0].id || ''); 
+  const {getModels, getModel} = useAnkiConnectionStore();
+  const models = getModels();
+  const [curVal, setCurVal] = useState(defaultModelId || '-1'); 
   const onChangeModel = (modelId:string) => {
-    if (Object.keys(models).length===0) return;
-    setModelId(models[modelId].id);
+    if (!modelId||!getModel(modelId)||Object.keys(models).length===0) return;
+    setModelId(modelId);
   }
   const {t} = useTranslation('common');
   const {t:tModelInput} = useTranslation('components', {keyPrefix: 'modelInput'});
@@ -21,9 +22,12 @@ const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (mo
       errorMessage={errorMessage}
       options={
         Object.keys(models).length === 0 ? [{key:tModelInput('ankiConnectionError'), val:'', isDisabled: false}] :
-        [{key:t('select{{word}}',{word: t('model')}), val: '',isDisabled:true},...Object.keys(models).map((modelId) => ({key: models[modelId].name, val: modelId}))]
+        [{key:t('select|word|',{word: t('model')}), val: '-1',isDisabled:false},...(models).map((model) => {
+          if (!model) return {key: tModelInput('ankiConnectionError'), val:'', isDisabled: true};
+          return {key: model.name, val: model.id};
+        })]
       }
-      onChange={(e)=>{onChangeModel(e.currentTarget.value); setCurVal(e.currentTarget.value);}}
+      onChange={(e)=>{onChangeModel(e.currentTarget.value); setCurVal(e.currentTarget.value);}} 
       />
   );
 };

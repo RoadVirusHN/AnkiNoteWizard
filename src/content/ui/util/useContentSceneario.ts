@@ -76,14 +76,14 @@ export const useContentScenario = ({
     setMultiHighlight(UIStates.setMultiHighlight([target]));
     return [
       {
-        key: '📄 ' + t('extract{{word}}', { word: t('text') }),
+        key: '📄 ' + t('extract|word|', { word: t('text') }),
         onClick: () => {
           const text = target.textContent?.trim() || '';
           copyToClipboard(text, x, y, port);
         },
       },
       {
-        key: '🎯 ' + t('extract{{word}}', { word: t('selector') }),
+        key: '🎯 ' + t('extract|word|', { word: t('selector') }),
         onClick: () => {
           let selectors = [] as string[];
           if (mode === INSPECTION_MODE.TAG_EXTRACTION) {
@@ -140,7 +140,7 @@ export const useContentScenario = ({
       {
         key:
           '🧑🏽‍🍼 ' +
-          t('select{{word}}', { word: tScript('parentElement') }) +
+          t('select|word|', { word: tScript('parentElement') }) +
           ` (${!target.parentElement || target.tagName === 'BODY' ? 'No Parent' : ''})`,
         onClick: (e) => {
           e.stopPropagation();
@@ -171,7 +171,7 @@ export const useContentScenario = ({
       {
         key:
           '📂 ' +
-          t('select{{word}}', { word: tScript('childrenElement') }) +
+          t('select|word|', { word: tScript('childrenElement') }) +
           ` (${target.children.length ?? tScript('noChildren')})`,
         onClick: (e) => {
           e.stopPropagation();

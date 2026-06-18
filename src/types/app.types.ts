@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import { Deck, Model, ScanRule } from './scanRule.types';
 
 export interface FetchAnkiRequestBody {
@@ -68,31 +69,34 @@ export const INSPECTION_MODE = {
 export type InspectionMode = (typeof INSPECTION_MODE)[keyof typeof INSPECTION_MODE];
 
 export const EMPTY_MODEL = {
-  name: 'NO MODEL',
+  name: i18next.t('common:no|word|Selected', { word: i18next.t('common:model') }),
   id: '-1',
   fields: ['Front', 'Back'],
 } satisfies Model;
 
 export const EMPTY_DECK = {
-  name: 'NO DECK',
+  name: i18next.t('common:no|word|Selected', { word: i18next.t('common:deck') }),
 } satisfies Deck;
 export const EMPTY_SCAN_RULE = {
-  scanRuleName: "",
-  meta: { author: "", description: "", version: "0.0.1" },
+  scanRuleName: '',
+  meta: { author: '', description: '', version: '0.0.1' },
   modelId: EMPTY_MODEL.id,
-  urlPatterns: ["*"],
-  rootTagSelector: "div.word",
+  urlPatterns: ['*'],
+  rootTagSelector: 'div.word',
   fields: {
-    Front: [{
-      content: 'div.front', dataType: 'text',
-      selectorType: 'css'
-    }],
+    Front: [
+      {
+        content: 'div.front',
+        dataType: 'text',
+        selectorType: 'css',
+      },
+    ],
     Back: [
-      {content:'mean :', dataType: 'text', selectorType: 'literal'},
-      { content: 'div.back', dataType: 'text',selectorType: 'css' }
+      { content: 'mean :', dataType: 'text', selectorType: 'literal' },
+      { content: 'div.back', dataType: 'text', selectorType: 'css' },
     ],
   },
-  tagIds: []
+  tagIds: [],
 } satisfies ScanRule;
 export const DEFAULT_DRAFT = {
   draftId: '',
@@ -104,8 +108,8 @@ export const DEFAULT_DRAFT = {
     { key: 'Back', content: '' },
   ],
   tagIds: [],
-}
+};
 export type ErrorMessage = {
-  result : 'error' | "success";
+  result: 'error' | 'success';
   error: string | null;
-}
+};

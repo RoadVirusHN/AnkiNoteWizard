@@ -1,4 +1,4 @@
-import { FetchAnkiRequestBody } from '@/types/app.types';
+import { EMPTY_MODEL, FetchAnkiRequestBody } from '@/types/app.types';
 import { Deck, Model } from '@/types/scanRule.types';
 import { create } from 'zustand';
 
@@ -47,6 +47,7 @@ const useAnkiConnectionStore = create<AnkiConnectionState>((set, get) => ({
   getDecks: () => Object.values(get().decks),
   models: {},
   getModel: (modelId: string) => {
+    if (modelId==='-1') return EMPTY_MODEL;
     const model = get().models[modelId];
     return model ? model : null;
   },

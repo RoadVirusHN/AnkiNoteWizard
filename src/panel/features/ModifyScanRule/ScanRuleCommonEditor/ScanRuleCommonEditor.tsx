@@ -4,7 +4,7 @@ import { useRef } from "react";
 import InspectionOverlay from "@/panel/components/InspectionOverlay/InspectionOverlay";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import useInspection from "@/panel/hooks/useInspection";
-import { ScanRule } from "@/types/scanRule.types";
+import { FieldProperties, ScanRule } from "@/types/scanRule.types";
 import { INSPECTION_MODE } from "@/types/app.types";
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
@@ -28,22 +28,22 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
       rootTagInputRef.current.value = text;
     };
   }
-  const {models} = useAnkiConnectionStore();
+  const {getModel} = useAnkiConnectionStore();
   const {enterInspectionMode, cancleInspectionMode, isInspectionMode} = useInspection(INSPECTION_MODE.TAG_EXTRACTION, scanRule.rootTagSelector );
   
-  const options = models
-    ? Object.entries(models).map(([modelId, model]) => ({ key: model.name, val: modelId, isDisabled: false }))
-    : [{ key: tCommon("ankiDisconnected"), val: "", isDisabled: true }];
-  
+  const setModelId = (id: string) => {
+    let newFields = {} as { [fieldName: string]: FieldProperties[] };
+    getModel(id)?.fields.map((field: string) => {
+      newFields[field] = [{ content: field, dataType: "text", selectorType: "literal" }] as FieldProperties[];
+    });
+    setData({ ...scanRule, modelId: id, fields: newFields });
+  };
+  //TODO : Make rerender ModelInput when change cancled.
   return (<div>
     <ModelInput
       errorMessages={[]}
       defaultModelId={scanRule.modelId}
-      setModelId={(id) => {
-        let newFields = {};
-        newFields = Object.fromEntries(models[id].fields.map((field:string) => [field, { selector: "", dataType: "text" }])); 
-        setData({ ...scanRule, modelId: id, fields: newFields});
-      }}
+      setModelId={setModelId}
     />
     <SimpleInput 
       inputId="urlPatterns"

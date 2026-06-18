@@ -30,21 +30,17 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: {[scanRuleName:string]
   scanRule: ScanRule,
   curScanRules: {[scanRuleName:string]:ScanRule}
 ) => {
-  const t = (key: string) => {
-    // return i18next.t(key, '', { ns: 'error', keyPrefix: 'scanRule' });
-    // @ts-expect-error i18next.t의 타입 정의가 keyPrefix를 지원하지 않아 발생하는 오류. 실제로는 keyPrefix 옵션이 적용되어 작동함.
-    return i18next.t(`error:scanRule.${key}`) as string;
-  };
+
   if (!scanRule.scanRuleName || scanRule.scanRuleName.trim() === '') {
     return {
       result: 'error',
-      error: t('invallidScanRuleName.statusText'),
+      error: i18next.t('error:scanRule.invallidScanRuleName.statusText'),
     };
   }
   if (curScanRules.hasOwnProperty(scanRule.scanRuleName)) {
     return {
       result: 'error',
-      error: t('duplicateScanRuleName.statusText'),
+      error: i18next.t('error:scanRule.duplicateScanRuleName.statusText'),
     };
   }
   // if (!scanRule.meta.author || scanRule.meta.author.trim() === '') {
@@ -53,13 +49,13 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: {[scanRuleName:string]
   if (!scanRule.modelId || scanRule.modelId=== EMPTY_MODEL.id) {
     return {
       result: 'error',
-      error: t('invalidModel.statusText'),
+      error: i18next.t('error:scanRule.invalidModel.statusText'),
     };
   }
   if (!scanRule.rootTagSelector || scanRule.rootTagSelector.trim() === '') {
     return {
       result: 'error',
-      error: t('invalidRootTag.statusText'),
+      error: i18next.t('error:scanRule.invalidRootTag.statusText'),
     };
   }
   return {

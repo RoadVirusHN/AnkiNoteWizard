@@ -18,7 +18,7 @@ const DeckInput = ({initDeckId,onChange,label, errorMessages}:{initDeckId? : str
       errorMessage={errorMessage}
       options={
         Object.keys(decks).length === 0 ? [{key:t('ankiDisconnected'), val:'', isDisabled: true}] :
-        [{key:t('select{{word}}', {word: t('deck')}), val:'', isDisabled:true},...Object.keys(decks).map((name) => ({key: name, val: name}))]
+        [{key:t('select|word|', {word: t('deck')}), val:'', isDisabled:true},...Object.keys(decks).map((name) => ({key: name, val: name}))]
       }
       onChange={onChange}/>
   );

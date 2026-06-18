@@ -33,7 +33,7 @@ const ModifyScanRule = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [scanRuleData, setScanRuleData] = useState<ScanRule>(currentScanRule);
   const [isChanged, setIsChanged] = useState<boolean>(false);
-  const changeTemplatData = (updatedData: ScanRule) => {
+  const changeScanRuleData = (updatedData: ScanRule) => {
     setIsChanged(true);
     setScanRuleData(updatedData);
   };
@@ -76,15 +76,15 @@ return (
         {activeTab === "meta" && (
           <ScanRuleMetaEditor 
             data={scanRuleData} 
-            setData={changeTemplatData}/>)}
+            setData={changeScanRuleData}/>)}
         {activeTab === "common" && (
           <ScanRuleCommonEditor 
             scanRule={scanRuleData} 
-            setData={changeTemplatData}/>)}
+            setData={changeScanRuleData}/>)}
         {activeTab === "fields" && (
           <ScanRuleFieldEditor
             scanRule={scanRuleData}
-            setData={changeTemplatData}
+            setData={changeScanRuleData}
           />
         )}
       </div>
