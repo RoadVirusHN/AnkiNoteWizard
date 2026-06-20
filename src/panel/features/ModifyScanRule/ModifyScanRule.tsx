@@ -53,8 +53,7 @@ const ModifyScanRule = () => {
     setScanRuleData(currentScanRule);
     setIsChanged(false);
   };
-  
-
+  const isDisabled = scanRuleData.fields && Object.keys(scanRuleData.fields).length === 0;
 return (
     <div className={modifyScanRuleStyle.container}>
       <ModifyScanRuleHeader 
@@ -68,7 +67,10 @@ return (
           <button
             key={tab}
             className={`${modifyScanRuleStyle.tab} ${activeTab === tab ? modifyScanRuleStyle.activeTab : ""}`}
-            onClick={() => setActiveTab(tab)}>
+            onClick={() => setActiveTab(tab)}
+            title={isDisabled && tab === "fields" ? t("fieldTabDisabledTooltip") : undefined}
+            disabled={isDisabled&&tab === "fields"}
+          >
             {t(tab)}
           </button>)}
       </div>

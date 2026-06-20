@@ -53,6 +53,7 @@ export default {
     modifyScanRuleHeader: {
       backToEmpty: 'Back to Empty',
     },
+    fieldTabDisabledTooltip: 'Please chcek model input in the common tab.',
     scanRuleCommonEditor: {
       modelName: 'Model Name',
       urlPatterns: 'URL Patterns',

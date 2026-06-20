@@ -55,6 +55,7 @@ export default {
     modifyScanRuleHeader: {
       backToEmpty: '내용 초기화',
     },
+    fieldTabDisabledTooltip: '공통 탭에서 모델 입력을 확인해주세요.',
     scanRuleCommonEditor: {
       modelName: '모델명',
       urlPatterns: 'URL 패턴',
