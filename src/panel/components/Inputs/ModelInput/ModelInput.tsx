@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (modelId:string)=>void, defaultModelId: string, errorMessages: string[]}) => {
   // make sure use models directly instead of getModels, because getModels does not trigger re-render when models change
   const {models, getModel} = useAnkiConnectionStore();
-  console.log("ModelInput render, models:", models);
   const [curVal, setCurVal] = useState(defaultModelId || '-1'); 
   const onChangeModel = (modelId:string) => {
     if (!modelId||!getModel(modelId)||Object.keys(models).length===0) return;

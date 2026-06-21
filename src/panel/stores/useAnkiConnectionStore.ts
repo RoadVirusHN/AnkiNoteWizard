@@ -18,6 +18,7 @@ interface AnkiConnectionState {
   ankiUrl: string;
   setAnkiUrl: (url: string) => void;
   checkConnection: () => Promise<void>;
+  fetchModels: () => Promise<void>;
   fetchAnki: <T>(request: FetchAnkiRequestBody) => Promise<AnkiResponseBody<T>>;
 }
 
@@ -47,7 +48,7 @@ const useAnkiConnectionStore = create<AnkiConnectionState>((set, get) => ({
   getDecks: () => Object.values(get().decks),
   models: {},
   getModel: (modelId: string) => {
-    if (modelId==='-1') return EMPTY_MODEL;
+    if (modelId === '-1') return EMPTY_MODEL;
     const model = get().models[modelId];
     return model ? model : null;
   },
@@ -55,64 +56,66 @@ const useAnkiConnectionStore = create<AnkiConnectionState>((set, get) => ({
   ankiUrl: 'http://127.0.0.1:8765',
   setAnkiUrl: (url: string) => set({ ankiUrl: url }),
   checkConnection: async () => {
-    console.log("Checking Anki connection...");
+    console.log('Checking Anki connection...');
     if (get().isPending) return;
     set({ isPending: true });
-    const res = await callAnki<string[]>(get().ankiUrl, { action: 'deckNames' }).catch((err) => {
-      set({ isPending: false, isConnected: false, decks: {} });
-      return { result: null, error: err.message };
-    });
+    const res = await callAnki<string[]>(get().ankiUrl, { action: 'deckNames' })
+      .catch((err) => {
+        set({ isPending: false, isConnected: false, decks: {} });
+        return { result: null, error: err.message };
+      })
+      .then((res) => {
+        get().fetchModels();
+        return { result: res.result, error: res.error };
+      });
     if (res.error) {
       set({ isPending: false, isConnected: false, decks: {} });
       return;
     }
-    //TODO : divide check connection and fetch data into two functions, so that we can check connection without fetching data
-    console.log("Connected, fetching datas");
-    // you can't fetch datas right after check connection, because the anki connect may not be ready yet, so we need to wait for a while or fetch the data in a separate function
+
+    const newDecks: { [deckIds: string]: Deck } = {};
+    res.result?.forEach((deckName) => {
+      newDecks[deckName] = { name: deckName };
+    });
+    set({ isPending: false, isConnected: !res.error, decks: res.result ? newDecks : {} });
+  },
+  fetchModels: async () => {
     const modelNamesAndIds = await callAnki<{ [modelNames: string]: number }>(get().ankiUrl, {
       action: 'modelNamesAndIds',
     }).catch((err) => {
-      console.log("Error fetching model names and IDs:", err.message);
       set({ isPending: false, isConnected: false, decks: {} });
       return { result: null, error: err.message };
     });
-
     let newModels: { [modelIds: string]: Model } = {};
-    Object.keys(modelNamesAndIds.result || {}).forEach(async (modelName) => {
-      let fields =
-        (
-          await callAnki<string[]>(get().ankiUrl, {
-            action: 'modelFieldNames',
-            params: { modelName },
-          }).catch((err) => {
-            set({ isPending: false, isConnected: false, decks: {} });
-            return { result: null, error: err.message };
-          })
-        ).result || [];
-      let style =
-        (
-          await callAnki<string>(get().ankiUrl, {
-            action: 'modelStyling',
-            params: { modelName },
-          }).catch((err) => {
-            set({ isPending: false, isConnected: false, decks: {} });
-            return { result: null, error: err.message };
-          })
-        ).result || '';
+    const modelNames = Object.keys(modelNamesAndIds.result || {});
+    for (const modelName of modelNames) {
+      let fields = (
+        await callAnki<string[]>(get().ankiUrl, {
+          action: 'modelFieldNames',
+          params: { modelName },
+        }).catch((err) => {
+          set({ isPending: false, isConnected: false, decks: {} });
+          return { result: null, error: err.message };
+        })
+      ).result || [];
+  
+      let style = (
+        await callAnki<string>(get().ankiUrl, {
+          action: 'modelStyling',
+          params: { modelName },
+        }).catch((err) => {
+          set({ isPending: false, isConnected: false, decks: {} });
+          return { result: null, error: err.message };
+        })
+      ).result || '';
       newModels[modelNamesAndIds.result![modelName]] = {
         name: modelName,
         id: String(modelNamesAndIds.result![modelName]),
         fields,
         style,
       };
-    });
+    }
     set({ models: newModels });
-    console.log('Fetched models:', newModels);
-    const newDecks: { [deckIds: string]: Deck } = {};
-    res.result?.forEach((deckName) => {
-      newDecks[deckName] = { name: deckName };
-    });
-    set({ isPending: false, isConnected: !res.error, decks: res.result ? newDecks : {} });
   },
   fetchAnki: async <T>(request: FetchAnkiRequestBody) => {
     if (get().isConnected === false) return Promise.reject('Anki is not connected');
