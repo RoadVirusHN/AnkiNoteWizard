@@ -5,9 +5,6 @@ export default {
     scanRules: 'ScanRules',
     config: 'Config',
   },
-  modelInput: {
-    ankiConnectionError: 'Anki Connection Error',
-  },
   inspectionOverlay: {
     textModeTitle: 'Text Extraction Mode',
     hoverText: 'Hover over the text',

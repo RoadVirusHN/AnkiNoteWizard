@@ -1,9 +1,9 @@
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
-import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
-import { ChangeEvent, JSX, useState } from "react";
+import { ChangeEvent, JSX } from "react";
+import deckIcon from '@/public/Icon/Icon-Decks.svg';
 import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
-import { Deck } from "@/types/scanRule.types";
+import Icon from "../../Icon/Icon";
 
 const DeckInput = ({initDeckId,onChange,label, errorMessages}:{initDeckId? : string, onChange : (e:ChangeEvent<HTMLSelectElement>)=>void, label?:string|JSX.Element, errorMessages: string[]}) => {
   const {decks} = useAnkiConnectionStore();
@@ -17,7 +17,7 @@ const DeckInput = ({initDeckId,onChange,label, errorMessages}:{initDeckId? : str
       isEssential={label?true:false}
       errorMessage={errorMessage}
       options={
-        Object.keys(decks).length === 0 ? [{key:t('ankiDisconnected'), val:'', isDisabled: true}] :
+        Object.keys(decks).length === 0 ? [{key:t('checkAnkiConnection'), val:''}] :
         [{key:t('select|word|', {word: t('deck')}), val:'', isDisabled:true},...Object.keys(decks).map((name) => ({key: name, val: name}))]
       }
       onChange={onChange}/>

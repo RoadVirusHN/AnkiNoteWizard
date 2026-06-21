@@ -7,6 +7,7 @@ export default {
   empty: 'Empty',
   newTag: 'New Tag',
   ankiDisconnected: 'Anki Disconnected',
+  checkAnkiConnection: 'Check Anki connection',  
   error: 'Error',
   preview: 'Preview',
   save: 'Save',

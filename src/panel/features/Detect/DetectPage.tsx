@@ -3,6 +3,7 @@ import { useState } from 'react';
 import DetectedDraft from './DetectedDraft/DetectedDraft';
 import DeckInput from '@/panel/components/Inputs/DeckInput/DeckInput';
 import AddIcon from '@/public/Icon/Icon-Add.svg';
+import DeckIcon from '@/public/Icon/Icon-Decks.svg';
 import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import useGlobalVarStore from '@/panel/stores/useGlobalVarStore';
 import useScanRule from '@/panel/stores/useScanRule';
@@ -10,6 +11,7 @@ import { ExtractedFields, ExtractedInfos,  FIELD_DATA_TYPES,  Draft, ScanRule } 
 import { MESSAGE_TYPE } from '@/types/chrome.types';
 import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
 import { useTranslation } from 'react-i18next';
+import Icon from '@/panel/components/Icon/Icon';
 
 //TODO : Apply SCSS for css.
 //TODO : MAKE Interfaces&Types FILE
@@ -30,6 +32,7 @@ const DetectPage: React.FC = () => {
   
   const {t} = useTranslation('page', {keyPrefix: 'detectPage'});  
   const {t:tError} = useTranslation('error', {keyPrefix: 'detectPage'});
+  const {t:tCommon} = useTranslation('common');
   const requestExtracteds = async () => {
     setIsPending(true);
     chrome.runtime.sendMessage({
@@ -108,13 +111,16 @@ const DetectPage: React.FC = () => {
   return (
     <div className={detectPageStyle.pageContainer}>
       <div className={detectPageStyle.header}>
-        <DeckInput
-          initDeckId={currentDeckId}
-          onChange={(e)=>{
-            setCurrentDeckId(e.target.value);
-          }}
-          errorMessages={errorMessages}
-        /> 
+        <div style={{display:'flex', gap:'4px', alignItems:'center'}}>
+          <Icon url={DeckIcon} title={tCommon('deck')}/>
+          <DeckInput
+            initDeckId={currentDeckId}
+            onChange={(e)=>{
+              setCurrentDeckId(e.target.value);
+            }}
+            errorMessages={errorMessages}
+          /> 
+        </div>
         <div className={detectPageStyle.headerButtons}>
           <SimpleButton disabled={isPending} className={detectPageStyle.redetectDraft} onClick={requestExtracteds}>
             {isPending ? t("scanning") : '↺ '+t("scan")}

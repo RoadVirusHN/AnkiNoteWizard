@@ -9,6 +9,7 @@ export default {
   empty: '없음',
   newTag: '새 태그',
   ankiDisconnected: 'Anki 연결 끊김',
+  checkAnkiConnection: 'Anki 연결 확인',  
   error: '오류',
   preview: '미리보기',
   save: '저장',

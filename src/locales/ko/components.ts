@@ -7,9 +7,6 @@ export default {
     scanRules: '스캔 규칙',
     config: '설정',
   },
-  modelInput: {
-    ankiConnectionError: 'Anki 연결 오류',
-  },
   inspectionOverlay: {
     textModeTitle: '텍스트 추출 모드',
     hoverText: '텍스트 위에 마우스를 올리세요',
