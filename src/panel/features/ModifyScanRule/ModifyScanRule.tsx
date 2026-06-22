@@ -1,12 +1,12 @@
 import useScanRules from "@/panel/stores/useScanRule";
 import { useParams } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import modifyScanRuleStyle from "./modifyScanRule.module.css";
 import ScanRuleFieldEditor from "./ScanRuleFieldEditor/ScanRuleFieldEditor";
 import ScanRuleMetaEditor from "./ScanRuleMetaEditor/ScanRuleMetaEditor";
 import ScanRuleCommonEditor from "./ScanRuleCommonEditor/ScanRuleCommonEditor";
 import ModifyScanRuleHeader from "./ModifyScanRuleHeader/ModifyScanRuleHeader";
-import { ScanRule, FIELD_DATA_TYPES } from "@/types/scanRule.types";
+import { ScanRule, FIELD_DATA_TYPES, SELECTOR_TYPES } from "@/types/scanRule.types";
 import { EMPTY_MODEL, SCAN_RULE_CODE } from "@/types/app.types";
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
 import { useTranslation } from "react-i18next";
@@ -31,10 +31,31 @@ const ModifyScanRule = () => {
   const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule'});
   const tabs = ["meta", "common", "fields"] as ("meta" | "common" | "fields")[];
   const [activeTab, setActiveTab] = useState(tabs[0]);
+  const {models} = useAnkiConnectionStore();
+  if (currentScanRule.modelId===EMPTY_MODEL.id&&Object.keys(models).length>0){
+    const firstKey = Object.keys(models)[0];
+    models[firstKey].fields.map((fieldName)=>{
+      currentScanRule.fields[fieldName] = [{
+        content: "",
+        selectorType: SELECTOR_TYPES.CSS,
+        dataType: FIELD_DATA_TYPES.TEXT
+      }];
+    });
+    currentScanRule.modelId = models[firstKey].id;
+  }
   const [scanRuleData, setScanRuleData] = useState<ScanRule>(currentScanRule);
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const changeScanRuleData = (updatedData: ScanRule) => {
     setIsChanged(true);
+    if (updatedData.modelId!==scanRuleData.modelId){
+      models[updatedData.modelId]?.fields.map((fieldName)=>{
+        updatedData.fields[fieldName] = [{
+          content: "",
+          selectorType: SELECTOR_TYPES.CSS,
+          dataType: FIELD_DATA_TYPES.TEXT
+        }];
+      });
+    }      
     setScanRuleData(updatedData);
   };
   const handleSave = () => {
@@ -53,7 +74,9 @@ const ModifyScanRule = () => {
     setScanRuleData(currentScanRule);
     setIsChanged(false);
   };
-  const isDisabled = scanRuleData.fields && Object.keys(scanRuleData.fields).length === 0;
+  const isDisabled = Object.keys(models).length===0||!scanRuleData.fields || Object.keys(scanRuleData.fields).length === 0;
+  console.log(scanRuleData, isDisabled);
+
 return (
     <div className={modifyScanRuleStyle.container}>
       <ModifyScanRuleHeader 
@@ -67,9 +90,15 @@ return (
           <button
             key={tab}
             className={`${modifyScanRuleStyle.tab} ${activeTab === tab ? modifyScanRuleStyle.activeTab : ""}`}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => {
+              if (isDisabled && tab === "fields" ) {
+                alert(t("fieldTabDisabledTooltip"));
+                return;
+              }
+              setActiveTab(tab);
+            }}
             title={isDisabled && tab === "fields" ? t("fieldTabDisabledTooltip") : undefined}
-            disabled={isDisabled&&tab === "fields"}
+            style={{cursor: isDisabled && tab === "fields" ? "not-allowed" : "pointer", color: isDisabled && tab === "fields" ? "var(--color-warning)" : "inherit"}}
           >
             {t(tab)}
           </button>)}

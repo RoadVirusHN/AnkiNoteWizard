@@ -19,7 +19,7 @@ const SimpleInput = ({inputId, label,placeholder,defaultValue,isEssential,errorM
   const [errorMessageState, setErrorMessageState] = useState(errorMessage);
   return <div className={simpleInputStyle.formGroup}>
     <label htmlFor={inputId+'-input'}>{isEssential? <span style={{color:'var(--color-danger)'}}>*</span>:null} {label}</label>
-    <input id={inputId+'-input'} name={inputId+'-input'} className={`${simpleInputStyle.input}`+ (errorMessageState? ` ${simpleInputStyle.error}` : null)} placeholder={placeholder} onChange={onChange} value={defaultValue}
+    <input id={inputId+'-input'} name={inputId+'-input'} className={`${simpleInputStyle.input}`+ (errorMessageState? ` ${simpleInputStyle.error}` : '')} placeholder={placeholder} onChange={onChange} value={defaultValue}
       onBlur={(e)=>{
         if (e.target.value.trim() === ''&&isEssential){
           setErrorMessageState('required');

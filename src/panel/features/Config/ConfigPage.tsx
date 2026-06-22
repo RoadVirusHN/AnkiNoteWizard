@@ -1,4 +1,3 @@
-import commonStyle from '@/panel/common.module.css';
 import configPageStyle from "./configPage.module.css";
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +30,7 @@ const ConfigPage: React.FC = () => {
   const hasChanges = locale !== curLocale || curThemeSetting !== themeOption.userSetting || curFontSize !== fontSize;
   const isUserSchemeDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   return (
-    <div>
+    <div className={configPageStyle.container}>
       <SimpleSelect 
         inputId='locale'
         label={t('locale')}
@@ -181,7 +180,6 @@ const ConfigPage: React.FC = () => {
           {t('default')}
         </SimpleButton>
       </div>
-
     </div>
   );
 };

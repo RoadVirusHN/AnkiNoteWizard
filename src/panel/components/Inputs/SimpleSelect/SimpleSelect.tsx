@@ -28,7 +28,7 @@ const SimpleSelect = ({inputId, label,placeholder,defaultValue,isEssential,error
   const [errorMessageState, setErrorMessageState] = useState(errorMessage);
   return <div className={simpleSelectStyle.formGroup}>
     <label htmlFor={inputId+'-select'}>{isEssential? <span style={{color:'var(--color-danger)'}}>*</span>:null} {label}</label>
-    <select id={inputId} name={inputId+'-select'} className={`${simpleSelectStyle.select}`+(errorMessageState ? ` ${simpleSelectStyle.error}`:null)} onChange={onChange} value={defaultValue}
+    <select id={inputId} name={inputId+'-select'} className={`${simpleSelectStyle.select}`+(errorMessageState ? ` ${simpleSelectStyle.error}`:'')} onChange={onChange} value={defaultValue}
       onBlur={(e)=>{
         if (e.target.value.trim() === ''&&isEssential){
           setErrorMessageState('required');

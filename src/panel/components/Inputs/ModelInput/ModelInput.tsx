@@ -11,7 +11,6 @@ const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (mo
     setModelId(modelId);
   }
   const {t} = useTranslation('common');
-  const {t:tModelInput} = useTranslation('components', {keyPrefix: 'modelInput'});
   const errorMessage = errorMessages.length > 0 ? errorMessages.join(',\n') : '';
   return (
     <SimpleSelect 
@@ -21,10 +20,10 @@ const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (mo
       isEssential={true}
       errorMessage={errorMessage}
       options={
-        Object.keys(models).length === 0 ? [{key:tModelInput('ankiConnectionError'), val:'', isDisabled: false}] :
-        [{key:t('select|word|',{word: t('model')}), val: '-1',isDisabled:false},...Object.keys(models).map((key) => {
+        Object.keys(models).length === 0 ? [{key:t('checkAnkiConnection'), val:'', isDisabled: false}] :
+        [...Object.keys(models).map((key) => {
           const model = getModel(key);
-          if (!model) return {key: tModelInput('ankiConnectionError'), val:'', isDisabled: true};
+          if (!model) return {key: t('checkAnkiConnection'), val:'', isDisabled: true};
           return {key: model.name, val: model.id};
         })]
       }
