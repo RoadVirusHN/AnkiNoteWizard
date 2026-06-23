@@ -50,7 +50,7 @@ export interface ScanRule {
   meta: ScanRuleMeta;
   scanRuleName: string;
   modelId: string;
-  urlPatterns: string[];
+  urlPattern: string;
   rootTagSelector: string;
   tagIds: string[];
   fields: {

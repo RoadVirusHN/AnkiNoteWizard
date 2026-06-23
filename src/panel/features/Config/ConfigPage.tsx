@@ -11,7 +11,6 @@ import { ScanRule } from '@/types/scanRule.types';
 import SimpleSelect from '@/panel/components/Inputs/SimpleSelect/SimpleSelect';
 import SimpleInput from '@/panel/components/Inputs/SimpleInput/SimpleInput';
 
-
 const ConfigPage: React.FC = () => {
   // font size, about, javascript, default Anki Connect url, default setting, default scanRules 
   const {t} = useTranslation('page', {keyPrefix: 'configPage'});

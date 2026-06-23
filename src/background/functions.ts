@@ -50,5 +50,6 @@ export const sendAsyncMessage = async <T>(
   } catch (error) {
     console.error('Background Error:', error);
     sendResponse({ error: 'Background script error' });
+    
   }
 };

@@ -12,7 +12,7 @@ export const defaultScanRules: ScanRule[] = [
     },
     scanRuleName: 'Sample ScanRule',
     modelId: EMPTY_MODEL.id,
-    urlPatterns: ['*'],
+    urlPattern: '*',
     rootTagSelector: 'body',
     fields: {
       Front: [

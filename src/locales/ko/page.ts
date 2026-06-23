@@ -43,6 +43,7 @@ export default {
   scanRulesPage: {
     'Deleting|count|scanRules': '{{count}}개의 스캔 규칙을 삭제하시겠습니까?', 
     addScanRule: '스캔 규칙 추가',
+    'noSuchAModel|model|': '모델 검색 실패, Id : {{model}}'
   },
   modifyScanRule: {
     meta: '메타 정보',
@@ -58,7 +59,7 @@ export default {
     fieldTabDisabledTooltip: '공통 탭에서 모델 입력을 확인해주세요.',
     scanRuleCommonEditor: {
       modelName: '모델명',
-      urlPatterns: 'URL 패턴',
+      urlPattern: 'URL 패턴',
       rootTag: '탐색 태그',
       rootTagDescription: '필드는 탐색 태그 내에서만 검색됩니다.',
     },

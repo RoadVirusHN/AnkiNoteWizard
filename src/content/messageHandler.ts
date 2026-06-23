@@ -12,8 +12,8 @@ export const messageHandler = async (
   let isAsync = false;
   console.log('Content script received message:', message);
   switch (message.type) {
-    case MESSAGE_TYPE.REQUEST_DETECTED_CARDS_TO_CONTENT:
-      console.log('Received REQUEST_DETECTED_CARDS_TO_CONTENT message');
+    case MESSAGE_TYPE.REQUEST_DETECTED_DRAFTS_TO_CONTENT:
+      console.log('Received REQUEST_DETECTED_DRAFTS_TO_CONTENT message ', message.data);
       sendResponse(getExtractedFromPage(message.data as ScanRule[]));
       break;
     case MESSAGE_TYPE.ENTER_INSPECTION_MODE_FROM_PANEL:

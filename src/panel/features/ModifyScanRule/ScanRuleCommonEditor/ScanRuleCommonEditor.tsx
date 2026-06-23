@@ -46,12 +46,12 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
       setModelId={setModelId}
     />
     <SimpleInput 
-      inputId="urlPatterns"
+      inputId="urlPattern"
       isEssential={true}
-      label={t("urlPatterns")} 
+      label={t("urlPattern")} 
       placeholder={"*"} 
-      defaultValue={scanRule.urlPatterns.join(", ")} 
-      onChange={(e) => ({ ...scanRule, urlPatterns: e.target.value.split(",").map(s=>s.trim()) })}
+      defaultValue={scanRule.urlPattern} 
+      onChange={(e) => setData({ ...scanRule, urlPattern: e.target.value })}
     />
     <Tags givenTagIds={scanRule.tagIds} isModifying={true} onAddTag={
       (newTag) => {

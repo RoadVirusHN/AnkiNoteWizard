@@ -14,11 +14,10 @@ import { useTranslation } from 'react-i18next';
 import Icon from '@/panel/components/Icon/Icon';
 
 //TODO : Apply SCSS for css.
-//TODO : MAKE Interfaces&Types FILE
 
-// REQUEST_DETECTED_CARDS : content script 에게 현재 페이지에서 추출된 카드 데이터를 요청
-// - customCards : 사용자가 정의한 카드 스캔 규칙들
-// SEND_DETECTED_CARDS : content script에서 감지된 카드 데이터를 CardPage로 전송
+// REQUEST_DETECTED_DRAFTS : content script 에게 현재 페이지에서 추출된 카드 데이터를 요청
+// - scanrules : 사용자가 정의한 카드 스캔 규칙들
+// SEND_DETECTED_DRAFTS : content script에서 감지된 카드 데이터를 CardPage로 전송
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
 const DetectPage: React.FC = () => {
   const [isPending, setIsPending] = useState(false);
@@ -26,8 +25,7 @@ const DetectPage: React.FC = () => {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentDeckId, setCurrentDetected, setCurrentDeckId} = useGlobalVarStore();
-  const {getDrafts, getDraft,setDrafts, getScanRules} = useScanRule();
-  const drafts = getDrafts();
+  const {drafts, getDraft,setDrafts, getScanRules} = useScanRule();
   const scanRules = getScanRules();
   
   const {t} = useTranslation('page', {keyPrefix: 'detectPage'});  
@@ -35,16 +33,24 @@ const DetectPage: React.FC = () => {
   const {t:tCommon} = useTranslation('common');
   const requestExtracteds = async () => {
     setIsPending(true);
+    console.log('requestExtracteds');
     chrome.runtime.sendMessage({
-      type: MESSAGE_TYPE.REQUEST_DETECTED_CARDS_FROM_PANEL,
+      type: MESSAGE_TYPE.REQUEST_DETECTED_DRAFTS_FROM_PANEL,
       data: scanRules,
     }, (response) => {
-        console.log("receive detected cards", response);
+        console.log("receive detected drafts", response);
+        if (response.error) {
+          alert(response.error);
+          setIsPending(false);
+          return;
+        }
         const em = response as ExtractedInfos;
         let cnt = 0;
         let tempDrafts= {} as {[key:string]:Draft};
         setIsPending(false);
+        console.log('em', em);
         Object.keys(em).map((key)=>{
+          console.log('key', key);
           const numberKey = Number(key);
           const extractedInfos = em[numberKey];
           extractedInfos.forEach((extracted, idx)=>{
@@ -52,6 +58,7 @@ const DetectPage: React.FC = () => {
             tempDrafts[id] = (getNote(scanRules[numberKey],extracted));
           });
         });
+        console.log(tempDrafts);
         setCurrentDetected(cnt);
         setDrafts(tempDrafts);
     });

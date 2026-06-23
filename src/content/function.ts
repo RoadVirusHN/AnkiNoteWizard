@@ -133,3 +133,24 @@ export const isValidElement = (element: HTMLElement) => {
 export const tagToText = (tag: HTMLElement) => {
   return `<${tag.tagName.toLowerCase()}> ${(tag.textContent && tag.textContent.length > 15 ? tag.textContent?.trim().slice(0, 12) + '...' : tag.textContent) || ''}`;
 };
+export const checkUrlMatched = (urlPattern: string): boolean => {
+  console.log(urlPattern);
+  urlPattern = urlPattern || '*';
+// use wildcard to match urlPattern
+  const patternHost = urlPattern.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+  console.log(patternHost);
+  const regexString =
+  '^https?://(www\\.)?' + // 시작 부분에 선택적 https:// 또는 http:// 및 www.
+  patternHost
+  .split('*')
+  .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  .join('.*') +
+  '($|/.*)'; // 끝 부분 또는 / 이하의 모든 문자열 허용
+  console.log(regexString);
+
+  const regex = new RegExp(regexString);
+  console.log(regex, window.location.href);
+
+  // 3. 현재 URL에 대해 정규식 테스트
+  return regex.test(window.location.href);
+};

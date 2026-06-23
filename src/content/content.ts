@@ -8,6 +8,7 @@ import {
   ExtractedInfos,
   ExtractedFields,
 } from '@/types/scanRule.types';
+import { checkUrlMatched } from './function';
 
 console.log('✅ Content script loaded');
 export const initLocale = () => {
@@ -33,30 +34,6 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-const checkUrlMatched = (customCard: ScanRule): boolean => {
-  customCard.urlPatterns = customCard.urlPatterns || ['body'];
-  return (
-    // use wildcard to match urlPattern
-    customCard.urlPatterns.some((pattern) => {
-      const patternHost = pattern.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
-
-      // 2. 입력된 패턴의 호스트 부분만 사용하여 정규식의 기반을 만듭니다.
-      //    '*'는 '.*'로, 다른 특수문자는 이스케이프 처리합니다.
-      const regexString =
-        '^https?://(www\\.)?' + // 시작 부분에 선택적 https:// 또는 http:// 및 www.
-        patternHost
-          .split('*')
-          .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-          .join('.*') +
-        '($|/.*)'; // 끝 부분 또는 / 이하의 모든 문자열 허용
-
-      const regex = new RegExp(regexString);
-
-      // 3. 현재 URL에 대해 정규식 테스트
-      return regex.test(window.location.href);
-    })
-  );
-};
 const extractFields = (root: Element, field: FieldProperties[]) => {
   let res = '';
   field.forEach((fieldProp, idx) => {
@@ -112,10 +89,14 @@ const extractFields = (root: Element, field: FieldProperties[]) => {
 
 export const getExtractedFromPage = (scanRules: ScanRule[]) => {
   const res: ExtractedInfos = {};
+  console.log(scanRules);
   scanRules.forEach((scanRule, idx) => {
+    console.log(scanRule, idx);
     res[idx] = [];
-    if (!checkUrlMatched(scanRule)) {
+    console.log("url Matching: ",scanRule.urlPattern,checkUrlMatched(scanRule.urlPattern));
+    if (checkUrlMatched(scanRule.urlPattern)) {
       let roots = Array.from(document.querySelectorAll(scanRule.rootTagSelector));
+      console.log(roots);
       if (roots.length === 0) roots = Array.from(document.querySelectorAll('body'));
       roots.forEach((root) => {
         const extracteds: ExtractedFields = {};
@@ -123,9 +104,11 @@ export const getExtractedFromPage = (scanRules: ScanRule[]) => {
           extracteds[fieldName] = extractFields(root, scanRule.fields[fieldName]);
         }
         res[idx].push(extracteds);
+        console.log(extracteds);
       });
     }
   });
+  console.log('request result', res);
   return res;
 };
 

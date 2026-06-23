@@ -41,6 +41,7 @@ export default {
   scanRulesPage: {
     'Deleting|count|scanRules': 'Deleting {{count}} scan rules?', 
     addScanRule: 'Add ScanRule',
+    'noSuchAModel|model|': 'No Such a model, Id : {{model}}'
   },
   modifyScanRule: {
     meta: 'Meta',
@@ -56,7 +57,7 @@ export default {
     fieldTabDisabledTooltip: 'Please check model input in the common tab.',
     scanRuleCommonEditor: {
       modelName: 'Model Name',
-      urlPatterns: 'URL Patterns',
+      urlPattern: 'URL Pattern',
       rootTag: 'Root Tag',
       rootTagDescription: 'Fields will be searched under the root tag.',
     },

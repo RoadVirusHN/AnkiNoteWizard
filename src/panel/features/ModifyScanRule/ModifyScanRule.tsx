@@ -15,7 +15,7 @@ const emptyScanRule: ScanRule = {
     scanRuleName: "",
     meta: { author: "", description: "", version: "0.0.1" },
     modelId: EMPTY_MODEL.id,
-    urlPatterns: ["*"],
+    urlPattern: "*",
     rootTagSelector: "div.word",
     fields: {},
     tagIds: []
@@ -65,7 +65,7 @@ const ModifyScanRule = () => {
     if (code.result === 'success') {
       setIsChanged(false);
     } else {
-      alert(`Error occurred: ${code}`);
+      alert(`Error occurred: ${code.error}`);
       return;
     }
   };

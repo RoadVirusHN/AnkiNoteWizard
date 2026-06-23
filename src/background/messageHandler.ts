@@ -13,24 +13,24 @@ export const messageHandler = (
   let shouldKeepChannelOpen = false;
 
   switch (message.type) {
-    case MESSAGE_TYPE.REQUEST_CUSTOMCARDS_FROM_CONTENT:
+    case MESSAGE_TYPE.REQUEST_DRAFTS_FROM_CONTENT:
       shouldKeepChannelOpen = true;
       (async () => {
         try {
           const response = await chrome.storage.local.get(STORAGE_KEY);
-          const customCards = response['customCards'] || [];
-          sendResponse({ customCards });
+          const drafts = response['drafts'] || [];
+          sendResponse({ drafts });
         } catch (e) {
           sendResponse({ error: e });
         }
       })();
       break;
 
-    case MESSAGE_TYPE.REQUEST_DETECTED_CARDS_FROM_PANEL:
-      console.log('Received REQUEST_DETECTED_CARDS_FROM_PANEL message');
+    case MESSAGE_TYPE.REQUEST_DETECTED_DRAFTS_FROM_PANEL:
+      console.log('Received REQUEST_DETECTED_CARDS_FROM_PANEL message', message);
       shouldKeepChannelOpen = true;
       sendAsyncMessage<Message>(
-        { type: MESSAGE_TYPE.REQUEST_DETECTED_CARDS_TO_CONTENT, data: message.data },
+        { type: MESSAGE_TYPE.REQUEST_DETECTED_DRAFTS_TO_CONTENT, data: message.data },
         sendResponse
       );
       break;

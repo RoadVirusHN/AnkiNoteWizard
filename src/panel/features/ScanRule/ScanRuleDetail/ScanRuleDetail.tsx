@@ -5,10 +5,16 @@ import LinkSvg from "@/public/Icon/Icon-Filter.svg";
 import { useNavigate } from "react-router";
 import { ScanRule } from "@/types/scanRule.types";
 import Tags from "@/panel/components/Tags/Tags";
+import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
+import { useTranslation } from "react-i18next";
 const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: string, onCheck: (e: React.MouseEvent<HTMLInputElement>) => void}) => {
   const navigate = useNavigate();
   // TODO : Add Link Functionality
   // TODO : Configurable elipsis for title and description by font size.
+  const {t} = useTranslation('page',{keyPrefix: 'scanRulesPage'});
+  const {t:tCommon} = useTranslation('common'); 
+  const {models, getModel} = useAnkiConnectionStore();
+  const isContainModel = getModel(scanRule.modelId)!==null;
   return (<div className={scanRuleDetailStyle.scanRule}>
     <div className={scanRuleDetailStyle.main}>
       <div className={scanRuleDetailStyle.meta}>
@@ -23,7 +29,12 @@ const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: strin
         {scanRule.meta.description?.slice(0,135)}{scanRule.meta.description && scanRule.meta.description.length > 135 ? '...' : ''}
       </div>
       <div className={scanRuleDetailStyle.info}>
-        <p>Model: {scanRule.modelId.slice(0,30)}{scanRule.modelId.length>30? "...":""}</p>
+        {isContainModel ? 
+          <p>Model: {models[scanRule.modelId].name.slice(0,30)}{scanRule.modelId.length>30? "...":""}</p>:
+          <p style={{color:'var(--color-danger)'}}
+            title={tCommon('checkAnkiConnection')}
+          >{t('noSuchAModel|model|', {model: scanRule.modelId})}</p>
+        }
         <Tags givenTagIds={scanRule.tagIds.slice(0,4)} />
       </div>
     </div> 

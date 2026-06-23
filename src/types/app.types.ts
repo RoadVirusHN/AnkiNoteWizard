@@ -81,7 +81,7 @@ export const EMPTY_SCAN_RULE = {
   scanRuleName: '',
   meta: { author: '', description: '', version: '0.0.1' },
   modelId: EMPTY_MODEL.id,
-  urlPatterns: ['*'],
+  urlPattern: '*',
   rootTagSelector: 'div.word',
   fields: {
     Front: [
