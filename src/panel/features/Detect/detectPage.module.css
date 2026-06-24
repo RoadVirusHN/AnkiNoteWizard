@@ -9,7 +9,9 @@
   box-sizing: border-box;
   overflow-y: auto;
 }
+.editing {
 
+}
 .header {
   display: flex;
   justify-content: space-between;
@@ -94,12 +96,11 @@
 .detectedDraftContainer input {
   flex-shrink: 0;
 }
-.detectedDraftContainer .delButton{
+.detectedDraftContainer .button{
   flex-shrink: 0;
 }
 
-/* ⨁ 추가 버튼 */
-.delButton {
+.button {
   font-size: 1.2rem;
   font-weight: bold;
   color: var(--color-primary);
