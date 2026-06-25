@@ -4,6 +4,11 @@ export default {
   detectPage: {
     noDraftDetected: '감지된 초안이 없습니다.',
     scanning: '감지 중...',
+    pending: '대기 중...',
+    ok: 'OK',
+    needToRefreshPage: '웹 페이지 새로고침 필요',
+    checkReady: '감지 가능 확인',
+    healthCheckFailWarn : '감지 준비 실패, 새로고침 필요',
     scan: '찾기',
     add: '추가',
     addNoteFail: '노트 추가 실패 :',

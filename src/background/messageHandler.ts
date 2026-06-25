@@ -13,6 +13,7 @@ export const messageHandler = (
   let shouldKeepChannelOpen = false;
 
   switch (message.type) {
+    // warn : do we using it?
     case MESSAGE_TYPE.REQUEST_DRAFTS_FROM_CONTENT:
       shouldKeepChannelOpen = true;
       (async () => {
@@ -34,6 +35,16 @@ export const messageHandler = (
         sendResponse
       );
       break;
+    case MESSAGE_TYPE.CONTENT_HEALTH_CHECK:
+      shouldKeepChannelOpen = true;
+      console.log('Received HEALTHCHECK message in Background', message);
+      sendAsyncMessage<Message>(
+        {type: MESSAGE_TYPE.CONTENT_HEALTH_CHECK,data:null},
+        sendResponse
+      );
+      break;
+      
+      
 }
 
   return shouldKeepChannelOpen;

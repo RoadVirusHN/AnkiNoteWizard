@@ -6,6 +6,9 @@ export default {
     add: '추가',
     scanRules: '스캔 규칙',
     config: '설정',
+    connecting: '연결 중...',
+    refresh: '재시도?',
+    ankiDisconnected: 'Anki 연결 단절'
   },
   inspectionOverlay: {
     textModeTitle: '텍스트 추출 모드',

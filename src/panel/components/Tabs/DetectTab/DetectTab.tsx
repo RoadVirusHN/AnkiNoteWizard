@@ -27,7 +27,7 @@ const DetectTab = ({}) => {
         <img src={AnkiIcon} className={`${tabsStyle["anki-logo"]} ` + (isPending ? `${tabsStyle.spinning}`:'')}/>
         <TooltipWrapper 
           classes={[tabsStyle.tooltip]}
-          text={`${isPending ? 'connecting..':(isConnected ? 'refresh?' : 'Anki disconnected')}`} 
+          text={`${isPending ? t('connecting'):(isConnected ? t('refresh') : t('ankiDisconnected'))}`} 
           tooltipDirection={TOOLTIP_DIRECTION.BOTTOM}
           textStyles={{top: '45px'}}>
           <span onClick={(e)=>{

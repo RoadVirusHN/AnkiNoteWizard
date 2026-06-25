@@ -2,6 +2,11 @@ export default {
   detectPage: {
     noDraftDetected: 'No Draft Detected.',
     scanning: 'Scanning...',
+    pending: 'Pending...',
+    ok: 'OK',
+    needToRefreshPage: 'Need to refresh your Page.',
+    checkReady: 'Check Ready',
+    healthCheckFailWarn : 'Fail to scan ready, refresh your web page.',
     scan: 'Scan',
     add: 'Add',
     addNoteFail: 'Failed to add note :',

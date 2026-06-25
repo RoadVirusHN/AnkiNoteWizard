@@ -4,6 +4,9 @@ export default {
     add: 'Add',
     scanRules: 'ScanRules',
     config: 'Config',
+    connecting: 'Connecting...',
+    refresh: 'Refresh?',
+    ankiDisconnected: 'Anki Disconnected'
   },
   inspectionOverlay: {
     textModeTitle: 'Text Extraction Mode',

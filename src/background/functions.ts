@@ -41,7 +41,7 @@ export const sendAsyncMessage = async <T>(
     chrome.tabs.sendMessage(tabId, message, (response) => {
       if (chrome.runtime.lastError) {
         console.error('Content Script Error:', chrome.runtime.lastError.message);
-        sendResponse({ error: chrome.runtime.lastError.message });
+        sendResponse({ res:'error', error: chrome.runtime.lastError.message });
       } else {
         console.log('Response from content script (Valid):', response);
         sendResponse(response);
