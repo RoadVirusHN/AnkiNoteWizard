@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import Icon from '@/panel/components/Icon/Icon';
 import TooltipWrapper from '@/panel/components/TooltipWrapper/TooltipWrapper';
 import { TOOLTIP_DIRECTION } from '@/types/app.types';
+import { processMediaInHtml } from '@/panel/utils/functions';
 
 //TODO : Apply SCSS for css.
 
@@ -125,14 +126,24 @@ const DetectPage: React.FC = () => {
             } : undefined,
           }) as Draft;
   }
-  const addSelected = ()=>{   
+  const addSelected = async ()=>{   
     if (currentDeckId === null||currentDeckId === ''){
       console.log('No deck selected');
       setErrorMessages([tError('selectDeckFirst.statusText')]);
       return;
     }
-    fetchAnki({action: "addNotes",params: { notes : [...selected.keys()].map((i)=>({
-      ...getDraft(i),
+    let notes = [];
+    for (const key of selected){
+      let curNote = drafts[key];
+      for (const field in curNote.fields){
+        let content = curNote.fields[field].content;
+        curNote.fields[field].content = await processMediaInHtml(content);
+        notes.push(curNote);
+      }
+    }
+
+    await fetchAnki({action: "addNotes",params: { notes : notes.map((note)=>({
+      note,
       deckName: currentDeckId
     }))}})
     .then((res) => {

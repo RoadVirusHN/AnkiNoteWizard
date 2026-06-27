@@ -20,7 +20,7 @@ import { NavLink } from "react-router";
 import { INSPECTION_MODE } from "@/types/app.types";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
-import { isNoteValid } from "@/panel/utils/functions";
+import { isNoteValid, processMediaInHtml } from "@/panel/utils/functions";
 import FieldInput from "@/panel/components/Inputs/FieldInput/FieldInput";
 import useScanRule from "@/panel/stores/useScanRule";
 import { Model } from "@/types/scanRule.types";
@@ -123,6 +123,13 @@ const AddPage = ({}) => {
 
             return;
           }
+
+          for (const field in curNote.fields){
+            let content = curNote.fields[field].content;
+            curNote.fields[field].content = await processMediaInHtml(content);
+          }
+
+
           const req = {
             action: 'addNote',
             params: {
