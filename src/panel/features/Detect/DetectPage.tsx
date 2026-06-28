@@ -12,8 +12,6 @@ import { MESSAGE_TYPE } from '@/types/chrome.types';
 import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
 import { useTranslation } from 'react-i18next';
 import Icon from '@/panel/components/Icon/Icon';
-import TooltipWrapper from '@/panel/components/TooltipWrapper/TooltipWrapper';
-import { TOOLTIP_DIRECTION } from '@/types/app.types';
 import { processMediaInHtml } from '@/panel/utils/functions';
 
 //TODO : Apply SCSS for css.
@@ -24,7 +22,6 @@ import { processMediaInHtml } from '@/panel/utils/functions';
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
 const DetectPage: React.FC = () => {
   const [isPending, setIsPending] = useState(false);
-  const [isContentOk, setIsContentOk] = useState(false);
   const [selected, setSelected] = useState(new Set<string>());
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const {fetchAnki} = useAnkiConnectionStore();
@@ -36,34 +33,8 @@ const DetectPage: React.FC = () => {
   const {t:tError} = useTranslation('error', {keyPrefix: 'detectPage'});
   const {t:tCommon} = useTranslation('common');
 
-  const healthCheck = async () =>{
-    if (isPending) return;
-    setIsPending(true);
-    console.log('health check');
-    chrome.runtime.sendMessage({
-      type: MESSAGE_TYPE.CONTENT_HEALTH_CHECK,
-      data: null
-    }, (response)=>{
-      console.log("receive health check", response);
-      if (response.res === 'error'){
-        alert(t('healthCheckFailWarn'))
-        setIsContentOk(false);
-        setIsPending(false);
-        return;
-      }
-      setIsContentOk(true);
-      setIsPending(false);
-    })
-  };
-
   const requestExtracteds = async () => {
     if (isPending) return;
-    if (!isContentOk){
-      alert(t('healthCheckFailWarn'))
-      setIsContentOk(false);
-      setIsPending(false);
-      return;
-    }
     setIsPending(true);
     console.log('requestExtracteds');
     chrome.runtime.sendMessage({
@@ -173,16 +144,6 @@ const DetectPage: React.FC = () => {
         <div className={detectPageStyle.headerButtons}>
           <SimpleButton disabled={isPending} className={detectPageStyle.redetectDraft} onClick={requestExtracteds}>
             {isPending ? t("scanning") : '↺ '+t("scan")}
-          </SimpleButton>
-          <SimpleButton disabled={isPending} className={detectPageStyle.redetectDraft} onClick={healthCheck}>
-            {<TooltipWrapper 
-              classes={[detectPageStyle.tooltip]}
-              text={`${isPending ? t('pending'):(isContentOk ? t('ok') : t('needToRefreshPage'))}`} 
-              tooltipDirection={TOOLTIP_DIRECTION.BOTTOM}
-              textStyles={{top: '45px'}}>
-              <span style={{cursor: 'pointer', color:isPending ? 'gray' : (isContentOk ? 'greenyellow' : 'red')}}>●</span>
-            </TooltipWrapper>}
-            {isPending ? t("pending") : t("checkReady")}
           </SimpleButton>
         </div>
         <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `+ ${selected.size}` : t('add')}/>

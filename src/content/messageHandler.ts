@@ -28,10 +28,6 @@ export const messageHandler = async (
       };
       activateInspectionMode(mode, port, rootSelector);
       break;
-    case MESSAGE_TYPE.CONTENT_HEALTH_CHECK:
-      console.log('Received HEALTHCHECK message in Content', message);
-      sendResponse({ status: 'OK' });
-      break;
   }
   return isAsync;
 };

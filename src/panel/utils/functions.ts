@@ -1,7 +1,7 @@
 import { Model, Draft } from '@/types/scanRule.types';
 import useAnkiConnectionStore from '../stores/useAnkiConnectionStore';
 import { ChangeEventHandler } from 'react';
-import { TFunction } from 'i18next';
+import i18next, { TFunction } from 'i18next';
 import { EMPTY_DECK, EMPTY_MODEL } from '@/types/app.types';
 
 export const getRandomColor = () => `hsl(${Math.random() * 360},50%, 50%)`;
@@ -81,7 +81,7 @@ export const processMediaInHtml = async (html: string) => {
       })
       .catch((err) => {
         console.error('Failed to store media file:', err);
-        alert(`Failed to store media file: ${err.message}`);
+        alert(i18next.t('error:common.storeMediaError') + `: ${err.message}`);
         return { result: 'error', error: err.message };
       });
   }

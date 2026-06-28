@@ -64,6 +64,9 @@ export default {
       ],
     },
   },
+  common: {
+    storeMediaError: '미디어 파일 등록에 실패'
+  },
   addNote: {
     modelNotFoundError: {
       code: 'modelNotFoundError',

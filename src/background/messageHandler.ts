@@ -35,16 +35,6 @@ export const messageHandler = (
         sendResponse
       );
       break;
-    case MESSAGE_TYPE.CONTENT_HEALTH_CHECK:
-      shouldKeepChannelOpen = true;
-      console.log('Received HEALTHCHECK message in Background', message);
-      sendAsyncMessage<Message>(
-        {type: MESSAGE_TYPE.CONTENT_HEALTH_CHECK,data:null},
-        sendResponse
-      );
-      break;
-      
-      
 }
 
   return shouldKeepChannelOpen;

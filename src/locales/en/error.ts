@@ -62,6 +62,9 @@ export default {
       ],
     },
   },
+  common: {
+    storeMediaError: 'Failed to store media file'
+  },
   addNote: {
     modelNotFoundError: {
       code: 'modelNotFoundError',
