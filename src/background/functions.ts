@@ -39,13 +39,13 @@ export const sendAsyncMessage = async <T>(
       sendResponse({ res:'error',error: 'No Active tab found',response:null });
       return;
     }
-    chrome.tabs.sendMessage(tabId, message, (response) => {
+    chrome.tabs.sendMessage(tabId, message, (response : Response) => {
       if (chrome.runtime.lastError) {
         console.error('Content Script Error:', chrome.runtime.lastError.message);
         sendResponse({ res:'error', error: chrome.runtime.lastError.message??null, response: null });
       } else {
         console.log('Response from content script (Valid):', response);
-        sendResponse({res:'ok', error:null, response});
+        sendResponse({res:'ok', error:null, response: response.response});
       }
     });
   } catch (error) {

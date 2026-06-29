@@ -64,7 +64,7 @@
 .detectedDraftContainer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
   background-color: var(--color-light);
   gap: 8px;
   padding: 2px 4px;
@@ -91,6 +91,18 @@
 .field {
   margin: 3px;
   word-wrap: break-word;
+  width: 100%;
+  height: 50px;
+  display: block;
+}
+
+.fieldInput {
+  width: 100%;
+}
+
+.fieldInput label{
+  font-weight: bold;
+  color: var(--color-primary);
 }
 
 .detectedDraftContainer input {
