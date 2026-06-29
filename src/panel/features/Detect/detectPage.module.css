@@ -9,9 +9,7 @@
   box-sizing: border-box;
   overflow-y: auto;
 }
-.editing {
 
-}
 .header {
   display: flex;
   justify-content: space-between;
@@ -74,6 +72,11 @@
   border-color: var(--color-dark);
   cursor: pointer;
 }
+
+.detectedDraftContainer .editing {
+  border-color: var(--color-warning);
+}
+
 .detectedDraftContainer:hover {
   border-color: var(--color-hyperlink);
 }
@@ -100,9 +103,13 @@
   width: 100%;
 }
 
-.fieldInput label{
+.fieldLabel{
   font-weight: bold;
   color: var(--color-primary);
+  text-align: start;
+}
+.fieldLabel .veryEmpty {
+  color: var(--color-warning);
 }
 
 .detectedDraftContainer input {

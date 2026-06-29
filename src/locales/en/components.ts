@@ -26,5 +26,8 @@ export default {
   },
   fieldInput: {
     fieldContentPlaceholder: 'Enter content for this field. You can also paste or drag media files (images, audio, video) directly into this area.',
+  },
+  fieldScanInput: {
+    containedTooManyEmptyWarn: 'This Field contains many Empty which can cause incorrect note generation.'
   }
 };

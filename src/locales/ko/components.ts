@@ -28,5 +28,8 @@ export default {
   },
   fieldInput: {
     fieldContentPlaceholder: '이 필드에 대한 내용을 입력하세요. 또한 미디어 파일(이미지, 오디오, 비디오)을 이 영역에 직접 붙여넣거나 드래그할 수도 있습니다.',
+  },
+  fieldScanInput: {
+    containedTooManyEmptyWarn: '이 요소는 빈 문자가 많아 생성 결과가 다르게 보일 수 있습니다.'
   }
 } satisfies typeof components;

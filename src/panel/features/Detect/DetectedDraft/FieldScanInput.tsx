@@ -1,17 +1,23 @@
 import { FieldData } from "@/types/scanRule.types";
 import detectPageStyle from "../detectPage.module.css";
+import { useTranslation } from "react-i18next";
 
 const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, isEditing: boolean, setCurrentField:(newField:FieldData)=>void}) => {
   const renderedContent = field.content.replace(/\s+/g, ' ').trim();
-  // TODO: rendering 시 공백 처리 문제
+  const containedTooManyEmpty = field.content.length - renderedContent.length > 30;
+  const {t} = useTranslation('components', {keyPrefix:'fieldScanInput'});
   return <div className={detectPageStyle.fieldInput}>
-    <label htmlFor="content">{field.key}</label>
+    <label 
+    className={`${detectPageStyle.fieldLabel}` + (containedTooManyEmpty && ` ${detectPageStyle.veryEmpty}`)}
+    htmlFor="content"
+    title={containedTooManyEmpty ?t('containedTooManyEmptyWarn'):''}
+    >{field.key}</label>
     {
       isEditing ? 
       <textarea
         id='content'
         className={detectPageStyle.field}
-        value={field.content.split('\n').map(line => line.trim()).join('\n').trim()}
+        value={field.content}
         onClick={(e)=>{
           e.stopPropagation();
         }}
