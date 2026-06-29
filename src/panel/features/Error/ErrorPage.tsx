@@ -17,11 +17,11 @@ const getErrorGuide = (infos:{status: Status, message: string},t:TFunction<"erro
   }
   let altKey = "codes." + infos.status;
   //@ts-ignore
-  res.statusText = t(altKey + "statusText") as string; // Ignore type error
+  res.statusText = t(altKey + ".statusText") as string; // Ignore type error
   //@ts-ignore
-  res.solutions = t(altKey + "solutions") as unknown as string[]; // Ignore type error
+  res.solutions = t(altKey + ".solutions") as unknown as string[]; // Ignore type error
   //@ts-ignore
-  res.description = t(altKey + "description") as string; // Ignore type error
+  res.description = t(altKey + ".description") as string; // Ignore type error
   if (infos.message.length > 0){
     res.description = infos.message; 
   }  

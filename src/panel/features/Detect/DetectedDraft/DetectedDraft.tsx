@@ -49,7 +49,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
       </div>
       {
         note.fields.map((item, idx)=>{
-          return <FieldInput field={item} isEditing={isEditing} setCurrentField={(newField:FieldData)=>{
+          return <FieldInput key={idx} field={item} isEditing={isEditing} setCurrentField={(newField:FieldData)=>{
             const newFields = [...currentDraft.fields];
             newFields[idx] = newField;
             setCurrentDraft({...currentDraft, fields: newFields});
