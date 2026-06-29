@@ -13,16 +13,15 @@ export const messageHandler = (
   let shouldKeepChannelOpen = false;
 
   switch (message.type) {
-    // warn : do we using it?
     case MESSAGE_TYPE.REQUEST_DRAFTS_FROM_CONTENT:
       shouldKeepChannelOpen = true;
       (async () => {
         try {
           const response = await chrome.storage.local.get(STORAGE_KEY);
           const drafts = response['drafts'] || [];
-          sendResponse({ drafts });
+          sendResponse({ res:'ok', error:null, response:drafts });
         } catch (e) {
-          sendResponse({ error: e });
+          sendResponse({ res:'error', error: 'unknown error', response:e });
         }
       })();
       break;

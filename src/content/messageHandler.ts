@@ -2,19 +2,23 @@ import { getExtractedFromPage } from './content';
 import { activateInspectionMode, deactivateInspectionMode } from './tagExtraction';
 import { ScanRule } from '@/types/scanRule.types';
 import { InspectionMode } from '@/types/app.types';
-import { Message, MESSAGE_TYPE, PORT_NAMES } from '@/types/chrome.types';
+import { Message, MESSAGE_TYPE, PORT_NAMES, Response } from '@/types/chrome.types';
 
 export const messageHandler = async (
   message: Message,
   sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: unknown) => void
+  sendResponse: (response?: Response) => void
 ) => {
   let isAsync = false;
   console.log('Content script received message:', message);
   switch (message.type) {
     case MESSAGE_TYPE.REQUEST_DETECTED_DRAFTS_TO_CONTENT:
       console.log('Received REQUEST_DETECTED_DRAFTS_TO_CONTENT message ', message.data);
-      sendResponse(getExtractedFromPage(message.data as ScanRule[]));
+      sendResponse({
+        res: 'ok',
+        error: null,
+        response: getExtractedFromPage(message.data as ScanRule[]),
+      });
       break;
     case MESSAGE_TYPE.ENTER_INSPECTION_MODE_FROM_PANEL:
       console.log('Enter inspect mode requested: ' + message.data);

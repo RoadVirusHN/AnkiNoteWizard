@@ -8,7 +8,7 @@ import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import useGlobalVarStore from '@/panel/stores/useGlobalVarStore';
 import useScanRule from '@/panel/stores/useScanRule';
 import { ExtractedFields, ExtractedInfos,  FIELD_DATA_TYPES,  Draft, ScanRule } from '@/types/scanRule.types';
-import { MESSAGE_TYPE } from '@/types/chrome.types';
+import { MESSAGE_TYPE, Response } from '@/types/chrome.types';
 import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
 import { useTranslation } from 'react-i18next';
 import Icon from '@/panel/components/Icon/Icon';
@@ -30,7 +30,7 @@ const DetectPage: React.FC = () => {
   const scanRules = getScanRules();
   
   const {t} = useTranslation('page', {keyPrefix: 'detectPage'});  
-  const {t:tError} = useTranslation('error', {keyPrefix: 'detectPage'});
+  const {t:tError} = useTranslation('error');
   const {t:tCommon} = useTranslation('common');
 
   const requestExtracteds = async () => {
@@ -40,14 +40,18 @@ const DetectPage: React.FC = () => {
     chrome.runtime.sendMessage({
       type: MESSAGE_TYPE.REQUEST_DETECTED_DRAFTS_FROM_PANEL,
       data: scanRules,
-    }, (response) => {
+    }, (response: Response) => {
         console.log("receive detected drafts", response);
         if (response.res==='error') {
-          alert(response.error);
+          if (response.error === 'Could not establish connection. Receiving end does not exist.'){
+            alert(tError('common.noContentErrorSolution'));
+          } else {
+            alert(response.error);
+          }
           setIsPending(false);
           return;
         }
-        const em = response as ExtractedInfos;
+        const em = response.response as ExtractedInfos;
         let cnt = 0;
         let tempDrafts= {} as {[key:string]:Draft};
         setIsPending(false);
@@ -77,10 +81,7 @@ const DetectPage: React.FC = () => {
   const getNote = (scanRule : ScanRule, extracted : ExtractedFields) =>{    
     let fields = [] as Draft['fields'];
     for (const fieldName of Object.keys(scanRule.fields)) {
-      let value = '';
-      for (const fieldProp of scanRule.fields[fieldName]) {   
-          value = extracted[fieldName];
-      }
+      let value = extracted[fieldName];
       fields.push({key: fieldName, content: value});
     }
     return ({
@@ -100,7 +101,7 @@ const DetectPage: React.FC = () => {
   const addSelected = async ()=>{   
     if (currentDeckId === null||currentDeckId === ''){
       console.log('No deck selected');
-      setErrorMessages([tError('selectDeckFirst.statusText')]);
+      setErrorMessages([tError('detectPage.selectDeckFirst.statusText')]);
       return;
     }
     let notes = [];
@@ -121,7 +122,7 @@ const DetectPage: React.FC = () => {
       console.log(res);
       if (res.error) {
         console.error('Error adding note to Anki:', res.error);
-        alert(tError('addNoteFail.statusText') + res.error);
+        alert(tError('detectPage.addNoteFail.statusText') + res.error);
       } else {
         console.log('Note added to Anki with ID:', res.result);
         alert(t('addNoteSuccess'));

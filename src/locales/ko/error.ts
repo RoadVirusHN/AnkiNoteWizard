@@ -65,7 +65,8 @@ export default {
     },
   },
   common: {
-    storeMediaError: '미디어 파일 등록에 실패'
+    storeMediaError: '미디어 파일 등록에 실패',
+    noContentErrorSolution: '수신 종말 스크립트 탐색 불가, 웹 페이지를 새로고침하고 다시 시도하세요.'
   },
   addNote: {
     modelNotFoundError: {

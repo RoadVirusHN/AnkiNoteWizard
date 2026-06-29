@@ -4,6 +4,12 @@ export interface Message {
   data: unknown;
 }
 
+export interface Response{
+  res: 'ok'|'error',
+  error: string | null,
+  response: unknown
+}
+
 export const MESSAGE_TYPE = {
   REQUEST_DRAFTS_FROM_CONTENT: 'REQUEST_DRAFTS_FROM_CONTENT',
   SEND_DETECTED_DRAFTS: 'SEND_DETECTED_DRAFTS',

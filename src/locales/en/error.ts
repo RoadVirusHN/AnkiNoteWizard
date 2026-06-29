@@ -63,7 +63,8 @@ export default {
     },
   },
   common: {
-    storeMediaError: 'Failed to store media file'
+    storeMediaError: 'Failed to store media file',
+    noContentErrorSolution: 'No Receiving end founded, Refresh your web page and retry it.'
   },
   addNote: {
     modelNotFoundError: {

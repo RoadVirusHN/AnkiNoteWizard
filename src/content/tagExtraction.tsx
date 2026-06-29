@@ -2,7 +2,6 @@ import { createRoot, Root } from "react-dom/client";
 import App from "@/content/ui/App";
 import { EXTENSION_UI_ID } from "./constants";
 import { INSPECTION_MODE, InspectionMode } from "@/types/app.types";
-import root from "react-shadow";
 let appRoot : Root;
 let contentPort: chrome.runtime.Port | null = null; // 포트 연결 상태 관리;
 // -----------------------------------------------------------------------------
