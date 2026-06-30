@@ -8,7 +8,7 @@ const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, is
   const {t} = useTranslation('components', {keyPrefix:'fieldScanInput'});
   return <div className={detectPageStyle.fieldInput}>
     <label 
-    className={`${detectPageStyle.fieldLabel}` + (containedTooManyEmpty && ` ${detectPageStyle.veryEmpty}`)}
+    className={`${detectPageStyle.fieldLabel}` + (containedTooManyEmpty ? ` ${detectPageStyle.veryEmpty}` : '')}
     htmlFor="content"
     title={containedTooManyEmpty ?t('containedTooManyEmptyWarn'):''}
     >{field.key}</label>

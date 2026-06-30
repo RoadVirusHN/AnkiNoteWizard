@@ -4,9 +4,8 @@ import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
 
 const ScanRuleInput = ({setScanRule, defaultScanRule}:{setScanRule: (model:string)=>void, defaultScanRule: string}) => {
-  const {getScanRules} = useScanRule();
   const [curVal, setCurVal] = useState(defaultScanRule || 'Empty'); 
-  const scanRules = getScanRules();
+  const {scanRules} = useScanRule();
   const onChangeModel = (scanRule:string) => {
     if (Object.keys(scanRules).length===0) return;
     setScanRule(scanRule);

@@ -11,6 +11,8 @@ import DelIcon from "@/public/Icon/Icon-Dump.svg";
 import { useTranslation } from "react-i18next";
 import useInspection from "@/panel/hooks/useInspection";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
+import Tags from "@/panel/components/Tags/Tags";
+import { useShallow } from "zustand/react/shallow";
 
 interface DetectedDraftProps {
   idx: string;
@@ -20,7 +22,13 @@ interface DetectedDraftProps {
 };
 
 const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => {
-  const {removeDraft,updateDraft, drafts, setDrafts} = useScanRule();
+  const {removeDraft,updateDraft, drafts} = useScanRule(
+    useShallow((state)=>({
+      drafts: state.drafts,
+      removeDraft: state.removeDraft,
+      updateDraft: state.updateDraft
+    }))
+  );
   const {setCurrentDetected, currentDetected} = useGlobalVarStore();
   const {t} = useTranslation('common');
   const [currentDraft, setCurrentDraft] = useState(note);
@@ -28,40 +36,47 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
   const [isChanged, setIsChanged] = useState(false);
   const {enterInspectionMode,isInspectionMode} = useInspection();
   const onClick = (e:MouseEvent)=>{
-    setIsEditing(!isEditing)
-    if (!isEditing){
+    console.log('draft:', drafts[idx]);
+    console.log('currentDraft:', currentDraft);
+    console.log('note:', note);
+    if (isEditing){
       onReset(e);
     }
+    setIsEditing(!isEditing)
   }
   const onReset = (e:MouseEvent)=>{
     e.stopPropagation();
     setCurrentDraft(note);
     setIsChanged(false);
   };
-  
   return (  
-  // TODO
-  // 1. 클릭으로 초안 모드 변경(전체 화면<->카드)
-  //  - 클릭 이전 : 초안의 최초 필드 2개의 Text Content, 스캔 룰 이름, 마우스 호버 시 웹 페이지에서 해당 정보가 어디서 추출되었는지 Highlight, 삭제, 추가, 체크박스
-  //  - 클릭 이후 : 카드의 모든 필드의 정보(Scrollable), 스캔 룰 이름, 필드별 텍스트 편집 기능(Text Editor로 전환), 기본 Highlight 필드 위에 마우스 호버 시 웹 페이지에서 해당 필드가 어디서 추출되었는지 Highlight
-  // FIX : 수정 시 inspection mode 추가
-  <article className={`${detectPageStyle.detectedDraftContainer}` + ` ${detectPageStyle.editing}`} onClick={onClick}>
+  <article className={`${detectPageStyle.detectedDraftContainer}` + (isEditing? ` ${detectPageStyle.editing}` : '')} onClick={onClick}>
     {
       !isEditing ?<input type="checkbox" onChange={e=>{checkAdd(e.target.checked)}} onClick={e=>e.stopPropagation()}/> : null
     }
     <div className={detectPageStyle.detectedDraftContent}>
-      <div style={{display: 'flex'}}>
+      <div style={{display: 'flex', gap:'5px'}}>
         <span className={detectPageStyle.scanRuleName} title={t('scanRule')} >{scanRuleId}</span>
-        {isEditing && <SimpleButton title="Extract Data" src={MagicIcon} onClick={(e)=>{
-          e.stopPropagation();
-          enterInspectionMode();
-        }}/> }
+        <Tags 
+          isModifying={isEditing} 
+          givenTagIds={currentDraft.tagIds}
+          onAddTag={(newTag)=>{
+            setCurrentDraft({...currentDraft,tagIds:[...currentDraft.tagIds, newTag.name]});
+            setIsChanged(true);
+          }}
+          onRemoveTag={(targetTag)=>{
+            setCurrentDraft({...currentDraft,tagIds:[...currentDraft.tagIds].filter((tagName)=>tagName!==targetTag.name)});
+            setIsChanged(true);
+          }}
+        />
       </div>
       {
-        note.fields.map((item, idx)=>{
+        currentDraft.fields.map((item, idx)=>{
           return <FieldScanInput key={idx} field={item} isEditing={isEditing} setCurrentField={(newField:FieldData)=>{
-            const newFields = [...currentDraft.fields];
+            const newFields = [...currentDraft.fields,];
             newFields[idx] = newField;
+            console.log('newField', newField);
+            console.log(newFields);
             setCurrentDraft({...currentDraft, fields: newFields});
             setIsChanged(true);
           }}/>
@@ -71,17 +86,26 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
     <div className={detectPageStyle.button}>
     {
       isEditing ? 
-        <><img src={SaveIcon} onClick={(e)=>{
+      <>
+        <img title="Extract Data" src={MagicIcon} onClick={(e)=>{
           e.stopPropagation();
-          const newDrafts = {...drafts};
-          newDrafts[note.draftId] = {...note,
-            fields: currentDraft.fields
-          };
-          setDrafts(newDrafts);
+          enterInspectionMode();
+        }}/> 
+        <img src={SaveIcon} onClick={(e)=>{
+          e.stopPropagation();
+          updateDraft(idx,
+            {
+              fields: currentDraft.fields,
+              tagIds: currentDraft.tagIds
+            }
+          );
+          console.log('draft:', drafts[idx]);
+          console.log('currentDraft:', currentDraft);
+          console.log('note:', note);
           setIsEditing(false);
-        }} style={{cursor: 'pointer'}}/>
+        }}/>
         {isChanged &&
-          <img src={ResetIcon} onClick={onReset} style={{cursor: 'pointer'}}/>}
+          <img src={ResetIcon} onClick={onReset}/>}
         </> :
       <img src={DelIcon} onClick={(e)=>{
         e.stopPropagation();

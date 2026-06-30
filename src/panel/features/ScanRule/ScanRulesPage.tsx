@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { ScanRule } from "@/types/scanRule.types";
 
 const ScalnRulePage = ({}) => {
-  const {removeScanRule, getScanRules , addScanRule} = useScanRule();  
+  const {removeScanRule, scanRules, addScanRule} = useScanRule();  
   const navigate = useNavigate();
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const {t} = useTranslation('page', {keyPrefix: 'configPage'});
@@ -23,7 +23,7 @@ const ScalnRulePage = ({}) => {
     style={{cursor: "pointer"}}
     title={tScanRulesPage('addScanRule')}
     />  
-    {Object.values(getScanRules()).map((scanRule)=>
+    {Object.values(scanRules).map((scanRule)=>
     <ScanRuleDetail key={scanRule.scanRuleName} idx={scanRule.scanRuleName} scanRule={scanRule} onCheck={(e)=>{
       if (e.currentTarget.checked){
         setCheckedList([...checkedList, scanRule.scanRuleName]);
@@ -43,7 +43,7 @@ const ScalnRulePage = ({}) => {
             }
           }}/>
           <SimpleButton text={t('exportScanRules')} onClick={()=>{
-            const checkedScanRules = getScanRules().filter(scanRule=>checkedList.includes(scanRule.scanRuleName));
+            const checkedScanRules = Object.keys(scanRules).filter(scanRule=>checkedList.includes(scanRule));
             const blob = new Blob([JSON.stringify(checkedScanRules, null, 2)], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -65,7 +65,7 @@ const ScalnRulePage = ({}) => {
               try {
                 console.log(event.target?.result);
                 const importedScanRules = JSON.parse(event.target?.result as string) as ScanRule[];
-                const copiedScanrules = [...Object.values(getScanRules())];
+                const copiedScanrules = [...Object.values(scanRules)];
                 if (Array.isArray(importedScanRules)) {
                   var addedCount = 0;
                   for (const rule of importedScanRules) {

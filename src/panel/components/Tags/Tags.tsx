@@ -15,7 +15,7 @@ interface TagsProps {
 }
 
 const Tags = ({givenTagIds, isModifying=false, onRemoveTag=(t)=>{}, onAddTag=(t)=>{}}:TagsProps) => {
-  const {getTag, addTag} = useScanRule();
+  const {tags, addTag} = useScanRule();
   const {t} = useTranslation('common');
   const deleteTag = (e: React.MouseEvent, tag: Tag) => {
     e.stopPropagation();
@@ -27,7 +27,7 @@ const Tags = ({givenTagIds, isModifying=false, onRemoveTag=(t)=>{}, onAddTag=(t)
     const newTagId = input.value;
     if(newTagId && !givenTagIds.find(id=>id === newTagId)){
       let randomColor = getRandomColor();
-      const existingTag = getTag(newTagId);
+      const existingTag = tags[newTagId];
       if(!existingTag){
         addTag(newTagId, randomColor);
       }
@@ -35,9 +35,9 @@ const Tags = ({givenTagIds, isModifying=false, onRemoveTag=(t)=>{}, onAddTag=(t)
       input.value = '';
     }
   }
-  return (<div className={tagsStyle.tags}>
+  return (<div className={tagsStyle.tags} onClick={(e)=>{e.stopPropagation();}}>
       {givenTagIds.map((id)=>{
-        const tag = getTag(id);
+        const tag = tags[id];
         let tagColor = tag ? tag.color : getRandomColor();
         if (tag===null) addTag(id, tagColor);
         // TODO: Make Tag Component

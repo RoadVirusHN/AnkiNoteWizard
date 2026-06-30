@@ -13,6 +13,10 @@ import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
 import { useTranslation } from 'react-i18next';
 import Icon from '@/panel/components/Icon/Icon';
 import { processMediaInHtml } from '@/panel/utils/functions';
+import InspectionOverlay from '@/panel/components/InspectionOverlay/InspectionOverlay';
+import { INSPECTION_MODE } from '@/types/app.types';
+import useInspection from '@/panel/hooks/useInspection';
+import { useShallow } from 'zustand/react/shallow';
 
 //TODO : Apply SCSS for css.
 
@@ -26,13 +30,17 @@ const DetectPage: React.FC = () => {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentDeckId, setCurrentDetected, setCurrentDeckId} = useGlobalVarStore();
-  const {drafts, getDraft,setDrafts, getScanRules} = useScanRule();
-  const scanRules = getScanRules();
-  
+  const {drafts,scanRules, setDrafts} = useScanRule(
+    useShallow((state)=>({
+    drafts: state.drafts,
+    scanRules: state.scanRules,
+    setDrafts: state.setDrafts
+    }))
+  );
   const {t} = useTranslation('page', {keyPrefix: 'detectPage'});  
   const {t:tError} = useTranslation('error');
   const {t:tCommon} = useTranslation('common');
-
+  const {isInspectionMode,cancleInspectionMode}= useInspection();
   const requestExtracteds = async () => {
     if (isPending) return;
     setIsPending(true);
@@ -153,7 +161,7 @@ const DetectPage: React.FC = () => {
       <div className={detectPageStyle.draftsWrapper}>
         {drafts && Object.keys(drafts).length > 0 ? (
           Object.keys(drafts).map((key) => { 
-            const note = getDraft(key);
+            const note = drafts[key];
             if (!note) return null;
             return (
               <DetectedDraft 
@@ -169,6 +177,7 @@ const DetectPage: React.FC = () => {
           <div className={detectPageStyle.noDrfat}>{t("noDraftDetected")}</div>
         )}
       </div>
+      {isInspectionMode && <InspectionOverlay mode={INSPECTION_MODE.FIELD_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
     </div>
   );
 };

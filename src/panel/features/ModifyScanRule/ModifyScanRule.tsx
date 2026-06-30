@@ -26,8 +26,8 @@ const ModifyScanRule = () => {
   const { index } = useParams();
   const isEditMode = index !== undefined;
   const idx = isEditMode ? index : undefined;
-  const { addScanRule, getScanRule, modifyScanRule } = useScanRules();
-  const currentScanRule = isEditMode && idx !== undefined ? (getScanRule(idx)??emptyScanRule) : emptyScanRule;
+  const { addScanRule, modifyScanRule, scanRules } = useScanRules();
+  const currentScanRule = isEditMode && idx !== undefined ? (scanRules[idx]??emptyScanRule) : emptyScanRule;
   const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule'});
   const tabs = ["meta", "common", "fields"] as ("meta" | "common" | "fields")[];
   const [activeTab, setActiveTab] = useState(tabs[0]);
@@ -59,6 +59,8 @@ const ModifyScanRule = () => {
     setScanRuleData(updatedData);
   };
   const handleSave = () => {
+    console.log(isEditMode && idx !== undefined);
+    console.log(scanRuleData);
     const code = isEditMode && idx !== undefined ? 
     modifyScanRule(idx, scanRuleData) :
     addScanRule(scanRuleData);

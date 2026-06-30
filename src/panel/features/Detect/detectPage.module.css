@@ -73,7 +73,7 @@
   cursor: pointer;
 }
 
-.detectedDraftContainer .editing {
+.detectedDraftContainer.editing {
   border-color: var(--color-warning);
 }
 
@@ -101,6 +101,7 @@
 
 .fieldInput {
   width: 100%;
+  text-align: start;
 }
 
 .fieldLabel{
@@ -128,6 +129,17 @@
   padding: 6px;
   border-radius: 6px;
   transition: background-color 0.2s;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: 6px;
+  margin: 3px;
+}
+.button img {
+  width: 90%;
+  cursor: pointer;
 }
 .addCardButton:hover {
   background-color: var(--color-primary);

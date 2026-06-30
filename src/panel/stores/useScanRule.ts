@@ -4,23 +4,20 @@ import i18next from 'i18next';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// TODO: Make hooks for only exposing getter and setter functions
+// ~~TODO: Make hooks for only exposing getter and setter functions~~
+// TODO : no! the above was silly idea, delete getters later. 
 interface ScanRuleState {
   scanRules: {[scanRuleId:string]:ScanRule};
-  getScanRules: () => ScanRule[];
-  getScanRule: (scanRuleId:string)=>ScanRule | null;
   addScanRule: (scanRule: ScanRule) => ErrorMessage;
   removeScanRule: (name: string) => void;
   modifyScanRule: (name: string, scanRule: ScanRule) => ErrorMessage;
   drafts: { [idx: string]: Draft };
   getDrafts: () => Draft[];
-  getDraft: (idx: string) => Draft | null;
   addDraft: (idx: string, note: Draft) => void;
   removeDraft: (idx: string) => void;
   updateDraft: (idx: string, updates: { [key: string]: unknown }) => void;
   setDrafts: (newDrafts: { [idx: string]: Draft }) => void;
   tags: { [name: string]: Tag };
-  getTag: (name: string) => Tag | null;
   addTag: (name: string, color: string) => void;
   removeTag: (name: string) => void;
   updateTag: (name: string, color: string) => void;
@@ -68,11 +65,6 @@ const useScanRule = create<ScanRuleState>()(
   persist(
     (set, get) => ({
       scanRules: {},
-      getScanRules: () => Object.values(get().scanRules),
-      getScanRule: (id: string) => {
-        const scanRule = get().scanRules[id];
-        return scanRule ? scanRule : null;
-      },
       addScanRule: (scanRule: ScanRule) => {
         const code = isScanRuleVaild(scanRule, get().scanRules);
         if (code.result === 'success')
@@ -117,10 +109,6 @@ const useScanRule = create<ScanRuleState>()(
       },
       drafts: {},
       getDrafts: () => Object.values(get().drafts),
-      getDraft: (idx) => {
-        const draft = get().drafts[idx];
-        return draft ? draft : null;
-      },
       addDraft: (idx, note) => {
         set((state) => ({
           drafts: { ...state.drafts, [idx]: note },
@@ -150,10 +138,6 @@ const useScanRule = create<ScanRuleState>()(
         }));
       },
       tags: {},
-      getTag: (name) => {
-        const tag = get().tags[name];
-        return tag ? tag : null;
-      },
       addTag: (name, color) => {
         set((state) => ({
           tags: { ...state.tags, [name]: { name, color } },
