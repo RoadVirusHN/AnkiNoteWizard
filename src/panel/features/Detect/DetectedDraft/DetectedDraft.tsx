@@ -3,14 +3,13 @@ import detectPageStyle from "@/panel/features/Detect/detectPage.module.css";
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import { Draft, FieldData, ScanRule } from "@/types/scanRule.types";
 import FieldScanInput from "./FieldScanInput";
-import React, { MouseEvent, useState } from "react";
+import { MouseEvent, useState } from "react";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import ResetIcon from "@/public/Icon/Icon-Reset.svg";
 import DelIcon from "@/public/Icon/Icon-Dump.svg";
 import { useTranslation } from "react-i18next";
 import useInspection from "@/panel/hooks/useInspection";
-import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import Tags from "@/panel/components/Tags/Tags";
 import { useShallow } from "zustand/react/shallow";
 
@@ -36,9 +35,6 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
   const [isChanged, setIsChanged] = useState(false);
   const {enterInspectionMode,isInspectionMode} = useInspection();
   const onClick = (e:MouseEvent)=>{
-    console.log('draft:', drafts[idx]);
-    console.log('currentDraft:', currentDraft);
-    console.log('note:', note);
     if (isEditing){
       onReset(e);
     }
@@ -75,8 +71,6 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
           return <FieldScanInput key={idx} field={item} isEditing={isEditing} setCurrentField={(newField:FieldData)=>{
             const newFields = [...currentDraft.fields,];
             newFields[idx] = newField;
-            console.log('newField', newField);
-            console.log(newFields);
             setCurrentDraft({...currentDraft, fields: newFields});
             setIsChanged(true);
           }}/>
@@ -99,9 +93,6 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
               tagIds: currentDraft.tagIds
             }
           );
-          console.log('draft:', drafts[idx]);
-          console.log('currentDraft:', currentDraft);
-          console.log('note:', note);
           setIsEditing(false);
         }}/>
         {isChanged &&

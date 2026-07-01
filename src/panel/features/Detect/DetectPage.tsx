@@ -44,7 +44,6 @@ const DetectPage: React.FC = () => {
   const requestExtracteds = async () => {
     if (isPending) return;
     setIsPending(true);
-    console.log('requestExtracteds');
     chrome.runtime.sendMessage({
       type: MESSAGE_TYPE.REQUEST_DETECTED_DRAFTS_FROM_PANEL,
       data: scanRules,
@@ -63,7 +62,6 @@ const DetectPage: React.FC = () => {
         let cnt = 0;
         let tempDrafts= {} as {[key:string]:Draft};
         setIsPending(false);
-        console.log('em', em);
         Object.keys(em).map((key)=>{
           console.log('key', key);
           const numberKey = Number(key);
@@ -73,7 +71,6 @@ const DetectPage: React.FC = () => {
             tempDrafts[id] = (getNote(scanRules[numberKey],extracted));
           });
         });
-        console.log(tempDrafts);
         setCurrentDetected(cnt);
         setDrafts(tempDrafts);
     });

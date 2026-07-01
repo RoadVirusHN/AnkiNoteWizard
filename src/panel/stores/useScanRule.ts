@@ -4,10 +4,8 @@ import i18next from 'i18next';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// ~~TODO: Make hooks for only exposing getter and setter functions~~
-// TODO : no! the above was silly idea, delete getters later. 
 interface ScanRuleState {
-  scanRules: {[scanRuleId:string]:ScanRule};
+  scanRules: { [scanRuleId: string]: ScanRule };
   addScanRule: (scanRule: ScanRule) => ErrorMessage;
   removeScanRule: (name: string) => void;
   modifyScanRule: (name: string, scanRule: ScanRule) => ErrorMessage;
@@ -23,18 +21,22 @@ interface ScanRuleState {
   updateTag: (name: string, color: string) => void;
 }
 
-const isScanRuleVaild: (scanRule: ScanRule, curScanRules: {[scanRuleName:string]:ScanRule}) => ErrorMessage = (
-  scanRule: ScanRule,
-  curScanRules: {[scanRuleName:string]:ScanRule}
+const isScanRuleVaild: (
+  targetScanRle: ScanRule,
+  curScanRules: { [scanRuleName: string]: ScanRule },
+  options?: { isModifying?: boolean }
+) => ErrorMessage = (
+  targetScanRule: ScanRule,
+  curScanRules: { [scanRuleName: string]: ScanRule },
+  options: { isModifying?: boolean } = {}
 ) => {
-
-  if (!scanRule.scanRuleName || scanRule.scanRuleName.trim() === '') {
+  if (!targetScanRule.scanRuleName || targetScanRule.scanRuleName.trim() === '') {
     return {
       result: 'error',
       error: i18next.t('error:scanRule.invallidScanRuleName.statusText'),
     };
   }
-  if (curScanRules.hasOwnProperty(scanRule.scanRuleName)) {
+  if (!options.isModifying && curScanRules.hasOwnProperty(targetScanRule.scanRuleName)) {
     return {
       result: 'error',
       error: i18next.t('error:scanRule.duplicateScanRuleName.statusText'),
@@ -43,13 +45,13 @@ const isScanRuleVaild: (scanRule: ScanRule, curScanRules: {[scanRuleName:string]
   // if (!scanRule.meta.author || scanRule.meta.author.trim() === '') {
   //   return SCAN_RULE_CODE.INVALID_AUTHOR_NAME;
   // }
-  if (!scanRule.modelId || scanRule.modelId=== EMPTY_MODEL.id) {
+  if (!targetScanRule.modelId || targetScanRule.modelId === EMPTY_MODEL.id) {
     return {
       result: 'error',
       error: i18next.t('error:scanRule.invalidModel.statusText'),
     };
   }
-  if (!scanRule.rootTagSelector || scanRule.rootTagSelector.trim() === '') {
+  if (!targetScanRule.rootTagSelector || targetScanRule.rootTagSelector.trim() === '') {
     return {
       result: 'error',
       error: i18next.t('error:scanRule.invalidRootTag.statusText'),
@@ -68,7 +70,9 @@ const useScanRule = create<ScanRuleState>()(
       addScanRule: (scanRule: ScanRule) => {
         const code = isScanRuleVaild(scanRule, get().scanRules);
         if (code.result === 'success')
-          set((state) => ({ scanRules: { ...state.scanRules, [scanRule.scanRuleName]: scanRule } }));
+          set((state) => ({
+            scanRules: { ...state.scanRules, [scanRule.scanRuleName]: scanRule },
+          }));
         return code;
       },
       removeScanRule: (id: string) => {
@@ -89,13 +93,21 @@ const useScanRule = create<ScanRuleState>()(
         });
       },
       modifyScanRule: (name: string, scanRule: ScanRule) => {
-        const res = isScanRuleVaild(scanRule, get().scanRules);
+        const res = isScanRuleVaild(scanRule, get().scanRules, { isModifying: true });
         if (res.result === 'error') {
           return res;
         }
 
-        if (get().scanRules.hasOwnProperty(scanRule.scanRuleName)) {
-          set((state) => ({scanRules: { ...state.scanRules, [name]: scanRule }}));
+        if (get().scanRules.hasOwnProperty(name)) {
+          get().removeScanRule(name);
+          get().addScanRule(scanRule);
+          const drafts = get().drafts;
+          Object.keys(drafts).forEach((draftKey) => {
+            const draft = drafts[draftKey];
+            if (draft.scanRuleId === name) {
+              get().updateDraft(draftKey, { scanRuleId: scanRule.scanRuleName });
+            }
+          });
           return {
             result: 'success',
             error: null,

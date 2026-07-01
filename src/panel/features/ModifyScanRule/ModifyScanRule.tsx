@@ -77,7 +77,6 @@ const ModifyScanRule = () => {
     setIsChanged(false);
   };
   const isDisabled = Object.keys(models).length===0||!scanRuleData.fields || Object.keys(scanRuleData.fields).length === 0;
-  console.log(scanRuleData, isDisabled);
 
 return (
     <div className={modifyScanRuleStyle.container}>
