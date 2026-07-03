@@ -3,7 +3,7 @@ import detectPageStyle from "@/panel/features/Detect/detectPage.module.css";
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import { Draft, FieldData, ScanRule } from "@/types/scanRule.types";
 import FieldScanInput from "./FieldScanInput";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import ResetIcon from "@/public/Icon/Icon-Reset.svg";
@@ -45,6 +45,9 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
     setCurrentDraft(note);
     setIsChanged(false);
   };
+  useEffect(() => {
+    setCurrentDraft(note);
+  }, [note]);
   return (  
   <article className={`${detectPageStyle.detectedDraftContainer}` + (isEditing? ` ${detectPageStyle.editing}` : '')} onClick={onClick}>
     {

@@ -1,10 +1,11 @@
 import styles from "../modifyScanRule.module.css";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
+import AddIcon from "@/public/Icon/Icon-Add.svg";
+import CancleIcon from "@/public/Icon/Icon-Dump.svg";
 import InspectionOverlay from "@/panel/components/InspectionOverlay/InspectionOverlay";
 import useInspection from "@/panel/hooks/useInspection";
 import { ScanRule, FieldProperties, FieldDataType, FIELD_DATA_TYPES, SELECTOR_TYPES } from "@/types/scanRule.types";
 import { INSPECTION_MODE } from "@/types/app.types";
-import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -36,9 +37,9 @@ const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
       </div>
       
       <div className={styles.fieldsList}>
-        {/*TODO : warn or make this tab unaccessbile when no model selected*/}
         {Object.keys(scanRule.fields).map((item) => {
           const onResult = (sel:string) => {};
+          //TODO: componentize it.
           return (
             <div key={item} className={styles.fieldRow}>
               {/* Field Name */}
@@ -85,17 +86,17 @@ const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
                       ))
                     }
                     </select>
-                    <span title={t('removeFieldProp')} onClick={()=>{
+                    <img title={t('removeFieldProp')} src={CancleIcon} onClick={()=>{
                       const newFieldProps = scanRule.fields[item].filter((_, i)=>i!==idx);
                       handleFieldsChange(item, newFieldProps);
-                    }}>x</span>
+                    }}/>
                   </div>
                 ))
               } 
-              <SimpleButton title="Extract Field Css Selector" src={MagicIcon} onClick={()=>{
+              <img title="Extract Field Css Selector" src={MagicIcon} onClick={()=>{
                 enterInspectionMode(onResult);
               }}/> 
-              <SimpleButton title="Add Field Property" text={t('addFieldProp')} onClick={()=>{
+              <img title={t('addFieldProp')} src={AddIcon} onClick={()=>{
                 const newFieldProps = [...scanRule.fields[item], {content: '', selectorType: 'css', dataType: 'text'}] as FieldProperties[];
                 handleFieldsChange(item, newFieldProps);
               }}/>

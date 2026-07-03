@@ -1,5 +1,5 @@
 import detectPageStyle from '@/panel/features/Detect/detectPage.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DetectedDraft from './DetectedDraft/DetectedDraft';
 import DeckInput from '@/panel/components/Inputs/DeckInput/DeckInput';
 import AddIcon from '@/public/Icon/Icon-Add.svg';
@@ -17,6 +17,7 @@ import InspectionOverlay from '@/panel/components/InspectionOverlay/InspectionOv
 import { INSPECTION_MODE } from '@/types/app.types';
 import useInspection from '@/panel/hooks/useInspection';
 import { useShallow } from 'zustand/react/shallow';
+import { flushSync } from 'react-dom';
 
 //TODO : Apply SCSS for css.
 
@@ -32,11 +33,19 @@ const DetectPage: React.FC = () => {
   const {currentDeckId, setCurrentDetected, setCurrentDeckId} = useGlobalVarStore();
   const {drafts,scanRules, setDrafts} = useScanRule(
     useShallow((state)=>({
-    drafts: state.drafts,
-    scanRules: state.scanRules,
-    setDrafts: state.setDrafts
+      drafts: state.drafts,
+      scanRules: state.scanRules,
+      setDrafts: state.setDrafts
     }))
   );
+  const [curDrafts, setCurDrafts] = useState(drafts);
+  useEffect(()=>{
+    // TODO : drafts가 변경되도 화면 업데이트가 안되는 문제를 -> 이 코드가 drafts가 바뀔 때 list를 재랜더링해줘서 해결한 원리 연구하기
+    // - flushSync도 안통했음, background asnyc 문제도 아님, setTimeOut으로 느리게 업데이트도 안통했음.
+    // - drafts가 바뀌어도 curDrafts가 바뀌지 않아서 화면이 업데이트 안됨.(유일하게 {}= 빈칸으로 바뀔때만 됨)
+    // - 근데 왜 이놈은 되는가?
+    setCurDrafts(drafts);
+  },[drafts]);
   const {t} = useTranslation('page', {keyPrefix: 'detectPage'});  
   const {t:tError} = useTranslation('error');
   const {t:tCommon} = useTranslation('common');
@@ -44,9 +53,10 @@ const DetectPage: React.FC = () => {
   const requestExtracteds = async () => {
     if (isPending) return;
     setIsPending(true);
+    const scanRuleArray = Object.values(scanRules);
     chrome.runtime.sendMessage({
       type: MESSAGE_TYPE.REQUEST_DETECTED_DRAFTS_FROM_PANEL,
-      data: scanRules,
+      data: scanRuleArray,
     }, (response: Response) => {
         console.log("receive detected drafts", response);
         if (response.res==='error') {
@@ -61,19 +71,23 @@ const DetectPage: React.FC = () => {
         const em = response.response as ExtractedInfos;
         let cnt = 0;
         let tempDrafts= {} as {[key:string]:Draft};
-        setIsPending(false);
-        Object.keys(em).map((key)=>{
-          console.log('key', key);
+        Object.keys(em).forEach((key)=>{
           const numberKey = Number(key);
           const extractedInfos = em[numberKey];
+          
           extractedInfos.forEach((extracted, idx)=>{
             const id = key + "-" + idx;
-            tempDrafts[id] = (getNote(scanRules[numberKey],extracted));
+            tempDrafts[id] = getNote(scanRuleArray[numberKey], extracted);
+            cnt++;
           });
         });
+        
         setCurrentDetected(cnt);
         setDrafts(tempDrafts);
+        setCurDrafts(tempDrafts);
+        setIsPending(false);
     });
+
   };
 
   const checkAdd = (id:string)=>(val:boolean)=>{
@@ -156,9 +170,9 @@ const DetectPage: React.FC = () => {
       </div>
 
       <div className={detectPageStyle.draftsWrapper}>
-        {drafts && Object.keys(drafts).length > 0 ? (
-          Object.keys(drafts).map((key) => { 
-            const note = drafts[key];
+        {curDrafts && Object.keys(curDrafts).length > 0 ? (
+          Object.keys(curDrafts).map((key) => { 
+            const note = curDrafts[key];
             if (!note) return null;
             return (
               <DetectedDraft 

@@ -27,30 +27,32 @@ export const getCurrentTabId = async () => {
   return tab.id;
 };
 
-export const sendAsyncMessage = async <T>(
+export const sendAsyncMessage = <T>(
   message: T,
   sendResponse: (response?: Response) => void
 ) => {
-  try {
-    const tabId = await getCurrentTabId();
-    console.log('tabId:', tabId);
+  // 프로미스 처리는 내부에서 .then() 스케줄러로 처리하여 외부 런타임을 방해하지 않음
+  getCurrentTabId()
+    .then((tabId) => {
+      console.log('tabId:', tabId);
 
-    if (tabId === undefined) {
-      sendResponse({ res:'error',error: 'No Active tab found',response:null });
-      return;
-    }
-    chrome.tabs.sendMessage(tabId, message, (response : Response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Content Script Error:', chrome.runtime.lastError.message);
-        sendResponse({ res:'error', error: chrome.runtime.lastError.message??null, response: null });
-      } else {
-        console.log('Response from content script (Valid):', response);
-        sendResponse({res:'ok', error:null, response: response.response});
+      if (tabId === undefined) {
+        sendResponse({ res: 'error', error: 'No Active tab found', response: null });
+        return;
       }
+
+      chrome.tabs.sendMessage(tabId, message, (response: Response) => {
+        if (chrome.runtime.lastError) {
+          console.error('Content Script Error:', chrome.runtime.lastError.message);
+          sendResponse({ res: 'error', error: chrome.runtime.lastError.message ?? null, response: null });
+        } else {
+          console.log('Response from content script (Valid):', response);
+          sendResponse(response); // 💡 이제 정상적으로 살아있는 패널의 원래 콜백 컨텍스트로 전달됩니다.
+        }
+      });
+    })
+    .catch((error) => {
+      console.error('Background Error:', error);
+      sendResponse({ res: 'error', error: 'Background script error', response: null });
     });
-  } catch (error) {
-    console.error('Background Error:', error);
-    sendResponse({ res:'error', error: 'Background script error', response:null });
-    
-  }
 };

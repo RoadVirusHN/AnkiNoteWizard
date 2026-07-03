@@ -89,9 +89,7 @@ const extractFields = (root: Element, field: FieldProperties[]) => {
 
 export const getExtractedFromPage = (scanRules: ScanRule[]) => {
   const res: ExtractedInfos = {};
-  console.log(scanRules);
   scanRules.forEach((scanRule, idx) => {
-    console.log(scanRule, idx);
     res[idx] = [];
     console.log("url Matching: ",scanRule.urlPattern,checkUrlMatched(scanRule.urlPattern));
     if (checkUrlMatched(scanRule.urlPattern)) {

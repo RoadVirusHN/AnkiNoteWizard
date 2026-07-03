@@ -10,10 +10,10 @@ export interface MenuItem {
   onMouseLeave?: (e:React.MouseEvent) => void;
   disable?: boolean;
 }
+//TODO: Menu component should be rendered inside of the webpage, sometimes, it clipped at the border of the viewport.
 const Menu = () => {
   const {menu} = useContentUI();
   const menuRef = useRef<HTMLDivElement>(null);
-  // console.log("menu rendered with items:", menu.items);
   const handleClickOutside= (e:MouseEvent)=>{
     console.log("handleClickOutside called with target:", e.target);
     if(!e.target || !(e.target instanceof HTMLElement)) return;
