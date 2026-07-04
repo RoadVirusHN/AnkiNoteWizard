@@ -19,6 +19,6 @@ body > .root {
   flex: 1;
   position: relative;
   overflow-y: auto;
-  padding-top: 8px;
+  padding-top: 5px;
   min-height: 0;
 }

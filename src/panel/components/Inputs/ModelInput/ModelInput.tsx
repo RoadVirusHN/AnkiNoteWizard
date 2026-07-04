@@ -3,7 +3,6 @@ import { useState } from "react";
 import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
 const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (modelId:string)=>void, defaultModelId: string, errorMessages: string[]}) => {
-  // make sure use models directly instead of getModels, because getModels does not trigger re-render when models change
   const {models} = useAnkiConnectionStore();
   const [curVal, setCurVal] = useState(defaultModelId || (Object.keys(models).length>0? Object.keys(models)[0]: '-1'));
   const onChangeModel = (modelId:string) => {

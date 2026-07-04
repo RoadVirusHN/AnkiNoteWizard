@@ -21,7 +21,6 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
 
   const rootTagInputRef = useRef<HTMLInputElement>(null);
   const {t} = useTranslation('page', {keyPrefix: 'modifyScanRule.scanRuleCommonEditor'});
-  const {t:tCommon} = useTranslation('common');
   const onResult = (text: string)=>{
     setData({ ...scanRule, rootTagSelector: text });
     if (rootTagInputRef.current){

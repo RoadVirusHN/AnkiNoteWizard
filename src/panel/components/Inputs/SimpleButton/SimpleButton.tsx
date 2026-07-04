@@ -9,7 +9,7 @@ const SimpleButton = ({text, src, className, children, ...props}:ButtonProps) =>
   return (<button 
     className={`${simpleButtonStyles['simple-btn']} ${className||''}`} 
     {...props}>
-    {src && <Icon url={src}/>} {text} {children}
+    {src && <div><Icon url={src}/></div>} {text} {children}
   </button>);
 };  
 export default SimpleButton;

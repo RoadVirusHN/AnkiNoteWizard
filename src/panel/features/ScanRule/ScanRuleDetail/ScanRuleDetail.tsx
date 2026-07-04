@@ -13,8 +13,8 @@ const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: strin
   // TODO : Configurable elipsis for title and description by font size.
   const {t} = useTranslation('page',{keyPrefix: 'scanRulesPage'});
   const {t:tCommon} = useTranslation('common'); 
-  const {models, getModel} = useAnkiConnectionStore();
-  const isContainModel = getModel(scanRule.modelId)!==null;
+  const {models} = useAnkiConnectionStore();
+  const isContainModel = models[scanRule.modelId]!==null;
   return (<div className={scanRuleDetailStyle.scanRule}>
     <div className={scanRuleDetailStyle.main}>
       <div className={scanRuleDetailStyle.meta}>
@@ -31,9 +31,8 @@ const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: strin
       <div className={scanRuleDetailStyle.info}>
         {isContainModel ? 
           <p>Model: {models[scanRule.modelId].name.slice(0,30)}{scanRule.modelId.length>30? "...":""}</p>:
-          <p style={{color:'var(--color-danger)'}}
-            title={tCommon('checkAnkiConnection')}
-          >{t('noSuchAModel|model|', {model: scanRule.modelId})}</p>
+          <p style={{color:'var(--color-danger)'}} title={tCommon('checkAnkiConnection')}>
+            {t('noSuchAModel|model|', {model: scanRule.modelId})}</p>
         }
         <Tags givenTagIds={scanRule.tagIds.slice(0,4)} />
       </div>

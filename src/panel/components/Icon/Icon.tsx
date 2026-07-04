@@ -10,8 +10,8 @@ const Icon = ({url, handleClick, className, style, ...props}:Props) => {
   return <div
     className={className}
     style={{
-      width: '24px',
-      height: '24px',
+      width: '21px',
+      height: '21px',
       backgroundColor: 'var(--color-primary)',
       WebkitMaskImage: `url(${url})`,
       maskImage: `url(${url})`,

@@ -75,7 +75,7 @@ export const EMPTY_MODEL = {
 } satisfies Model;
 
 export const EMPTY_DECK = {
-  name: i18next.t('common:no|word|Selected', { word: i18next.t('common:deck') }),
+  name: ''
 } satisfies Deck;
 export const EMPTY_SCAN_RULE = {
   scanRuleName: '',

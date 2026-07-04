@@ -6,7 +6,7 @@ import { withErrorBoundary } from 'react-error-boundary';
 import ErrorPage from '../Error/ErrorPage';
 
 const Main = () => {
- 
+  // TODO : 맙소사, 각 페이지별 Padding 통일하기
   return (
     <div className={mainStyle.main}>
       <PathUpdater/>
