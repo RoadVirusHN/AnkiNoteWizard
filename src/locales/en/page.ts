@@ -18,6 +18,7 @@ export default {
     addNoteSuccess: 'Note added successfully.',
     addNoteFail: 'Failed to add note :',
     changeModelFieldWarning: 'Changing the model will reset the currently entered fields. Do you want to continue?',
+    changeScanRuleWarning: 'Changing the scanRule will reset the currently entered data(tags, model, fields etc...). Do you want to continue?',
     fieldsLabel: 'Fields',
     tagsLabel: 'Tags',
   },

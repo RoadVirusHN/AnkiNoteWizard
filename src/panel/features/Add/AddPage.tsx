@@ -20,12 +20,13 @@ import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
 import { isNoteValid, processMediaInHtml } from "@/panel/utils/functions";
 import FieldInput from "@/panel/components/Inputs/FieldInput/FieldInput";
+import useScanRule from "@/panel/stores/useScanRule";
 
 
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();
-  const {currentAddingDraft: currentAddingNote, setCurrentAddingDraft: setCurrentAddingNote} = useGlobalVarStore();
-  const [curNote, setCurNote] = useState(currentAddingNote);
+  const {currentAddingDraft, setCurrentAddingDraft} = useGlobalVarStore();
+  const [curNote, setCurNote] = useState(currentAddingDraft);
   const [isChanged, setIsChanged] = useState(false);
   const [isModifying, setIsModifying] = useState(true);
   const [errorMessages, setErrorMessages] = useState<{[key:string]:string[]}>({
@@ -33,6 +34,7 @@ const AddPage = ({}) => {
     model: [],
   });
   const {models} = useAnkiConnectionStore();  
+  const {scanRules} = useScanRule();
   const {t} = useTranslation('page',{keyPrefix: 'addPage'});
   const {t:tCommon} = useTranslation('common');
   const {t:tError} = useTranslation('error',{keyPrefix: 'addNote'});
@@ -44,11 +46,11 @@ const AddPage = ({}) => {
         <div className={addPageStyle.modBtns} style={{visibility: isChanged ? "visible" : "hidden"}}>
           <Icon url={CancleIcon} handleClick={()=>{
             setIsChanged(false);
-            setCurNote(currentAddingNote);
+            setCurNote(currentAddingDraft);
           }} style={{'cursor': 'pointer', margin: '5px'}}/>
           <Icon url={SaveIcon} handleClick={()=>{
             setIsChanged(false);
-            setCurrentAddingNote(curNote);
+            setCurrentAddingDraft(curNote);
           }} style={{'cursor': 'pointer', margin: '5px'}}/>
         </div>
       </div>
@@ -57,12 +59,16 @@ const AddPage = ({}) => {
       {<section className={addPageStyle.content}>
         {isInspectionMode ?? <InspectionOverlay mode={INSPECTION_MODE.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
         <div className={addPageStyle.formGroup}>
-          {/* TODO: fix style changing when error message popup. */}
           <DeckInput label={tCommon('deck')} onChange={(e)=>{setCurNote({...curNote, deckId: e.target.value}); setIsChanged(true);}} initDeckId={curNote.deckId}
             errorMessages={errorMessages.deck}/>
         </div>
+        {/* TODO: WTF DO I need this? */}
         <ScanRuleInput defaultScanRule={curNote.scanRuleId? curNote.scanRuleId : ''} setScanRule={(scanRuleName:string)=>{
           setCurNote({...curNote, scanRuleId: scanRuleName});
+          const scanRule = scanRules[scanRuleName];
+          if (scanRule&& confirm(t('changeScanRuleWarning'))){
+            setCurNote({...curNote, modelId: scanRule.modelId, fields: Object.keys(scanRule.fields).map((fieldName:string)=>({key: fieldName, content: ''})), tagIds: scanRule.tagIds});
+          }
           setIsChanged(true);
         }}/>
         <ModelInput defaultModelId={curNote.modelId} setModelId={(id:string)=>{
@@ -136,7 +142,7 @@ const AddPage = ({}) => {
           //TODO : AnkiConnect Media Actions 연구 및 적용. 현재는 media 필드도 그냥 note의 field로 보내고 있음.
           await fetchAnki(req).then((res)=>{
             setIsChanged(false);
-            setCurNote(currentAddingNote);
+            setCurNote(currentAddingDraft);
             alert(res.error ? tCommon('error')+`: ${res.error}` : t('addNoteSuccess'));
             });
           }}

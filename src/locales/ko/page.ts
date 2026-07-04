@@ -20,6 +20,7 @@ export default {
     addNoteSuccess: '노트가 성공적으로 추가되었습니다.',
     addNoteFail: '노트 추가 실패 :',
     changeModelFieldWarning: '모델을 변경하면 현재 입력한 요소가 초기화됩니다. 계속하시겠습니까?',  
+    changeScanRuleWarning: '스캔 규칙을 변경하면 현재 입력한 데이터(태그, 모델, 요소 등)가 초기화됩니다. 계속하시겠습니까?',
     fieldsLabel: '필드',
     tagsLabel: '태그',
   },
