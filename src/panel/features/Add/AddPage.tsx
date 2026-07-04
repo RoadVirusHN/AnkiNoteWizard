@@ -1,5 +1,3 @@
-import PreviewIcon from "@/public/Icon/Icon-Preview.svg";
-import DecksIcon from "@/public/Icon/Icon-Decks.svg";
 import AddIcon from "@/public/Icon/Icon-Add.svg";
 import CancleIcon from "@/public/Icon/Icon-Reset.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
@@ -22,8 +20,7 @@ import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
 import { isNoteValid, processMediaInHtml } from "@/panel/utils/functions";
 import FieldInput from "@/panel/components/Inputs/FieldInput/FieldInput";
-import useScanRule from "@/panel/stores/useScanRule";
-import { Model } from "@/types/scanRule.types";
+
 
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();

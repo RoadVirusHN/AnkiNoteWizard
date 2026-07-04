@@ -4,10 +4,10 @@ import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
 const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (modelId:string)=>void, defaultModelId: string, errorMessages: string[]}) => {
   // make sure use models directly instead of getModels, because getModels does not trigger re-render when models change
-  const {models, getModel} = useAnkiConnectionStore();
+  const {models} = useAnkiConnectionStore();
   const [curVal, setCurVal] = useState(defaultModelId || (Object.keys(models).length>0? Object.keys(models)[0]: '-1'));
   const onChangeModel = (modelId:string) => {
-    if (!modelId||!getModel(modelId)||Object.keys(models).length===0) return;
+    if (!modelId||!models[modelId]||Object.keys(models).length===0) return;
     setModelId(modelId);
   }
   const {t} = useTranslation('common');
@@ -22,7 +22,7 @@ const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (mo
       options={
         Object.keys(models).length === 0 ? [{key:t('checkAnkiConnection'), val:'', isDisabled: false}] :
         [...Object.keys(models).map((key) => {
-          const model = getModel(key);
+          const model = models[key];
           if (!model) return {key: t('checkAnkiConnection'), val:'', isDisabled: true};
           return {key: model.name, val: model.id};
         })]

@@ -1,9 +1,7 @@
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
 import { ChangeEvent, JSX } from "react";
-import deckIcon from '@/public/Icon/Icon-Decks.svg';
 import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
-import Icon from "../../Icon/Icon";
 
 const DeckInput = ({initDeckId,onChange,label, errorMessages}:{initDeckId? : string, onChange : (e:ChangeEvent<HTMLSelectElement>)=>void, label?:string|JSX.Element, errorMessages: string[]}) => {
   const {decks} = useAnkiConnectionStore();

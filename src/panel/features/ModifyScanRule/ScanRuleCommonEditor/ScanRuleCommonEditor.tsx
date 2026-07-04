@@ -28,12 +28,12 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
       rootTagInputRef.current.value = text;
     };
   }
-  const {getModel} = useAnkiConnectionStore();
+  const {models} = useAnkiConnectionStore();
   const {enterInspectionMode, cancleInspectionMode, isInspectionMode} = useInspection(INSPECTION_MODE.TAG_EXTRACTION, scanRule.rootTagSelector );
   
   const setModelId = (id: string) => {
     let newFields = {} as { [fieldName: string]: FieldProperties[] };
-    getModel(id)?.fields.map((field: string) => {
+    models[id]?.fields.forEach((field: string) => {
       newFields[field] = [{ content: field, dataType: "text", selectorType: "literal" }] as FieldProperties[];
     });
     setData({ ...scanRule, modelId: id, fields: newFields });

@@ -1,4 +1,4 @@
-import { EMPTY_MODEL, FetchAnkiRequestBody } from '@/types/app.types';
+import { FetchAnkiRequestBody } from '@/types/app.types';
 import { Deck, Model } from '@/types/scanRule.types';
 import { create } from 'zustand';
 
@@ -10,11 +10,7 @@ interface AnkiConnectionState {
   isConnected: boolean;
   isPending: boolean;
   decks: { [deckIds: string]: Deck };
-  getDeck: (deckId: string) => Deck | null;
-  getDecks: () => Deck[];
   models: { [modelIds: string]: Model };
-  getModel: (modelId: string) => Model | null;
-  getModels: () => Model[];
   ankiUrl: string;
   setAnkiUrl: (url: string) => void;
   checkConnection: () => Promise<void>;
@@ -41,18 +37,7 @@ const useAnkiConnectionStore = create<AnkiConnectionState>((set, get) => ({
   isConnected: false,
   isPending: false,
   decks: {},
-  getDeck: (deckId: string) => {
-    const deck = get().decks[deckId];
-    return deck ? deck : null;
-  },
-  getDecks: () => Object.values(get().decks),
   models: {},
-  getModel: (modelId: string) => {
-    if (modelId === '-1') return EMPTY_MODEL;
-    const model = get().models[modelId];
-    return model ? model : null;
-  },
-  getModels: () => Object.values(get().models),
   ankiUrl: 'http://127.0.0.1:8765',
   setAnkiUrl: (url: string) => set({ ankiUrl: url }),
   checkConnection: async () => {
@@ -75,6 +60,7 @@ const useAnkiConnectionStore = create<AnkiConnectionState>((set, get) => ({
 
     const newDecks: { [deckIds: string]: Deck } = {};
     res.result?.forEach((deckName) => {
+      if (deckName === 'Default') return;
       newDecks[deckName] = { name: deckName };
     });
     set({ isPending: false, isConnected: !res.error, decks: res.result ? newDecks : {} });
