@@ -31,5 +31,19 @@ export default {
   },
   fieldScanInput: {
     containedTooManyEmptyWarn: '이 요소는 빈 문자가 많아 생성 결과가 다르게 보일 수 있습니다.'
-  }
+  },
+  fieldPropInput: {
+    content: '내용',
+    cssSelector: 'CSS 선택자',
+    removeFieldProp: '이 필드 속성 삭제',
+    addFieldProp: '새 필드 속성 추가',
+    extractContent: '내용 추출',
+    text: '텍스트',
+    image: '이미지',
+    audio: '소리',
+    video: '영상',
+    html: 'HTML',
+    CSS: 'CSS',
+    LITERAL: '문자열',
+  },
 } satisfies typeof components;

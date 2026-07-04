@@ -1,12 +1,12 @@
 export default {
-  tabs:{
+  tabs: {
     detect: 'Detect',
     add: 'Add',
     scanRules: 'ScanRules',
     config: 'Config',
     connecting: 'Connecting...',
     refresh: 'Refresh?',
-    ankiDisconnected: 'Anki Disconnected'
+    ankiDisconnected: 'Anki Disconnected',
   },
   inspectionOverlay: {
     textModeTitle: 'Text Extraction Mode',
@@ -25,9 +25,25 @@ export default {
     removedCodeWarning: 'Some elements(scripts,tags) were removed for security reasons.',
   },
   fieldInput: {
-    fieldContentPlaceholder: 'Enter content for this field. You can also paste or drag media files (images, audio, video) directly into this area.',
+    fieldContentPlaceholder:
+      'Enter content for this field. You can also paste or drag media files (images, audio, video) directly into this area.',
   },
   fieldScanInput: {
-    containedTooManyEmptyWarn: 'This Field contains many Empty which can cause incorrect note generation.'
-  }
+    containedTooManyEmptyWarn:
+      'This Field contains many Empty which can cause incorrect note generation.',
+  },
+  fieldPropInput: {
+    content: 'Content',
+    cssSelector: 'CSS Selector',
+    removeFieldProp: 'Remove this property',
+    addFieldProp: 'Add new property',
+    extractContent: 'Extract Content',
+    text: 'Text',
+    image: 'Image',
+    audio: 'Audio',
+    video: 'Video',
+    html: 'HTML',
+    CSS: 'CSS',
+    LITERAL: 'Literal',
+  },
 };

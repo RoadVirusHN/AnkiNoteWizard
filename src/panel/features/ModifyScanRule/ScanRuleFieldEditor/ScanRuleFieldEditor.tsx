@@ -1,12 +1,11 @@
 import styles from "../modifyScanRule.module.css";
-import MagicIcon from "@/public/Icon/Icon-Magic.svg";
-import AddIcon from "@/public/Icon/Icon-Add.svg";
-import CancleIcon from "@/public/Icon/Icon-Dump.svg";
+
 import InspectionOverlay from "@/panel/components/InspectionOverlay/InspectionOverlay";
 import useInspection from "@/panel/hooks/useInspection";
 import { ScanRule, FieldProperties, FieldDataType, FIELD_DATA_TYPES, SELECTOR_TYPES } from "@/types/scanRule.types";
 import { INSPECTION_MODE } from "@/types/app.types";
 import { useTranslation } from "react-i18next";
+import FieldPropInput from "./FieldPropInput/FieldPropInput";
 
 interface Props {
   scanRule: ScanRule;
@@ -15,7 +14,6 @@ interface Props {
 
 const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
   const {
-    enterInspectionMode,
     cancleInspectionMode,
     isInspectionMode
   } = useInspection(INSPECTION_MODE.FIELD_EXTRACTION, scanRule.rootTagSelector);
@@ -37,71 +35,13 @@ const ScanRuleFieldEditor = ({ scanRule, setData } : Props) => {
       </div>
       
       <div className={styles.fieldsList}>
-        {Object.keys(scanRule.fields).map((item) => {
-          const onResult = (sel:string) => {};
-          //TODO: componentize it.
-          return (
-            <div key={item} className={styles.fieldRow}>
-              {/* Field Name */}
-              <div>
-                <div className={styles.fieldName}>{item}</div>
-              </div>
-              {
-                scanRule.fields[item].map((fieldProp, idx)=>(
-                  <div className={styles.selectorWrapper}>
-                    <select 
-                      className={styles.fieldSelectorType}
-                      value={fieldProp.selectorType}
-                      onChange={(e) => {
-                        const newFieldProps = [...scanRule.fields[item]];
-                        newFieldProps[idx] = {...newFieldProps[idx], selectorType: e.target.value as FieldProperties['selectorType']} as FieldProperties;
-                        handleFieldsChange(item, newFieldProps);
-                      }}
-                    >
-                      {
-                        Object.keys(SELECTOR_TYPES).map(type=>(
-                          <option key={type} value={type}>{t(type as keyof typeof SELECTOR_TYPES)}</option>
-                        ))
-                      }
-                    </select>
-                    <input
-                      className={`${styles.input} ${styles.fieldPropContent}`}
-                      value={fieldProp.content}
-                      placeholder={fieldProp.selectorType==='literal'? t("content") : t("cssSelector")}
-                      onChange={(e) => {
-                        const newFieldProps = [...scanRule.fields[item]];
-                        newFieldProps[idx] = {...newFieldProps[idx], content: e.target.value} as FieldProperties;
-                        handleFieldsChange(item, newFieldProps);
-                      }}
-                    />
-                    {/* CSS Selector + Picker */}
-                    <select
-                      className={styles.select}
-                      value={fieldProp.dataType}
-                      onChange={(e) => handleFieldsChange(item, {...scanRule.fields[item] })}
-                    >
-                    {
-                      Object.keys(FIELD_DATA_TYPES).map(type=>(
-                        <option key={type} value={type}>{t((type).toLowerCase() as FieldDataType)}</option>
-                      ))
-                    }
-                    </select>
-                    <img title={t('removeFieldProp')} src={CancleIcon} onClick={()=>{
-                      const newFieldProps = scanRule.fields[item].filter((_, i)=>i!==idx);
-                      handleFieldsChange(item, newFieldProps);
-                    }}/>
-                  </div>
-                ))
-              } 
-              <img title="Extract Field Css Selector" src={MagicIcon} onClick={()=>{
-                enterInspectionMode(onResult);
-              }}/> 
-              <img title={t('addFieldProp')} src={AddIcon} onClick={()=>{
-                const newFieldProps = [...scanRule.fields[item], {content: '', selectorType: 'css', dataType: 'text'}] as FieldProperties[];
-                handleFieldsChange(item, newFieldProps);
-              }}/>
-            </div>
-          );
+        {Object.keys(scanRule.fields).map((key) => {
+          return <FieldPropInput 
+            key={key} 
+            fieldName={key}
+            scanRule={scanRule}
+            onChange={handleFieldsChange}
+          />;
         })}
       </div>
       {isInspectionMode && <InspectionOverlay mode={INSPECTION_MODE.FIELD_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
