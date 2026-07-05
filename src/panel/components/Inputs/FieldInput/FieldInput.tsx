@@ -23,7 +23,7 @@ const FieldInput = ({field,onChange}:{field:FieldData,onChange:ChangeEventHandle
   return <div className={fieldInputStyle.container}>
     <div className={fieldInputStyle.header}>
       <label htmlFor={key} className={fieldInputStyle.fieldName}>{key}</label>
-      <SimpleButton title="Extract Data" src={MagicIcon} onClick={()=>{enterInspectionMode();}}/> 
+      <img title="Extract Data" src={MagicIcon} onClick={()=>{enterInspectionMode();}}/> 
     </div>
     <textarea  
       id={key}

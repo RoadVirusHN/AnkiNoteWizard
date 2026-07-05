@@ -21,13 +21,14 @@ export const isNoteValid = (draft: Draft, model: Model, t: TFunction<"error", "a
     result: 'error',
     error: [] as string[],
   };
-  if (model === undefined || model.id === EMPTY_MODEL.id) {
+  console.log({ draft, model });
+  if (model === null || model === undefined || model.id === EMPTY_MODEL.id) {
     res.error.push(t('modelNotFoundError.code'));
   }
-  if (draft.modelId === '' || draft.modelId === null || draft.modelId === EMPTY_MODEL.id){
+  if (draft.modelId === '' || draft.modelId === null || draft.modelId===undefined || draft.modelId === EMPTY_MODEL.id){
     res.error.push(t('emptyModelError.code'));
   }
-  if (draft.deckId === '' || draft.deckId === null || draft.deckId === EMPTY_DECK.name){
+  if (draft.deckId === '' || draft.deckId === null || draft.deckId===undefined||draft.deckId === EMPTY_DECK.name){
     res.error.push(t('emptyDeckError.code'));
   }
   //check model fields == note fields

@@ -98,7 +98,6 @@ const AddPage = ({}) => {
               newFields[idx] = {...newFields[idx], content: e.target.value};
               setCurNote({...curNote, fields: newFields});
               setIsChanged(true);
-              console.log(e.target.value);
             }}/>)
           })
         }
@@ -136,7 +135,15 @@ const AddPage = ({}) => {
           const req = {
             action: 'addNote',
             params: {
-              note: curNote
+              note: {
+                deckName: curNote.deckId,
+                modelName: models[curNote.modelId].name,
+                fields: curNote.fields.reduce((acc, field) => {
+                  acc[field.key] = field.content;
+                  return acc;
+                }, {} as {[key:string]: string}),
+                tags: curNote.tagIds,
+              } 
             },
           };
           //TODO : AnkiConnect Media Actions 연구 및 적용. 현재는 media 필드도 그냥 note의 field로 보내고 있음.

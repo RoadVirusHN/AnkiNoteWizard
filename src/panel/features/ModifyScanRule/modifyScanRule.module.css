@@ -73,7 +73,9 @@
   flex-direction: column;
   gap: 12px;
 }
-
+.req {
+  color: var(--color-danger);
+}
 .formGroup {
   display: flex;
   flex-direction: column;

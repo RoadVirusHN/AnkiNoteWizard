@@ -27,6 +27,8 @@ const ConfigPage: React.FC = () => {
   const [curAnkiUrl, setCurAnkiUrl] = useState(ankiUrl);
   const hasChanges = locale !== curLocale || curThemeSetting !== themeOption.userSetting || curFontSize !== fontSize;
   const isUserSchemeDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  // TODO : add trim extracted data option.
+  // - dilemma : trim option을 켜면, 추출된 데이터가 trim되서 저장되지만, 사용자가 원래 데이터를 확인할 수 없음.(공백 신경안쓰는 영어 단어 암기 이용자 vs 공백 중요한 프로그래머 이용자)
   return (
     <div className={configPageStyle.container}>
       <SimpleSelect 

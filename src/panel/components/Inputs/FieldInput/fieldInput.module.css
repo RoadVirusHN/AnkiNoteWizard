@@ -24,4 +24,4 @@
   background: var(--color-dark);
   box-sizing: border-box;
 }
-.fieldName { flex: 0 0 20%; min-width: 40px; }
+.fieldName { flex: 0 0 20%; min-width: 40px; font-weight: bold; }

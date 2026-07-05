@@ -122,7 +122,7 @@ const DetectPage: React.FC = () => {
   }
   const addSelected = async ()=>{   
     if (!isConnected) {
-      alert(tError('detectPage.addNoteFail.statusText') + tError('common.ankiNotConnected'));
+      alert(tError('detectPage.addNoteFail.statusText') +' ' +tError('common.ankiNotConnected'));
       return;
     }
     if (currentDeckId === null||currentDeckId === ''){
@@ -137,14 +137,14 @@ const DetectPage: React.FC = () => {
         let content = curNote.fields[field].content;
         curNote.fields[field].content = await processMediaInHtml(content);
         if (models[curNote.modelId] === undefined) {
-          alert(tError('detectPage.addNoteFail.statusText') + tError('addNote.modelNotFoundError.statusText'));
+          alert(tError('detectPage.addNoteFail.statusText') + ' ' +tError('addNote.modelNotFoundError.statusText'));
           return;
         }
       }
       notes.push(curNote);
     }
     if (notes.length === 0) {
-      alert(tError('detectPage.addNoteFail.statusText') + tError('detectPage.noSelectedDraft.description'));
+      alert(tError('detectPage.addNoteFail.statusText') + ' ' +tError('detectPage.noSelectedDraft.description'));
       return;
     }
 
@@ -159,7 +159,7 @@ const DetectPage: React.FC = () => {
     );
     await fetchAnki({action: "addNotes",params: { notes : notes.map((note)=>({
       deckName: currentDeckId,
-      modelName: models[note.modelId],
+      modelName: models[note.modelId].name,
       fields: note.fields.reduce((acc, field) => {
         acc[field.key] = field.content;
         return acc;
