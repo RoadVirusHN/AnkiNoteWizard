@@ -56,20 +56,21 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
       !isEditing ?<input type="checkbox" onChange={e=>{checkAdd(e.target.checked)}} onClick={e=>e.stopPropagation()}/> : null
     }
     <div className={detectPageStyle.detectedDraftContent}>
-      <div style={{display: 'flex', gap:'5px'}}>
+      <div className={detectPageStyle.detectedDraftHeader}>
         <span className={detectPageStyle.scanRuleName} title={t('scanRule')} >{scanRuleId}</span>
-        <Tags 
-          isModifying={isEditing} 
-          givenTagIds={currentDraft.tagIds}
-          onAddTag={(newTag)=>{
-            setCurrentDraft({...currentDraft,tagIds:[...currentDraft.tagIds, newTag.name]});
-            setIsChanged(true);
-          }}
-          onRemoveTag={(targetTag)=>{
-            setCurrentDraft({...currentDraft,tagIds:[...currentDraft.tagIds].filter((tagName)=>tagName!==targetTag.name)});
-            setIsChanged(true);
-          }}
-        />
+        <div className={detectPageStyle.tagTrap}>
+          <Tags 
+            isModifying={isEditing} 
+            givenTagIds={currentDraft.tagIds}
+            onAddTag={(newTag)=>{
+              setCurrentDraft({...currentDraft,tagIds:[...currentDraft.tagIds, newTag.name]});
+              setIsChanged(true);
+            }}
+            onRemoveTag={(targetTag)=>{
+              setCurrentDraft({...currentDraft,tagIds:[...currentDraft.tagIds].filter((tagName)=>tagName!==targetTag.name)});
+              setIsChanged(true);
+          }}/>
+        </div>
       </div>
       {
         currentDraft.fields.map((item, idx)=>{

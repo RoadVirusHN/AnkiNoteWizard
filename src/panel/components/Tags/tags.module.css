@@ -7,13 +7,22 @@
   display: flex;
   font-size: 0.8rem;
   align-items: center;
+  min-width: 0;
+  flex: 1;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+.tags::-webkit-scrollbar {
+  display: none; 
 }
 .tag{
-  border-radius: 15%;
+  border-radius: 8px;
   border-color: var(--color-primary);
   padding: 2px 3px;
   margin: 2px;
   white-space: nowrap;
+  flex-shrink: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
