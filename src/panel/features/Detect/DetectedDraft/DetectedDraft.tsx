@@ -30,6 +30,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
   );
   const {setCurrentDetected, currentDetected} = useGlobalVarStore();
   const {t} = useTranslation('common');
+  const {t:tDraft} = useTranslation('components', {keyPrefix: 'detectedDraft'});
   const [currentDraft, setCurrentDraft] = useState(note);
   const [isEditing, setIsEditing] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
@@ -49,7 +50,8 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
     setCurrentDraft(note);
   }, [note]);
   return (  
-  <article className={`${detectPageStyle.detectedDraftContainer}` + (isEditing? ` ${detectPageStyle.editing}` : '')} onClick={onClick}>
+  <article className={`${detectPageStyle.detectedDraftContainer}` + (isEditing? ` ${detectPageStyle.editing}` : '')} 
+  onClick={onClick} title={isEditing ? tDraft('clickToStopEditingAndRevert') : tDraft('clickToEdit')}>
     {
       !isEditing ?<input type="checkbox" onChange={e=>{checkAdd(e.target.checked)}} onClick={e=>e.stopPropagation()}/> : null
     }
@@ -84,7 +86,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
     {
       isEditing ? 
       <>
-        <img title="Extract Data" src={MagicIcon} onClick={(e)=>{
+        <img title={tDraft('extractData')} src={MagicIcon} onClick={(e)=>{
           e.stopPropagation();
           enterInspectionMode();
         }}/> 

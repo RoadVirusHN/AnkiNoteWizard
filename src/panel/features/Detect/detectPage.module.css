@@ -18,14 +18,14 @@
 }
 
 .deckInput {
-  flex-basis: 60%;
+  flex-basis: 58%;
 }
 
 .header button.redetectDraft {
-  flex-basis: 19%;
+  flex-basis: 20%;
 }
 .header button {
-  flex-basis: 21%;
+  flex-basis: 22%;
 }
 
 .redetectDraft {
@@ -33,7 +33,7 @@
   font-weight: bold;
   background-color: var(--color-dark);
   color: var(--color-primary);
-  padding: 3px 6px;
+  padding: 2px 4px;
   border-radius: 8px;
   cursor: pointer;
   user-select: none;

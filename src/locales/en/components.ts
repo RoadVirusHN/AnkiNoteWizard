@@ -46,4 +46,9 @@ export default {
     CSS: 'CSS',
     LITERAL: 'Literal',
   },
+  detectedDraft: {
+    clickToEdit: 'Click to edit',
+    clickToStopEditingAndRevert: 'Click to stop editing and revert changes',
+    extractData: 'Extract Data',
+  }
 };

@@ -46,4 +46,9 @@ export default {
     CSS: 'CSS',
     LITERAL: '문자열',
   },
+  detectedDraft: {
+    clickToEdit: '클릭하여 편집',
+    clickToStopEditingAndRevert: '클릭하여 편집 중지 및 변경 사항 되돌리기',
+    extractData: '데이터 추출',
+  }
 } satisfies typeof components;

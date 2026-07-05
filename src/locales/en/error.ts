@@ -64,7 +64,8 @@ export default {
   },
   common: {
     storeMediaError: 'Failed to store media file',
-    noContentErrorSolution: 'No Receiving end founded, Refresh your web page and retry it.'
+    noContentErrorSolution: 'No Receiving end founded, Refresh your web page and retry it.',
+    ankiNotConnected: 'Anki is not connected. Please check your Anki connection.',
   },
   addNote: {
     modelNotFoundError: {
@@ -137,5 +138,11 @@ export default {
       description: 'An error occurred while adding the note to Anki.',
       solutions: ['Please try again.', 'Check your Anki connection.'],
     },
+    noSelectedDraft: {
+      code: 'noSelectedDraft',
+      statusText: 'No Draft Selected',
+      description: 'No draft was selected for adding notes.',
+      solutions: ['Please select at least one draft to add notes.'],
+    },    
   }
 };

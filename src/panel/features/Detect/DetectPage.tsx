@@ -26,10 +26,7 @@ import { flushSync } from 'react-dom';
 // SEND_DETECTED_DRAFTS : content script에서 감지된 카드 데이터를 CardPage로 전송
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
 const DetectPage: React.FC = () => {
-  const [isPending, setIsPending] = useState(false);
-  const [selected, setSelected] = useState(new Set<string>());
-  const [errorMessages, setErrorMessages] = useState<string[]>([]);
-  const {fetchAnki} = useAnkiConnectionStore();
+  const {fetchAnki, models, isConnected} = useAnkiConnectionStore();
   const {currentDeckId, setCurrentDetected, setCurrentDeckId} = useGlobalVarStore();
   const {drafts,scanRules, setDrafts} = useScanRule(
     useShallow((state)=>({
@@ -38,6 +35,12 @@ const DetectPage: React.FC = () => {
       setDrafts: state.setDrafts
     }))
   );
+
+  const [isPending, setIsPending] = useState(false);
+  const [selected, setSelected] = useState(new Set<string>());
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
+
+  
   const [curDrafts, setCurDrafts] = useState(drafts);
   useEffect(()=>{
     // TODO : drafts가 변경되도 화면 업데이트가 안되는 문제를 -> 이 코드가 drafts가 바뀔 때 list를 재랜더링해줘서 해결한 원리 연구하기
@@ -118,6 +121,10 @@ const DetectPage: React.FC = () => {
           }) as Draft;
   }
   const addSelected = async ()=>{   
+    if (!isConnected) {
+      alert(tError('detectPage.addNoteFail.statusText') + tError('common.ankiNotConnected'));
+      return;
+    }
     if (currentDeckId === null||currentDeckId === ''){
       console.log('No deck selected');
       setErrorMessages([tError('detectPage.selectDeckFirst.statusText')]);
@@ -129,16 +136,36 @@ const DetectPage: React.FC = () => {
       for (const field in curNote.fields){
         let content = curNote.fields[field].content;
         curNote.fields[field].content = await processMediaInHtml(content);
-        notes.push(curNote);
+        if (models[curNote.modelId] === undefined) {
+          alert(tError('detectPage.addNoteFail.statusText') + tError('addNote.modelNotFoundError.statusText'));
+          return;
+        }
       }
+      notes.push(curNote);
+    }
+    if (notes.length === 0) {
+      alert(tError('detectPage.addNoteFail.statusText') + tError('detectPage.noSelectedDraft.description'));
+      return;
     }
 
+    console.log(
+      { notes : notes.map((note)=>({
+      deckName: currentDeckId,
+      modelName: models[note.modelId].name,
+      fields: note.fields.reduce((acc, field) => {
+        acc[field.key] = field.content;
+        return acc;
+      }, {} as {[key:string]: string})}))}
+    );
     await fetchAnki({action: "addNotes",params: { notes : notes.map((note)=>({
-      note,
-      deckName: currentDeckId
+      deckName: currentDeckId,
+      modelName: models[note.modelId],
+      fields: note.fields.reduce((acc, field) => {
+        acc[field.key] = field.content;
+        return acc;
+      }, {} as {[key:string]: string}),      
     }))}})
     .then((res) => {
-      console.log(res);
       if (res.error) {
         console.error('Error adding note to Anki:', res.error);
         alert(tError('detectPage.addNoteFail.statusText') + res.error);
@@ -148,11 +175,14 @@ const DetectPage: React.FC = () => {
       }
     });
   }
+  // TODO : Click all & Deselect all buttonS
   return (
     <div className={detectPageStyle.pageContainer}>
       <div className={detectPageStyle.header}>
-        <div style={{display:'flex', gap:'4px', alignItems:'center'}}>
-          <Icon url={DeckIcon} title={tCommon('deck')}/>
+        <div className={detectPageStyle.deckInput} style={{display:'flex', gap:'4px', alignItems:'center'}}>
+          <div>
+            <Icon url={DeckIcon} title={tCommon('deck')}/>
+          </div>
           <DeckInput
             initDeckId={currentDeckId}
             onChange={(e)=>{
@@ -161,14 +191,11 @@ const DetectPage: React.FC = () => {
             errorMessages={errorMessages}
           /> 
         </div>
-        <div className={detectPageStyle.headerButtons}>
-          <SimpleButton disabled={isPending} className={detectPageStyle.redetectDraft} onClick={requestExtracteds}>
-            {isPending ? t("scanning") : '↺ '+t("scan")}
-          </SimpleButton>
-        </div>
-        <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `+ ${selected.size}` : t('add')}/>
+        <SimpleButton disabled={isPending} className={detectPageStyle.redetectDraft} onClick={requestExtracteds}>
+          {isPending ? t("scanning") : '↺ '+t("scan")}
+        </SimpleButton>
+        <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `${selected.size}` : t('add')}/>
       </div>
-
       <div className={detectPageStyle.draftsWrapper}>
         {curDrafts && Object.keys(curDrafts).length > 0 ? (
           Object.keys(curDrafts).map((key) => { 

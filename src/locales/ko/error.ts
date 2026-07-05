@@ -66,7 +66,8 @@ export default {
   },
   common: {
     storeMediaError: '미디어 파일 등록에 실패',
-    noContentErrorSolution: '수신 종말 스크립트 탐색 불가, 웹 페이지를 새로고침하고 다시 시도하세요.'
+    noContentErrorSolution: '웹페이지 인식 불가, 웹 페이지를 새로고침하고 다시 시도하세요.',
+    ankiNotConnected: 'Anki가 연결되지 않았습니다. Anki 연결을 확인하세요.',
   },
   addNote: {
     modelNotFoundError: {
@@ -139,5 +140,11 @@ export default {
       description: 'Anki에 노트를 추가하는 동안 오류가 발생했습니다.',
       solutions: ['다시 시도하세요.', 'Anki Note Wizard 또는 Chrome의 최신 버전으로 업데이트하세요.'],
     },
+    noSelectedDraft: {
+      code: 'noSelectedDraft',
+      statusText: '선택된 초안 없음',
+      description: '선택된 초안이 없습니다.',
+      solutions: ['노트를 추가하기 전에 초안을 선택하세요.'],
+    }
   }
 } satisfies typeof error;
