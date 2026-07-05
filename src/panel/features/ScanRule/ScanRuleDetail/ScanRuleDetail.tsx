@@ -14,7 +14,7 @@ const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: strin
   const {t} = useTranslation('page',{keyPrefix: 'scanRulesPage'});
   const {t:tCommon} = useTranslation('common'); 
   const {models} = useAnkiConnectionStore();
-  const isContainModel = models[scanRule.modelId]!==null;
+  const isContainModel = models[scanRule.modelId]!==null&&models[scanRule.modelId]!==undefined;
   return (<div className={scanRuleDetailStyle.scanRule}>
     <div className={scanRuleDetailStyle.main}>
       <div className={scanRuleDetailStyle.meta}>

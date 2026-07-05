@@ -10,6 +10,7 @@
   margin: 3px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   font-size: 0.8rem;
 }
