@@ -70,7 +70,7 @@ export type InspectionMode = (typeof INSPECTION_MODE)[keyof typeof INSPECTION_MO
 
 export const EMPTY_MODEL = {
   name: i18next.t('common:no|word|Selected', { word: i18next.t('common:model') }),
-  id: '-1',
+  id: '',
   fields: ['Front', 'Back'],
 } satisfies Model;
 

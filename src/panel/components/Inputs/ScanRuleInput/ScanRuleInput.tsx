@@ -14,7 +14,7 @@ const ScanRuleInput = ({setScanRule, defaultScanRule}:{setScanRule: (model:strin
   return (
     <SimpleSelect 
       inputId="scanRuleInput"
-      label={t('scanRules')}
+      label={t('scanRule')}
       defaultValue={curVal} 
       options={
        [{key:t('empty'), val:''}, ...Object.values(scanRules).map((scanRule) => ({key: scanRule.scanRuleName, val: scanRule.scanRuleName}))]

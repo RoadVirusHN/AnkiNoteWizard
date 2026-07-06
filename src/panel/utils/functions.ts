@@ -21,7 +21,6 @@ export const isNoteValid = (draft: Draft, model: Model, t: TFunction<"error", "a
     result: 'error',
     error: [] as string[],
   };
-  console.log({ draft, model });
   if (model === null || model === undefined || model.id === EMPTY_MODEL.id) {
     res.error.push(t('modelNotFoundError.code'));
   }
@@ -31,6 +30,7 @@ export const isNoteValid = (draft: Draft, model: Model, t: TFunction<"error", "a
   if (draft.deckId === '' || draft.deckId === null || draft.deckId===undefined||draft.deckId === EMPTY_DECK.name){
     res.error.push(t('emptyDeckError.code'));
   }
+  if (res.error.length>0) return res;
   //check model fields == note fields
   const modelFieldNames = Object.keys(model.fields);
   const noteFieldNames = Object.keys(draft.fields);

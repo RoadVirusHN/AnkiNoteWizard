@@ -146,6 +146,7 @@ const AddPage = ({}) => {
               } 
             },
           };
+          
           //TODO : AnkiConnect Media Actions 연구 및 적용. 현재는 media 필드도 그냥 note의 field로 보내고 있음.
           await fetchAnki(req).then((res)=>{
             setIsChanged(false);

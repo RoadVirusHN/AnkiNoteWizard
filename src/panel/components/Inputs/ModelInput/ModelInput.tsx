@@ -4,7 +4,9 @@ import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
 const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (modelId:string)=>void, defaultModelId: string, errorMessages: string[]}) => {
   const {models} = useAnkiConnectionStore();
-  const [curVal, setCurVal] = useState(defaultModelId || (Object.keys(models).length>0? Object.keys(models)[0]: '-1'));
+  const modelKeys = Object.keys(models);
+  const [curVal, setCurVal] = useState(modelKeys.includes(defaultModelId) ? defaultModelId : (modelKeys.length > 0 ? modelKeys[0] : ''));
+  
   const onChangeModel = (modelId:string) => {
     if (!modelId||!models[modelId]||Object.keys(models).length===0) return;
     setModelId(modelId);

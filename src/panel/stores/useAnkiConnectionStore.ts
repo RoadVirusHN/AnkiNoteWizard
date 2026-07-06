@@ -22,10 +22,6 @@ const callAnki = async <T>(
   ankiUrl: string,
   request: FetchAnkiRequestBody
 ): Promise<AnkiResponseBody<T>> => {
-  console.log({
-    method: 'POST',
-    body: JSON.stringify({ ...request, version: 6 }),
-  });
   const res = await fetch(ankiUrl, {
     method: 'POST',
     body: JSON.stringify({ ...request, version: 6 }),
