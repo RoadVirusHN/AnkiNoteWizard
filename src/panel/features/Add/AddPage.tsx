@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { isNoteValid, processMediaInHtml } from "@/panel/utils/functions";
 import FieldInput from "@/panel/components/Inputs/FieldInput/FieldInput";
 import useScanRule from "@/panel/stores/useScanRule";
+import i18next from "i18next";
 
 
 const AddPage = ({}) => {
@@ -107,8 +108,7 @@ const AddPage = ({}) => {
         className={addPageStyle.addBtn}
         onClick={async ()=>{
           const res = isNoteValid(curNote, models[curNote.modelId], tError);
-          console.log(res);
-          if (res.result!== 'success'){
+          if (res.result!== 'ok'){
             for (const code of res.error){
               if(code === 'modelNotFoundError.code'){
                 setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('modelNotFoundError.statusText')]});
@@ -125,10 +125,18 @@ const AddPage = ({}) => {
 
             return;
           }
-
-          for (const field in curNote.fields){
-            let content = curNote.fields[field].content;
-            curNote.fields[field].content = await processMediaInHtml(content);
+          const updatedFields  = [...curNote.fields];
+          for (const fieldName in updatedFields){
+            let content = updatedFields[fieldName].content;
+            let res = await processMediaInHtml(content);
+            if (res.result==='error'){
+              alert(i18next.t('page:addPage.addNoteFail') + ' ' + res.error);
+              return;
+            }
+            updatedFields[fieldName] = {
+              ...updatedFields[fieldName],
+              content: res.data
+            }
           }
 
 
@@ -138,7 +146,7 @@ const AddPage = ({}) => {
               note: {
                 deckName: curNote.deckId,
                 modelName: models[curNote.modelId].name,
-                fields: curNote.fields.reduce((acc, field) => {
+                fields: updatedFields.reduce((acc, field) => {
                   acc[field.key] = field.content;
                   return acc;
                 }, {} as {[key:string]: string}),
@@ -146,7 +154,7 @@ const AddPage = ({}) => {
               } 
             },
           };
-          
+
           //TODO : AnkiConnect Media Actions 연구 및 적용. 현재는 media 필드도 그냥 note의 field로 보내고 있음.
           await fetchAnki(req).then((res)=>{
             setIsChanged(false);

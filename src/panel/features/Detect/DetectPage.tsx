@@ -133,9 +133,15 @@ const DetectPage: React.FC = () => {
     let notes = [];
     for (const key of selected){
       let curNote = drafts[key];
+      //TODO : implement media processing for each field content && add handler in input tag.
       for (const field in curNote.fields){
         let content = curNote.fields[field].content;
-        curNote.fields[field].content = await processMediaInHtml(content);
+        let res = await processMediaInHtml(content);
+        if (res.result==='error'){
+          alert(tError('detectPage.addNoteFail.statusText') + ' ' + res.error);
+          return;
+        }
+        curNote.fields[field].content = res.data;
         if (models[curNote.modelId] === undefined) {
           alert(tError('detectPage.addNoteFail.statusText') + ' ' +tError('addNote.modelNotFoundError.statusText'));
           return;
