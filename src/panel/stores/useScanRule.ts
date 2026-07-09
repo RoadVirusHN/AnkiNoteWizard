@@ -3,14 +3,13 @@ import { Draft, ScanRule as ScanRule, Tag } from '@/types/scanRule.types';
 import i18next from 'i18next';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
+//TODO: 메모리 사용률 모니터링 및 warning 구현
 interface ScanRuleState {
   scanRules: { [scanRuleId: string]: ScanRule };
   addScanRule: (scanRule: ScanRule) => ErrorMessage;
   removeScanRule: (name: string) => void;
   modifyScanRule: (name: string, scanRule: ScanRule) => ErrorMessage;
   drafts: { [idx: string]: Draft };
-  getDrafts: () => Draft[];
   addDraft: (idx: string, note: Draft) => void;
   removeDraft: (idx: string) => void;
   updateDraft: (idx: string, updates: { [key: string]: unknown }) => void;
@@ -120,7 +119,6 @@ const useScanRule = create<ScanRuleState>()(
         }
       },
       drafts: {},
-      getDrafts: () => Object.values(get().drafts),
       addDraft: (idx, note) => {
         set((state) => ({
           drafts: { ...state.drafts, [idx]: note },

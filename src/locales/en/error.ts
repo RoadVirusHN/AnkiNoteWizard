@@ -1,3 +1,4 @@
+// soultions array 접근시, returnObjects: true 옵션을 사용하여 배열을 반환하도록 설정, 이렇게 하면 i18next.t() 호출 시 배열 직접 접근 가능
 export default {
   solutions: 'solutions',
   codes: {
@@ -64,6 +65,18 @@ export default {
   },
   common: {
     storeMediaError: 'Failed to store media file',
+    base64Error: {
+      code: 'base64Error',
+      statusText: 'base64 Conversion Error',
+      description: 'Failed to convert media file to base64 format.',
+      solutions: ['Please check the media file and try again.'],
+    },
+    unsupportedSrcFormatError: {
+      code: 'unsupportedSrcFormatError',
+      statusText: 'Unsupported src Format',
+      description: 'The src format is unsupported.',
+      solutions: ['Please check the src format and try again.'],
+    },
     noContentErrorSolution: 'No Receiving end founded, Refresh your web page and retry it.',
     ankiNotConnected: 'Anki is not connected. Please check your Anki connection.',
   },
@@ -98,6 +111,18 @@ export default {
       description: 'A note with the same content already exists.',
       solutions: ['Please modify the note content to make it unique.'],
     },
+    addNoteFail: {
+      code: 'addNoteFail',
+      statusText: 'Add Note Failed',
+      description: 'An error occurred while adding the note to Anki.',
+      solutions: ['Please try again.', 'Check your Anki connection.'],
+    },
+    fileTooLarge: {
+      code: 'fileTooLarge',
+      statusText: 'File Too Large',
+      description: 'The file size exceeds the allowed limit :',
+      solutions: ['Please reduce the file size and try again.'],
+    }
   },
   scanRule:{
     invallidScanRuleName: {
@@ -132,12 +157,7 @@ export default {
       description: 'Please select a deck before adding notes.',
       solutions: ['Please select a deck from the dropdown menu.'],
     },
-    addNoteFail: {
-      code: 'addNoteFail',
-      statusText: 'Add Note Failed',
-      description: 'An error occurred while adding the note to Anki.',
-      solutions: ['Please try again.', 'Check your Anki connection.'],
-    },
+
     noSelectedDraft: {
       code: 'noSelectedDraft',
       statusText: 'No Draft Selected',

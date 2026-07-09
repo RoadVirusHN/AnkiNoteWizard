@@ -55,16 +55,16 @@ const extractFields = (root: Element, field: FieldProperties[]) => {
         element instanceof HTMLAudioElement) &&
         element.src
       ) {
-        
+
         switch (fieldProp.dataType) {
           case FIELD_DATA_TYPES.IMAGE:
             res += `<img src='${element.src}' />`;
             break;
           case FIELD_DATA_TYPES.VIDEO:
-            res += `<video src='${element.src}' control/>`;
+            res += `<video src='${element.src}' control></video>`;
             break;
           case FIELD_DATA_TYPES.AUDIO:
-            res += `<audio src='${element.src}' control/>`;
+            res += `<audio src='${element.src}' control></audio>`;
             break;
         }
       } else {

@@ -39,7 +39,7 @@ const getErrorInfo = (error: unknown): {status: string, message: string} => {
   return {status: "Unknown Error", message: "An unexpected error has occurred."};
 };
 
-// TODO: Responsive, runtime error and route error handling
+// TODO : MAKE ERRORS USING "Error" OBJECT, NOT FK {} => THIS SHIT, WHY DID YOU DO THAT UGHHHHHH
 const ErrorPage = ({ error: runtimeError, resetErrorBoundary }: Partial<FallbackProps>) => {
   let infos = getErrorInfo(runtimeError ?? useRouteError());
   const {t} = useTranslation('error');

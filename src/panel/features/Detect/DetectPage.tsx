@@ -18,6 +18,7 @@ import { INSPECTION_MODE } from '@/types/app.types';
 import useInspection from '@/panel/hooks/useInspection';
 import { useShallow } from 'zustand/react/shallow';
 import { flushSync } from 'react-dom';
+import i18next from 'i18next';
 
 //TODO : Apply SCSS for css.
 
@@ -122,7 +123,7 @@ const DetectPage: React.FC = () => {
   }
   const addSelected = async ()=>{   
     if (!isConnected) {
-      alert(tError('detectPage.addNoteFail.statusText') +' ' +tError('common.ankiNotConnected'));
+      alert(tError('addNote.addNoteFail.statusText') +' ' +tError('common.ankiNotConnected'));
       return;
     }
     if (currentDeckId === null||currentDeckId === ''){
@@ -130,39 +131,29 @@ const DetectPage: React.FC = () => {
       setErrorMessages([tError('detectPage.selectDeckFirst.statusText')]);
       return;
     }
-    let notes = [];
-    for (const key of selected){
-      let curNote = drafts[key];
-      //TODO : implement media processing for each field content && add handler in input tag.
-      for (const field in curNote.fields){
-        let content = curNote.fields[field].content;
-        let res = await processMediaInHtml(content);
-        if (res.result==='error'){
-          alert(tError('detectPage.addNoteFail.statusText') + ' ' + res.error);
-          return;
-        }
-        curNote.fields[field].content = res.data;
-        if (models[curNote.modelId] === undefined) {
-          alert(tError('detectPage.addNoteFail.statusText') + ' ' +tError('addNote.modelNotFoundError.statusText'));
-          return;
-        }
-      }
-      notes.push(curNote);
-    }
-    if (notes.length === 0) {
-      alert(tError('detectPage.addNoteFail.statusText') + ' ' +tError('detectPage.noSelectedDraft.description'));
+    if (selected.size === 0) {
+      alert(tError('addNote.addNoteFail.statusText') + ' ' +tError('detectPage.noSelectedDraft.description'));
       return;
     }
+    let notes = [];
+    for (const key of selected){
+      let updatedNote = {...drafts[key]};
+      if (models[updatedNote.modelId] === undefined) {
+        alert(tError('addNote.addNoteFail.statusText') + ' ' +tError('addNote.modelNotFoundError.statusText'));
+        return;
+      }
+      for (const fieldName in updatedNote.fields){
+        let content = updatedNote.fields[fieldName].content;
+        let res = await processMediaInHtml(content);
+        if (res.result==='error'){
+          alert(tError('addNote.addNoteFail.statusText') + ' ' + res.error);
+          return;
+        }
+        updatedNote.fields[fieldName].content = res.data;
+      }
+      notes.push(updatedNote);
+    }
 
-    console.log(
-      { notes : notes.map((note)=>({
-      deckName: currentDeckId,
-      modelName: models[note.modelId].name,
-      fields: note.fields.reduce((acc, field) => {
-        acc[field.key] = field.content;
-        return acc;
-      }, {} as {[key:string]: string})}))}
-    );
     await fetchAnki({action: "addNotes",params: { notes : notes.map((note)=>({
       deckName: currentDeckId,
       modelName: models[note.modelId].name,
@@ -170,11 +161,12 @@ const DetectPage: React.FC = () => {
         acc[field.key] = field.content;
         return acc;
       }, {} as {[key:string]: string}),      
+      tags: note.tagIds,
     }))}})
     .then((res) => {
       if (res.error) {
         console.error('Error adding note to Anki:', res.error);
-        alert(tError('detectPage.addNoteFail.statusText') + res.error);
+        alert(tError('addNote.addNoteFail.statusText') + res.error);
       } else {
         console.log('Note added to Anki with ID:', res.result);
         alert(t('addNoteSuccess'));

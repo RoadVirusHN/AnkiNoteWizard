@@ -1,5 +1,4 @@
 import useInspection from "@/panel/hooks/useInspection";
-import SimpleButton from "../SimpleButton/SimpleButton";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import { FieldData } from "@/types/scanRule.types";
 import { useTranslation } from "react-i18next";

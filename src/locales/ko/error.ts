@@ -66,6 +66,18 @@ export default {
   },
   common: {
     storeMediaError: '미디어 파일 등록에 실패',
+    base64Error: {
+      code: 'base64Error',
+      statusText: 'base64 변환 실패',
+      description: '미디어 파일을 base64로 변환하는 데 실패했습니다.',
+      solutions: ['미디어 파일을 확인 및 재작성하고 다시 시도하세요.'],
+    },
+    unsupportedSrcFormatError: {
+      code: 'unsupportedSrcFormatError',
+      statusText: '지원되지 않는 src 형식',
+      description: '지원되지 않는 src 형식입니다.',
+      solutions: ['src 형식을 확인하고 다시 시도하세요.'],
+    },
     noContentErrorSolution: '웹페이지 인식 불가, 웹 페이지를 새로고침하고 다시 시도하세요.',
     ankiNotConnected: 'Anki가 연결되지 않았습니다. Anki 연결을 확인하세요.',
   },
@@ -100,6 +112,18 @@ export default {
       description: 'Anki에 이미 동일한 노트가 존재합니다.',
       solutions: ['노트 내용을 수정하여 중복을 피하세요.'],
     },
+    addNoteFail: {
+      code: 'addNoteFail',
+      statusText: '노트 추가 실패',
+      description: 'Anki에 노트를 추가하는 동안 오류가 발생했습니다.',
+      solutions: ['다시 시도하세요.', 'Anki Note Wizard 또는 Chrome의 최신 버전으로 업데이트하세요.'],
+    },
+    fileTooLarge: {
+      code: 'fileTooLarge',
+      statusText: '파일이 너무 큼',
+      description: '파일 크기가 허용된 크기 보다 큽니다. :',
+      solutions: ['파일 크기를 줄이고 다시 시도하세요.'],
+    }
   },
   scanRule:{
     invallidScanRuleName: {
@@ -134,12 +158,7 @@ export default {
       description: '노트를 추가하기 전에 덱을 선택해야 합니다.',
       solutions: ['노트를 추가하기 전에 덱을 선택하세요.'],
     },
-    addNoteFail: {
-      code: 'addNoteFail',
-      statusText: '노트 추가 실패',
-      description: 'Anki에 노트를 추가하는 동안 오류가 발생했습니다.',
-      solutions: ['다시 시도하세요.', 'Anki Note Wizard 또는 Chrome의 최신 버전으로 업데이트하세요.'],
-    },
+
     noSelectedDraft: {
       code: 'noSelectedDraft',
       statusText: '선택된 초안 없음',

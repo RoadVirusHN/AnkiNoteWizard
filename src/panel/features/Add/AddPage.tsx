@@ -13,7 +13,6 @@ import ScanRuleInput from "@/panel/components/Inputs/ScanRuleInput/ScanRuleInput
 import DeckInput from "@/panel/components/Inputs/DeckInput/DeckInput";
 import Icon from "@/panel/components/Icon/Icon";
 import useInspection from "@/panel/hooks/useInspection";
-import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import { NavLink } from "react-router";
 import { INSPECTION_MODE } from "@/types/app.types";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
@@ -38,7 +37,7 @@ const AddPage = ({}) => {
   const {scanRules} = useScanRule();
   const {t} = useTranslation('page',{keyPrefix: 'addPage'});
   const {t:tCommon} = useTranslation('common');
-  const {t:tError} = useTranslation('error',{keyPrefix: 'addNote'});
+  const {t:tError} = useTranslation('error', {keyPrefix: 'addNote'});
   const {cancleInspectionMode,isInspectionMode} = useInspection();
   return <div className={addPageStyle.container}>
     <div className={addPageStyle.header}>     
@@ -63,7 +62,6 @@ const AddPage = ({}) => {
           <DeckInput label={tCommon('deck')} onChange={(e)=>{setCurNote({...curNote, deckId: e.target.value}); setIsChanged(true);}} initDeckId={curNote.deckId}
             errorMessages={errorMessages.deck}/>
         </div>
-        {/* TODO: WTF DO I need this? */}
         <ScanRuleInput defaultScanRule={curNote.scanRuleId? curNote.scanRuleId : ''} setScanRule={(scanRuleName:string)=>{
           setCurNote({...curNote, scanRuleId: scanRuleName});
           const scanRule = scanRules[scanRuleName];
@@ -111,7 +109,6 @@ const AddPage = ({}) => {
           if (res.result!== 'ok'){
             for (const code of res.error){
               if(code === 'modelNotFoundError.code'){
-                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('modelNotFoundError.statusText')]});
               } else if (code === 'emptyModelError.code'){
                 setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('emptyModelError.statusText')]});
               } else if (code === 'emptyDeckError.code'){
@@ -130,7 +127,7 @@ const AddPage = ({}) => {
             let content = updatedFields[fieldName].content;
             let res = await processMediaInHtml(content);
             if (res.result==='error'){
-              alert(i18next.t('page:addPage.addNoteFail') + ' ' + res.error);
+              alert(tError('addNoteFail.statusText') + ' ' + res.error);
               return;
             }
             updatedFields[fieldName] = {
@@ -138,7 +135,6 @@ const AddPage = ({}) => {
               content: res.data
             }
           }
-
 
           const req = {
             action: 'addNote',
@@ -155,7 +151,6 @@ const AddPage = ({}) => {
             },
           };
 
-          //TODO : AnkiConnect Media Actions 연구 및 적용. 현재는 media 필드도 그냥 note의 field로 보내고 있음.
           await fetchAnki(req).then((res)=>{
             setIsChanged(false);
             setCurNote(currentAddingDraft);
