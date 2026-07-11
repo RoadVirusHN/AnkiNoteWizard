@@ -1,0 +1,119 @@
+
+/* 각 카드 */
+.detectedDraftContainer {
+  position: relative;
+  background-color: var(--color-light);
+  gap: 8px;
+  border-radius: 12px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--color-dark);
+  width: 100%;
+  max-width: 100%;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0 3px;
+}
+
+.detectedDraftContainer.editing {
+  border-color: var(--color-warning);
+}
+
+.detectedDraftContainer:hover {
+  border-color: var(--color-hyperlink);
+}
+input.checkBox{
+  flex: 0;
+}
+.detectedDraftContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 1rem;
+  color: var(--color-primary);
+}
+.detectedDraftHeader {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+}
+
+.scanRuleNameContainer {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.scanRuleName {
+  font-weight: bold;
+  color: var(--color-hyperlink);
+  flex-shrink: 0;
+}
+.tagTrap {
+  max-width: 100%;
+  width:fit-content;
+  flex: 1;
+  overflow: hidden;
+}
+
+.field {
+  margin: 3px;
+  width: 100%;
+}
+
+.fieldInput {
+  width: 100%;
+  text-align: start;
+}
+
+.fieldLabel{
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  text-align: start;
+}
+.fieldLabel .veryEmpty {
+  color: var(--color-warning);
+}
+
+.detectedDraftContainer input {
+  flex-shrink: 0;
+}
+.detectedDraftContainer .button{
+  flex-shrink: 0;
+}
+
+.buttons {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  cursor: pointer;
+  user-select: none;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+
+  display: flex;
+  flex-shrink: 0;
+  justify-content: start;
+  align-items: center;
+  gap: 6px;
+  margin: 3px;
+}
+.button img {
+  width: 90%;
+  cursor: pointer;
+}
+.addCardButton:hover {
+  background-color: var(--color-primary);
+  color: var(--color-light);
+}
