@@ -1,49 +1,61 @@
 import { FieldData } from "@/types/scanRule.types";
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import { useTranslation } from "react-i18next";
-import { onFieldDrop, onFieldPaste } from "@/panel/utils/functions";
-import { ChangeEvent, useEffect, useRef } from "react";
+import { convertQuillToAnkiPureHtml, onFieldDrop, onFieldPaste } from "@/panel/utils/functions";
+import { useEffect, useRef } from "react";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
-import { editor } from "monaco-editor";
-
 const MAX_CONTENT_LENGTH = 100;
+
+//TODO : Editor view && HTML View 
 const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, isEditing: boolean, setCurrentField:(newField:FieldData)=>void}) => {
   const renderedContent = field.content.replace(/\s+/g, ' ').trim();
   const containedTooManyEmpty = field.content.length - renderedContent.length > 30;
   const {t} = useTranslation('components', {keyPrefix:'fieldScanInput'});
   const editorRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const isMounted = useRef(false);
   useEffect(()=>{
-    if (!editorRef.current) return;
+    if (!editorRef.current||!previewRef.current) return;
     if (!isMounted.current) {
       // prevent double toolbar by strict mode
       isMounted.current = true;
       return;
     }
-    const quill = new Quill(editorRef.current,
+    const editorQuill = new Quill(editorRef.current,
       {
         debug: 'warn',
         theme: 'snow',
         modules: {
-          toolbar: true
+          toolbar: true,
         }
       }
     );
-    quill.root.innerHTML = field.content;
-    quill.on('text-change', function(delta, oldDelta, source) {
+    const previewQuill = new Quill(previewRef.current,
+      {
+        debug: 'warn',
+        theme: 'snow',
+        readOnly: true,
+        modules: {
+          toolbar: false
+        }
+      }
+    );
+    editorQuill.root.innerHTML = field.content;
+    previewQuill.root.innerHTML = field.content;
+    editorQuill.on('text-change', function(delta, oldDelta, source) {
       if (source === 'user') {
-        const newContent = quill.root.innerHTML;
+        console.log("original:", editorQuill.root.innerHTML);
+        const newContent = convertQuillToAnkiPureHtml(editorQuill.root.innerHTML);
         setCurrentField({key: field.key, content: newContent});
+        previewQuill.root.innerHTML = newContent;
+        console.log("source:", source," changed:",newContent);
       }
     });
-    const parent = editorRef.current.parentElement;
-    console.log(parent);
     return ()=>{
-      quill.off('text-change');
+      editorQuill.off('text-change');      
     };
   },[]);
-  // onChange={onChange}
   // onPaste={onFieldPaste(onChange)}
   // onDrop={onFieldDrop(onChange)}
   // onDragOver={(e)=>{e.preventDefault()}}
@@ -53,15 +65,20 @@ const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, is
       htmlFor="content"
       title={containedTooManyEmpty ?t('containedTooManyEmptyWarn'):''}
       >{field.key}</label>
-      <div className={detectedDraftStyles.field} style={{display: isEditing ? 'block' : 'none'}} onClick={(e)=>{e.stopPropagation();}} >
-        <div
-          id='content'
-          ref={editorRef}
-          /> 
+      <div className={detectedDraftStyles.fields}>
+        <div className={detectedDraftStyles.field} style={{display: isEditing ? 'block' : 'none'}} onClick={(e)=>{e.stopPropagation();}} >
+          <div
+            id='content'
+            ref={editorRef}
+            /> 
+        </div>
+        <div className={detectedDraftStyles.field} style={{display: isEditing ? 'none' : 'block'}} onClick={(e)=>{e.stopPropagation();e.preventDefault();}} >
+          <div
+            id='content'
+            ref={previewRef}
+            /> 
+        </div>
       </div>
-      <div
-      style={{display: isEditing ? 'none' : 'block'}}
-      >{field.content.length > MAX_CONTENT_LENGTH ? field.content.slice(0,MAX_CONTENT_LENGTH)+'...' : field.content}</div>
     </div>;
 };
 export default FieldScanInput;

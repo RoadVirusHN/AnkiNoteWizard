@@ -370,3 +370,33 @@ export const onFieldDrop =
       }
     }
   };
+export const convertQuillToAnkiPureHtml = (quillHtml: string, outerTag='p') => {
+
+  let cleaned = quillHtml.trim();
+
+  const startTag = `<${outerTag}>`;
+  const endTag = `</${outerTag}>`;
+
+  const closeTagRegex = new RegExp(endTag, 'g');
+  const closeTagCount = (cleaned.match(closeTagRegex) || []).length;
+
+  if (cleaned.startsWith(startTag) && cleaned.endsWith(endTag) && closeTagCount === 1) {
+    cleaned = cleaned.substring(startTag.length, cleaned.length - endTag.length);
+  }
+  
+  else {
+    const middleTagRegex = new RegExp(`${endTag}${startTag}`, 'g');
+    const startTagRegex = new RegExp(`^${startTag}`);
+    const endTagRegex = new RegExp(`${endTag}$`);
+
+    cleaned = cleaned
+      .replace(middleTagRegex, '<br>')  // 중간의 닫고 여는 태그 세트를 <br>로 변경
+      .replace(startTagRegex, '')       // 맨 첫 줄 시작 태그 제거
+      .replace(endTagRegex, '');        // 맨 마지막 줄 끝 태그 제거
+  }
+
+  const emptyLineRegex = new RegExp(`${startTag}<br>${endTag}`, 'g');
+  cleaned = cleaned.replace(emptyLineRegex, '<br>');
+
+  return cleaned;
+}

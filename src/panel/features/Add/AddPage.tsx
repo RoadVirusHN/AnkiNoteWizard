@@ -92,9 +92,9 @@ const AddPage = ({}) => {
         {
           curNote.fields.map((item, idx)=>{
           return (            
-            <FieldInput key={idx} field={item} onChange={(e)=>{
+            <FieldInput key={idx} field={item} onChange={(newContent)=>{
               const newFields = [...curNote.fields];
-              newFields[idx] = {...newFields[idx], content: e.target.value};
+              newFields[idx] = {...newFields[idx], content: newContent};
               setCurNote({...curNote, fields: newFields});
               setIsChanged(true);
             }}/>)
