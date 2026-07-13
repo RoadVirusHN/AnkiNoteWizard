@@ -1,0 +1,124 @@
+/* Anki 툴바 메인 컨테이너 (다크모드 전용 배경색) */
+.ankiToolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: #2c2c2c !important; /* Anki의 깊은 무채색 배경 */
+  padding: 6px 12px !important;
+  border: 1px solid #3c3c3c !important;
+  border-radius: 6px 6px 0 0;
+  gap: 4px;
+  user-select: none;
+  /* 툴바 빈 공간 마우스 억까 차단 */
+  cursor: default !important;
+  pointer-events: none;
+}
+
+/* 툴바 내 마우스 반응 허용 구역 지정 */
+.ankiToolbar button,
+.ankiToolbar :global(.ql-picker) {
+  pointer-events: auto;
+}
+
+/* 아이콘 버튼들을 한 세트로 묶는 그룹 */
+.toolGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* 안키 특유의 얇은 세로 절단선(구분선) */
+.divider {
+  width: 1px;
+  height: 18px;
+  background-color: #4a4a4a;
+  margin: 0 6px;
+}
+
+/* 1. Fields... / Cards... 같은 와이드 텍스트 버튼 스타일 */
+.ankiActionBtn {
+  background-color: #383838 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #484848 !important;
+  border-radius: 4px !important;
+  padding: 4px 10px !important;
+  font-size: 13px !important;
+  font-weight: 500;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease;
+}
+.ankiActionBtn:hover {
+  background-color: #484848 !important;
+}
+
+/* 2. 일반 정사각형 아이콘 버튼 스타일 (B, I, U, 📎 등) */
+.ankiToolbar :global(.ql-stroke) {
+  stroke: #e0e0e0 !important; /* Quill 자체 SVG 아이콘 탑재 시 흰색으로 채움 */
+}
+.ankiToolbar :global(.ql-fill) {
+  fill: #e0e0e0 !important;
+}
+
+.ankiToolbar button,
+.ankiIconBtn {
+  background-color: #383838 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #444444 !important;
+  border-radius: 4px !important;
+  width: 28px !important;
+  height: 26px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px !important;
+  font-weight: bold;
+  cursor: pointer !important;
+  transition: all 0.15s ease;
+  padding: 0 !important;
+}
+
+/* 버튼 마우스 호버 효과 */
+.ankiToolbar button:hover,
+.ankiIconBtn:hover {
+  background-color: #4c4c4c !important;
+  border-color: #5c5c5c !important;
+  color: #ffffff !important;
+}
+
+/* 버튼이 활성화된 상태 (예: 글자가 굵게 처리된 구역에 커서가 있을 때) */
+.ankiToolbar :global(.ql-active) {
+  background-color: #555555 !important;
+  border-color: #777777 !important;
+  color: #61afef !important; /* 활성화 시 부드러운 하이라이트 블루 */
+}
+
+/* 3. Quill 전용 드롭다운 피커 (글자크기, 색상, 정렬 등) Anki화 */
+.ankiToolbar :global(.ql-picker) {
+  color: #e0e0e0 !important;
+  background-color: #383838 !important;
+  border: 1px solid #444444 !important;
+  border-radius: 4px !important;
+  height: 26px !important;
+  display: flex;
+  align-items: center;
+}
+.ankiToolbar :global(.ql-picker-label) {
+  padding-left: 6px !important;
+  padding-right: 18px !important;
+  display: flex;
+  align-items: center;
+  height: 100% !important;
+}
+.ankiToolbar :global(.ql-picker-options) {
+  background-color: #333333 !important; /* 드롭다운이 열렸을 때 어두운 배경 */
+  border: 1px solid #555555 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+.ankiToolbar :global(.ql-picker-item) {
+  color: #cccccc !important;
+}
+.ankiToolbar :global(.ql-picker-item:hover) {
+  color: #ffffff !important;
+  background-color: #444444 !important;
+}

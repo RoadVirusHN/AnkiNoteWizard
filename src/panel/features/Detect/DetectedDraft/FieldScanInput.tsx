@@ -5,6 +5,7 @@ import { convertQuillToAnkiPureHtml, onFieldDrop, onFieldPaste } from "@/panel/u
 import { useEffect, useRef } from "react";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
+import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
 const MAX_CONTENT_LENGTH = 100;
 
 //TODO : Editor view && HTML View 
@@ -13,10 +14,11 @@ const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, is
   const containedTooManyEmpty = field.content.length - renderedContent.length > 30;
   const {t} = useTranslation('components', {keyPrefix:'fieldScanInput'});
   const editorRef = useRef<HTMLDivElement>(null);
+  const editorToolbarRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const isMounted = useRef(false);
   useEffect(()=>{
-    if (!editorRef.current||!previewRef.current) return;
+    if (!editorRef.current||!editorToolbarRef.current||!previewRef.current) return;
     if (!isMounted.current) {
       // prevent double toolbar by strict mode
       isMounted.current = true;
@@ -27,7 +29,7 @@ const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, is
         debug: 'warn',
         theme: 'snow',
         modules: {
-          toolbar: true,
+          toolbar: editorToolbarRef.current,
         }
       }
     );
@@ -67,6 +69,7 @@ const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, is
       >{field.key}</label>
       <div className={detectedDraftStyles.fields}>
         <div className={detectedDraftStyles.field} style={{display: isEditing ? 'block' : 'none'}} onClick={(e)=>{e.stopPropagation();}} >
+          <EditorToolbar toolbarRef={editorToolbarRef} />
           <div
             id='content'
             ref={editorRef}
