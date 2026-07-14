@@ -5,7 +5,7 @@ interface EditorProps {
   toolbarId: string;
   editorId: string;
 }
-
+// TODO : editor의 readonly와 아닐때가 구별 가능해야함.
 export default function Editor({ toolbarId, editorId }: EditorProps) {
   const { t } = useTranslation('components', { keyPrefix: 'fieldScanInput' });
 

@@ -98,7 +98,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
             e.stopPropagation();
             removeDraft(idx);
             setCurrentDetected(currentDetected - 1);
-          }} style={{cursor: 'pointer'}}/>
+          }} />
         }
         </div>
       </div>
