@@ -58,3 +58,15 @@
   font-size: 0.8rem;
   margin-top: 20px;
 }
+
+.addBtn {
+  background-color: var(--color-dark);
+  color: var(--color-primary);
+  width: 80%;
+  padding: 4px 8px;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  bottom : 5px;
+  left: 10%;
+}

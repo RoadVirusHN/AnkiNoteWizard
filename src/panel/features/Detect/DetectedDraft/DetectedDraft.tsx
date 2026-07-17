@@ -3,7 +3,7 @@ import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedD
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import { Draft, FieldData, ScanRule } from "@/types/scanRule.types";
 import FieldScanInput from "./FieldScanInput";
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import ResetIcon from "@/public/Icon/Icon-Reset.svg";
@@ -18,9 +18,10 @@ interface DetectedDraftProps {
   note: Draft;
   scanRuleId: string;
   checkAdd: (val:boolean)=>void;
+  isChecked: boolean;
 };
 
-const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => {
+const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraftProps) => {
   const {removeDraft,updateDraft, drafts} = useScanRule(
     useShallow((state)=>({
       drafts: state.drafts,
@@ -35,6 +36,10 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
   const [isEditing, setIsEditing] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
   const {enterInspectionMode,isInspectionMode} = useInspection();
+  const checkRef = useRef<HTMLInputElement>(null);
+  if (checkRef.current){
+    checkRef.current.checked = isChecked;
+  }
   const onClick = (e:MouseEvent)=>{
     if (isEditing){
       onReset(e);
@@ -55,9 +60,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd}:DetectedDraftProps) => 
     <div className={detectedDraftStyles.detectedDraftContent}>
       <div className={detectedDraftStyles.detectedDraftHeader}>
         <div className={detectedDraftStyles.scanRuleNameContainer}>
-          {
-            !isEditing &&<input type="checkbox" className={detectedDraftStyles.checkBox} onChange={e=>{checkAdd(e.target.checked)}} onClick={e=>e.stopPropagation()}/>
-          }
+          <input ref={checkRef} type="checkbox" className={detectedDraftStyles.checkBox} onChange={e=>{checkAdd(e.target.checked)}} onClick={e=>e.stopPropagation()}/>
           <span className={detectedDraftStyles.scanRuleName} title={t('scanRule')} >{scanRuleId}</span>
           <div className={detectedDraftStyles.tagTrap} style={{pointerEvents: isEditing ? 'auto' : 'none'}}>
             <Tags 

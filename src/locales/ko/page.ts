@@ -13,6 +13,8 @@ export default {
     add: '추가',
     addNoteFail: '노트 추가 실패 :',
     addNoteSuccess: '노트가 성공적으로 추가되었습니다.',
+    checkAll: '전부 선택',
+    uncheckAll: '전부 제외'
   },
   addPage: {
     addNoteToAnki: '노트 직접 추가',

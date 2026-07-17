@@ -11,6 +11,8 @@ export default {
     add: 'Add',
     addNoteFail: 'Failed to add note :',
     addNoteSuccess: 'Note added successfully.',
+    checkAll: 'Check All',
+    uncheckAll: 'Uncheck All'
   },
   addPage: {
     addNoteToAnki: 'Add Note to Anki',

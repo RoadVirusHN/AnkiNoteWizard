@@ -2,7 +2,9 @@ import detectPageStyle from '@/panel/features/Detect/detectPage.module.css';
 import { useEffect, useState } from 'react';
 import DetectedDraft from './DetectedDraft/DetectedDraft';
 import DeckInput from '@/panel/components/Inputs/DeckInput/DeckInput';
-import AddIcon from '@/public/Icon/Icon-Add.svg';
+import CheckIcon from "@/public/Icon/Icon-Check.svg";
+import UncheckIcon from "@/public/Icon/Icon-Uncheck.svg";
+import AddIcon from "@/public/Icon/Icon-Add.svg";
 import DeckIcon from '@/public/Icon/Icon-Decks.svg';
 import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import useGlobalVarStore from '@/panel/stores/useGlobalVarStore';
@@ -40,9 +42,9 @@ const DetectPage: React.FC = () => {
   const [isPending, setIsPending] = useState(false);
   const [selected, setSelected] = useState(new Set<string>());
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
-
   
   const [curDrafts, setCurDrafts] = useState(drafts);
+  const curDraftsKeys = Object.keys(curDrafts);
   useEffect(()=>{
     // TODO : drafts가 변경되도 화면 업데이트가 안되는 문제를 -> 이 코드가 drafts가 바뀔 때 list를 재랜더링해줘서 해결한 원리 연구하기
     // - flushSync도 안통했음, background asnyc 문제도 아님, setTimeOut으로 느리게 업데이트도 안통했음.
@@ -100,6 +102,15 @@ const DetectPage: React.FC = () => {
     else newSelected.delete(id);
     setSelected(newSelected);
   }
+
+  const checkAll = ()=>{
+    setSelected(new Set(curDraftsKeys));
+  };
+
+  const uncheckAll = ()=>{
+    setSelected(new Set());
+  }
+
 
   const getNote = (scanRule : ScanRule, extracted : ExtractedFields) =>{    
     let fields = [] as Draft['fields'];
@@ -173,7 +184,6 @@ const DetectPage: React.FC = () => {
       }
     });
   }
-  // TODO : Click all & Deselect all buttonS
   return (
     <div className={detectPageStyle.pageContainer}>
       <div className={detectPageStyle.header}>
@@ -192,11 +202,19 @@ const DetectPage: React.FC = () => {
         <SimpleButton disabled={isPending} className={detectPageStyle.redetectDraft} onClick={requestExtracteds}>
           {isPending ? t("scanning") : '↺ '+t("scan")}
         </SimpleButton>
-        <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `${selected.size}` : t('add')}/>
+        { selected.size == curDraftsKeys.length ? 
+        <SimpleButton src={UncheckIcon} 
+        onClick={uncheckAll}
+        text={t('uncheckAll')}
+        /> :
+        <SimpleButton src={CheckIcon}
+        onClick={checkAll}
+        text={t('checkAll')}
+        /> }
       </div>
       <div className={detectPageStyle.draftsWrapper}>
-        {curDrafts && Object.keys(curDrafts).length > 0 ? (
-          Object.keys(curDrafts).map((key) => { 
+        {curDrafts && curDraftsKeys.length > 0 ? (
+          curDraftsKeys.map((key) => { 
             const note = curDrafts[key];
             if (!note) return null;
             return (
@@ -206,6 +224,7 @@ const DetectPage: React.FC = () => {
                 note={note} 
                 scanRuleId={note.scanRuleId} 
                 checkAdd={checkAdd(key)}
+                isChecked={selected.has(key)}
               />
             );
           })
@@ -214,6 +233,8 @@ const DetectPage: React.FC = () => {
         )}
       </div>
       {isInspectionMode && <InspectionOverlay mode={INSPECTION_MODE.FIELD_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
+      <div style={{height:'45px'}} /> {/* for button space */} 
+      <SimpleButton src={AddIcon} className={detectPageStyle.addBtn} onClick={addSelected} text={selected.size > 0 ? `${selected.size}` : t('add')}/>
     </div>
   );
 };
