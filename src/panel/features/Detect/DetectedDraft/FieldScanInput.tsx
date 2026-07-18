@@ -8,13 +8,20 @@ import 'quill/dist/quill.snow.css';
 import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
 const MAX_CONTENT_LENGTH = 100;
 
-//TODO : Editor view && HTML View 
-const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, isEditing: boolean, setCurrentField:(newField:FieldData)=>void}) => {
+interface FieldScanInputProps {
+  field:FieldData;
+  isEditing: boolean;
+  defaultFocus: boolean;
+  setCurrentField:(newField:FieldData)=>void;
+}
+//TODO : Better HTML Preview 
+const FieldScanInput = ({field, isEditing, setCurrentField, defaultFocus}:FieldScanInputProps) => {
   const renderedContent = field.content.replace(/\s+/g, ' ').trim();
   const containedTooManyEmpty = field.content.length - renderedContent.length > 30;
   const {t} = useTranslation('components', {keyPrefix:'fieldScanInput'});
   
   const editorRef = useRef<HTMLDivElement>(null);
+  const quillRef = useRef<Quill>(null);
   const editorToolbarRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const isMounted = useRef(false);
@@ -38,6 +45,7 @@ const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, is
         }
       }
     );
+    quillRef.current = editorQuill;
     const previewQuill = new Quill(previewRef.current,
       {
         debug: 'warn',
@@ -67,6 +75,18 @@ const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, is
       editorQuill.root.removeEventListener('blur',blur);
     };
   },[]);
+  console.log(isEditing,defaultFocus);
+  if (isEditing && editorRef.current && defaultFocus) {
+    editorRef.current.focus();
+  }
+
+  useEffect(() => {
+    if (isEditing && defaultFocus && quillRef.current) {
+      setTimeout(() => {
+        quillRef.current?.focus(); 
+      }, 20);
+    }
+  }, [isEditing, defaultFocus]); 
   // onPaste={onFieldPaste(onChange)}
   // onDrop={onFieldDrop(onChange)}
   // onDragOver={(e)=>{e.preventDefault()}}
@@ -81,13 +101,14 @@ const FieldScanInput = ({field, isEditing, setCurrentField}:{field:FieldData, is
           <EditorToolbar toolbarRef={editorToolbarRef} isFocusing={isFocusing} />
           <div
             id='content'
-            ref={editorRef}/> 
+            ref={editorRef}
+            style={{border: "1px solid var(--color-primary)"}}/> 
         </div>
         <div className={detectedDraftStyles.field} style={{display: isEditing ? 'none' : 'block'}} onClick={(e)=>{e.stopPropagation();e.preventDefault();}} >
           <div
             id='content'
             ref={previewRef}
-            /> 
+            style={{border: "1px solid var(--color-primary)"}}/> 
         </div>
       </div>
     </div>;

@@ -8,13 +8,11 @@ interface GlobalVarState {
   currentTab: Tab;
   currentDeckId: string;
   isAddingCard: boolean;
-  currentDetected: number;
   currentAddingDraft: Draft;
   isInspectionMode: boolean;
   setCurrentUrl: (url: string) => void;
   setCurrentTab: (tab: Tab) => void;
   setCurrentDeckId: (deckId: string) => void;
-  setCurrentDetected: (cnt: number) => void;
   setCurrentAddingDraft: (note: Draft) => void;
   setIsAddingCard: (isAdding: boolean) => void;
   setIsInspectionMode: (isInspection: boolean) => void;
@@ -27,7 +25,6 @@ const useGlobalVarStore = create<GlobalVarState>()(
       currentTab: TAB.DETECT,
       currentDeckId: EMPTY_DECK.name,
       isAddingCard: false,
-      currentDetected: 0,
       currentAddingDraft: {
         draftId: '',
         scanRuleId: EMPTY_SCAN_RULE.scanRuleName,
@@ -47,7 +44,6 @@ const useGlobalVarStore = create<GlobalVarState>()(
         set({ currentTab: tab });
       },
       setCurrentDeckId: (deckId: string) => set({ currentDeckId: deckId }),
-      setCurrentDetected: (cnt: number) => set({ currentDetected: cnt }),
       setCurrentAddingDraft: (draft: Draft) => set({ currentAddingDraft: draft }),
       setIsAddingCard: (isAdding: boolean) => set({ isAddingCard: isAdding }),
       setIsInspectionMode: (isInspection: boolean) => set({ isInspectionMode: isInspection }),

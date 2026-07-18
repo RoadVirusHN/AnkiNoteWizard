@@ -29,7 +29,6 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
       updateDraft: state.updateDraft
     }))
   );
-  const {setCurrentDetected, currentDetected} = useGlobalVarStore();
   const {t} = useTranslation('common');
   const {t:tDraft} = useTranslation('components', {keyPrefix: 'detectedDraft'});
   const [currentDraft, setCurrentDraft] = useState(note);
@@ -100,14 +99,14 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
           <img src={DelIcon} onClick={(e)=>{
             e.stopPropagation();
             removeDraft(idx);
-            setCurrentDetected(currentDetected - 1);
           }} />
         }
         </div>
       </div>
       {
         currentDraft.fields.map((item, idx)=>{
-          return <FieldScanInput key={idx} field={item} isEditing={isEditing} setCurrentField={(newField:FieldData)=>{
+          return <FieldScanInput key={idx} field={item} isEditing={isEditing} defaultFocus={idx===0} 
+          setCurrentField={(newField:FieldData)=>{
             const newFields = [...currentDraft.fields,];
             newFields[idx] = newField;
             setCurrentDraft({...currentDraft, fields: newFields});

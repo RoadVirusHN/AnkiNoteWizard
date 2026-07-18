@@ -30,7 +30,7 @@ import i18next from 'i18next';
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
 const DetectPage: React.FC = () => {
   const {fetchAnki, models, isConnected} = useAnkiConnectionStore();
-  const {currentDeckId, setCurrentDetected, setCurrentDeckId} = useGlobalVarStore();
+  const {currentDeckId, setCurrentDeckId} = useGlobalVarStore();
   const {drafts,scanRules, setDrafts} = useScanRule(
     useShallow((state)=>({
       drafts: state.drafts,
@@ -88,7 +88,6 @@ const DetectPage: React.FC = () => {
           });
         });
         
-        setCurrentDetected(cnt);
         setDrafts(tempDrafts);
         setCurDrafts(tempDrafts);
         setIsPending(false);

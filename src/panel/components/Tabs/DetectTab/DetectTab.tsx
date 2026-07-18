@@ -8,9 +8,11 @@ import TooltipWrapper from "../../TooltipWrapper/TooltipWrapper";
 import commonStyle from "@/panel/common.module.css";
 import { useTranslation } from "react-i18next";
 import { TAB, TOOLTIP_DIRECTION } from "@/types/app.types";
+import useScanRule from "@/panel/stores/useScanRule";
 
 const DetectTab = ({}) => {
-  const {currentTab, currentDetected } = useGlobalVarStore();
+  const {drafts} = useScanRule();
+  const {currentTab } = useGlobalVarStore();
   const {isConnected, isPending, checkConnection} = useAnkiConnectionStore();
   const [t] = useTranslation('components', {keyPrefix: 'tabs'});
   useEffect(()=>{
@@ -23,7 +25,7 @@ const DetectTab = ({}) => {
   return (
   <NavLink className={`${tabsStyle.tab} ${currentTab==TAB.DETECT ? tabsStyle.selected : ''}`} to={'/detect'}>
       <div style={{display:'flex', alignItems: 'end', gap: '5px'}}>
-        <span className={commonStyle.badge}>{currentDetected}</span>
+        <span className={commonStyle.badge}>{Object.keys(drafts).length}</span>
         <img src={AnkiIcon} className={`${tabsStyle["anki-logo"]} ` + (isPending ? `${tabsStyle.spinning}`:'')}/>
         <TooltipWrapper 
           classes={[tabsStyle.tooltip]}
