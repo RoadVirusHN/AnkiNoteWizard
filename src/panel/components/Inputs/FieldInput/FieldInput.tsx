@@ -3,12 +3,23 @@ import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import { FieldData } from "@/types/scanRule.types";
 import { useTranslation } from "react-i18next";
 import { convertQuillToAnkiPureHtml, onFieldDrop, onFieldPaste } from "@/panel/utils/functions";
-import { ChangeEventHandler, useEffect, useRef } from "react";
+import { ChangeEventHandler, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import fieldInputStyle from "./fieldInput.module.css";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
+import EditorToolbar from "../../Editor/EditorToolbar";
+export interface FieldInputHandle {
+    getContent(): string;
+    reset(content: string): void;
+    saved():void;
+}
 
-const FieldInput = ({field,onChange}:{field:FieldData,onChange:(newContent:string)=>void}) => {
+type Props = {
+    field: FieldData;
+    onDirty: () => void;
+};
+
+const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref) => {
   //TODO: Implement FieldInput component
   /*
     Features to implement:
@@ -22,9 +33,42 @@ const FieldInput = ({field,onChange}:{field:FieldData,onChange:(newContent:strin
   const {key, content} = field;
 
   const editorRef = useRef<HTMLDivElement>(null);
+  const quillRef = useRef<Quill>(null);
+  const editorToolbarRef = useRef<HTMLDivElement>(null);
   const isMounted = useRef(false);
+  
+  const [isFocusing, setIsFocusing] = useState(false);
+  const focus = () => setIsFocusing(true);
+  const blur = () => setIsFocusing(false);
+
+  const dirtyRef = useRef(false);
+  useImperativeHandle(ref, () => ({
+      getContent() {
+          return convertQuillToAnkiPureHtml(quillRef.current!.root.innerHTML);
+      },
+
+      reset(content: string) {
+        dirtyRef.current = false;
+
+        const editor = quillRef.current;
+        if (!editor) return;
+
+        const range = editor.getSelection();
+
+        editor.clipboard.dangerouslyPasteHTML(content);
+
+        if (range) {
+            editor.setSelection(range);
+        } else {
+            editor.blur();
+        }
+      },
+      saved(){
+        dirtyRef.current=false;
+      }
+  }));
   useEffect(()=>{
-    if (!editorRef.current) return;
+    if (!editorRef.current||!editorToolbarRef.current) return;
     if (!isMounted.current) {
       // prevent double toolbar by strict mode
       isMounted.current = true;
@@ -35,35 +79,42 @@ const FieldInput = ({field,onChange}:{field:FieldData,onChange:(newContent:strin
         debug: 'warn',
         theme: 'snow',
         modules: {
-          toolbar: true,
+          toolbar: editorToolbarRef.current,
         }
       }
     );
-
-    editorQuill.root.innerHTML = content;
+    editorQuill.setText(content);
+    quillRef.current = editorQuill;
     editorQuill.on('text-change', function(delta, oldDelta, source) {
       if (source === 'user') {
-        const newContent = convertQuillToAnkiPureHtml(editorQuill.root.innerHTML);
-        onChange(newContent);
+        if (!dirtyRef.current) {
+            dirtyRef.current = true;
+            onDirty();
+        }
       }
     });
+    editorQuill.root.addEventListener('focus',focus);
+    editorQuill.root.addEventListener('blur', blur)
     return ()=>{
-      editorQuill.off('text-change');      
+      editorQuill.off('text-change');  
+      editorQuill.root.removeEventListener('focus',focus);
+      editorQuill.root.removeEventListener('blur',blur);
     };
   },[]);
-
 
   return <div className={fieldInputStyle.container}>
     <div className={fieldInputStyle.header}>
       <label htmlFor={key} className={fieldInputStyle.fieldName}>{key}</label>
       <img style={{cursor: 'pointer'}} title="Extract Data" src={MagicIcon} onClick={()=>{enterInspectionMode();}}/> 
     </div>
-       
-    <div onClick={(e)=>{e.stopPropagation();}} >
+      
+    <div onClick={(e)=>{e.stopPropagation();}} style={ {margin: 'auto', width: '100%'}} >
+      <EditorToolbar toolbarRef={editorToolbarRef} isFocusing={isFocusing} />
       <div
         id='content'
         ref={editorRef}
-        /> 
+        style={{border: "1px solid var(--color-primary)", width: '100%'}}
+        />
     </div>
     {/* <textarea  
       id={key}
@@ -76,5 +127,5 @@ const FieldInput = ({field,onChange}:{field:FieldData,onChange:(newContent:strin
       onDragOver={(e)=>{e.preventDefault()}}
     /> */}
   </div>;
-};
+});
 export default FieldInput;

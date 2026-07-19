@@ -7,7 +7,7 @@ import InspectionOverlay from "@/panel/components/InspectionOverlay/InspectionOv
 import Tags from "@/panel/components/Tags/Tags";
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
 import ModelInput from "@/panel/components/Inputs/ModelInput/ModelInput";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import ScanRuleInput from "@/panel/components/Inputs/ScanRuleInput/ScanRuleInput";
 import DeckInput from "@/panel/components/Inputs/DeckInput/DeckInput";
@@ -18,17 +18,21 @@ import { INSPECTION_MODE } from "@/types/app.types";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
 import { isNoteValid, processMediaInHtml } from "@/panel/utils/functions";
-import FieldInput from "@/panel/components/Inputs/FieldInput/FieldInput";
+import FieldInput, { FieldInputHandle } from "@/panel/components/Inputs/FieldInput/FieldInput";
 import useScanRule from "@/panel/stores/useScanRule";
 import i18next from "i18next";
+import { useForceUpdate } from "@/panel/hooks/useForceUpdate";
 
 
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentAddingDraft, setCurrentAddingDraft} = useGlobalVarStore();
-  const [curNote, setCurNote] = useState(currentAddingDraft);
+  const curNoteRef = useRef(currentAddingDraft);
+  const fieldRefs = useRef<FieldInputHandle[]>([]);
+  // const curNote = curNoteRef.current; // WARN : curNote 복사 하지말고 직접 쓰기(스냅샷 문제)
+  // const reRender = useForceUpdate();
   const [isChanged, setIsChanged] = useState(false);
-  const [isModifying, setIsModifying] = useState(true);
+  console.log('reRendered!', isChanged);
   const [errorMessages, setErrorMessages] = useState<{[key:string]:string[]}>({
     deck: [],
     model: [],
@@ -39,18 +43,28 @@ const AddPage = ({}) => {
   const {t:tCommon} = useTranslation('common');
   const {t:tError} = useTranslation('error', {keyPrefix: 'addNote'});
   const {cancleInspectionMode,isInspectionMode} = useInspection();
+
   return <div className={addPageStyle.container}>
     <div className={addPageStyle.header}>     
       <h2>{t('addNoteToAnki')}</h2>
       <div className={commonStyle.toggle}>
         <div className={addPageStyle.modBtns} style={{visibility: isChanged ? "visible" : "hidden"}}>
           <Icon url={CancleIcon} handleClick={()=>{
+            curNoteRef.current = structuredClone(currentAddingDraft);
+
+            currentAddingDraft.fields.forEach((field, idx) => {
+                fieldRefs.current[idx]?.reset(field.content);
+            });
             setIsChanged(false);
-            setCurNote(currentAddingDraft);
           }} style={{'cursor': 'pointer', margin: '5px'}}/>
           <Icon url={SaveIcon} handleClick={()=>{
             setIsChanged(false);
-            setCurrentAddingDraft(curNote);
+            curNoteRef.current.fields = curNoteRef.current.fields.map((field, idx) => ({
+                ...field,
+                content: fieldRefs.current[idx].getContent()
+            }));
+            setCurrentAddingDraft(curNoteRef.current);
+            fieldRefs.current.forEach(f=>f.saved());
           }} style={{'cursor': 'pointer', margin: '5px'}}/>
         </div>
       </div>
@@ -59,45 +73,46 @@ const AddPage = ({}) => {
       {<section className={addPageStyle.content}>
         {isInspectionMode ?? <InspectionOverlay mode={INSPECTION_MODE.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
         <div className={addPageStyle.formGroup}>
-          <DeckInput label={tCommon('deck')} onChange={(e)=>{setCurNote({...curNote, deckId: e.target.value}); setIsChanged(true);}} initDeckId={curNote.deckId}
+          <DeckInput label={tCommon('deck')} onChange={(e)=>{
+            curNoteRef.current = {...curNoteRef.current, deckId: e.target.value}; 
+            setIsChanged(true);
+          }} initDeckId={curNoteRef.current.deckId}
             errorMessages={errorMessages.deck}/>
         </div>
-        <ScanRuleInput defaultScanRule={curNote.scanRuleId? curNote.scanRuleId : ''} setScanRule={(scanRuleName:string)=>{
-          setCurNote({...curNote, scanRuleId: scanRuleName});
+        <ScanRuleInput defaultScanRule={curNoteRef.current.scanRuleId? curNoteRef.current.scanRuleId : ''} setScanRule={(scanRuleName:string)=>{
+          curNoteRef.current = {...curNoteRef.current, scanRuleId: scanRuleName};
           const scanRule = scanRules[scanRuleName];
           if (scanRule&& confirm(t('changeScanRuleWarning'))){
-            setCurNote({...curNote, modelId: scanRule.modelId, fields: Object.keys(scanRule.fields).map((fieldName:string)=>({key: fieldName, content: ''})), tagIds: scanRule.tagIds});
+            curNoteRef.current = {...curNoteRef.current, modelId: scanRule.modelId, fields: Object.keys(scanRule.fields).map((fieldName:string)=>({key: fieldName, content: ''})), tagIds: scanRule.tagIds};
           }
           setIsChanged(true);
         }}/>
-        <ModelInput defaultModelId={curNote.modelId} setModelId={(id:string)=>{
+        <ModelInput defaultModelId={curNoteRef.current.modelId} setModelId={(id:string)=>{
           if (confirm(t('changeModelFieldWarning'))){ 
-            setCurNote({...curNote, modelId:id, fields: models[id].fields.map((fieldName:string)=>({key: fieldName, content: ''}))});
+            curNoteRef.current = {...curNoteRef.current, modelId:id, fields: models[id].fields.map((fieldName:string)=>({key: fieldName, content: ''}))};
             setIsChanged(true);
           }
         }}
           errorMessages={errorMessages.model}
         />
         <div className={addPageStyle.fakeLabel}>{t('tagsLabel')}</div>
-        <Tags givenTagIds={curNote.tagIds} isModifying={isModifying} 
+        <Tags givenTagIds={curNoteRef.current.tagIds} isModifying={true} 
         onAddTag={(tag)=>{
           setIsChanged(true);
-          setCurNote({...curNote, tagIds: [...curNote.tagIds, tag.name]});
+          curNoteRef.current = {...curNoteRef.current, tagIds: [...curNoteRef.current.tagIds, tag.name]};
         }} 
         onRemoveTag={(tag)=>{
           setIsChanged(true);
-          setCurNote({...curNote, tagIds: curNote.tagIds.filter(t=>t !== tag.name)});
+          curNoteRef.current = {...curNoteRef.current, tagIds: curNoteRef.current.tagIds.filter(t=>t !== tag.name)};
         }}/>
         <div className={addPageStyle.fakeLabel}>{t('fieldsLabel')}</div>
         {
-          curNote.fields.map((item, idx)=>{
+          curNoteRef.current.fields.map((item, idx)=>{
           return (            
-            <FieldInput key={idx} field={item} onChange={(newContent)=>{
-              const newFields = [...curNote.fields];
-              newFields[idx] = {...newFields[idx], content: newContent};
-              setCurNote({...curNote, fields: newFields});
-              setIsChanged(true);
-            }}/>)
+            <FieldInput key={idx} 
+            field={item} 
+            ref={e=>{if (e) fieldRefs.current[idx]= e;}}
+            onDirty={()=>{setIsChanged(true);}}/>)
           })
         }
       </section> }
@@ -105,6 +120,7 @@ const AddPage = ({}) => {
       <SimpleButton src={AddIcon} 
         className={addPageStyle.addBtn}
         onClick={async ()=>{
+          const curNote = curNoteRef.current;
           const res = isNoteValid(curNote, models[curNote.modelId], tError);
           if (res.result!== 'ok'){
             for (const code of res.error){
@@ -153,7 +169,7 @@ const AddPage = ({}) => {
 
           await fetchAnki(req).then((res)=>{
             setIsChanged(false);
-            setCurNote(currentAddingDraft);
+            setCurrentAddingDraft(curNote);
             alert(res.error ? tCommon('error')+`: ${res.error}` : t('addNoteSuccess'));
             });
           }}

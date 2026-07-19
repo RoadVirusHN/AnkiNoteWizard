@@ -19,7 +19,9 @@ const FieldScanInput = ({field, isEditing, setCurrentField, defaultFocus}:FieldS
   const renderedContent = field.content.replace(/\s+/g, ' ').trim();
   const containedTooManyEmpty = field.content.length - renderedContent.length > 30;
   const {t} = useTranslation('components', {keyPrefix:'fieldScanInput'});
-  
+  const [curContent, setCurContent] = useState(field.content);  
+
+
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill>(null);
   const editorToolbarRef = useRef<HTMLDivElement>(null);
@@ -75,7 +77,6 @@ const FieldScanInput = ({field, isEditing, setCurrentField, defaultFocus}:FieldS
       editorQuill.root.removeEventListener('blur',blur);
     };
   },[]);
-  console.log(isEditing,defaultFocus);
   if (isEditing && editorRef.current && defaultFocus) {
     editorRef.current.focus();
   }
@@ -87,6 +88,10 @@ const FieldScanInput = ({field, isEditing, setCurrentField, defaultFocus}:FieldS
       }, 20);
     }
   }, [isEditing, defaultFocus]); 
+
+  if (quillRef.current){
+    quillRef.current.setText(curContent);
+  }
   // onPaste={onFieldPaste(onChange)}
   // onDrop={onFieldDrop(onChange)}
   // onDragOver={(e)=>{e.preventDefault()}}
@@ -102,13 +107,13 @@ const FieldScanInput = ({field, isEditing, setCurrentField, defaultFocus}:FieldS
           <div
             id='content'
             ref={editorRef}
-            style={{border: "1px solid var(--color-primary)"}}/> 
+            style={{border: "1px solid var(--color-primary)", width: '100%'}}/> 
         </div>
         <div className={detectedDraftStyles.field} style={{display: isEditing ? 'none' : 'block'}} onClick={(e)=>{e.stopPropagation();e.preventDefault();}} >
           <div
             id='content'
             ref={previewRef}
-            style={{border: "1px solid var(--color-primary)"}}/> 
+            style={{border: "1px solid var(--color-primary)", width: '100%'}}/> 
         </div>
       </div>
     </div>;
