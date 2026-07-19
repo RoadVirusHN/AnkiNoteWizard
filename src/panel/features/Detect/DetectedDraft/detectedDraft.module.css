@@ -20,8 +20,19 @@
 .detectedDraftContainer.editing {
   border-color: var(--color-warning);
 }
+.detectedDraftContainer:not(.editing) * {
+  user-select: none;
+  pointer-events: none;
+}
 
-.detectedDraftContainer:hover {
+.detectedDraftContainer:not(.editing) input[type="checkbox"],
+.detectedDraftContainer:not(.editing) .buttons,
+.detectedDraftContainer:not(.editing) .buttons * {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.detectedDraftContainer:not(.editing):hover {
   border-color: var(--color-hyperlink);
 }
 input.checkBox{
