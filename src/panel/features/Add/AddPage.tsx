@@ -27,12 +27,10 @@ import { useForceUpdate } from "@/panel/hooks/useForceUpdate";
 const AddPage = ({}) => {
   const {fetchAnki} = useAnkiConnectionStore();
   const {currentAddingDraft, setCurrentAddingDraft} = useGlobalVarStore();
-  const curNoteRef = useRef(currentAddingDraft);
+  const [curNote, setCurNote] = useState(currentAddingDraft);
   const fieldRefs = useRef<FieldInputHandle[]>([]);
-  // const curNote = curNoteRef.current; // WARN : curNote 복사 하지말고 직접 쓰기(스냅샷 문제)
   // const reRender = useForceUpdate();
   const [isChanged, setIsChanged] = useState(false);
-  console.log('reRendered!', isChanged);
   const [errorMessages, setErrorMessages] = useState<{[key:string]:string[]}>({
     deck: [],
     model: [],
@@ -50,8 +48,7 @@ const AddPage = ({}) => {
       <div className={commonStyle.toggle}>
         <div className={addPageStyle.modBtns} style={{visibility: isChanged ? "visible" : "hidden"}}>
           <Icon url={CancleIcon} handleClick={()=>{
-            curNoteRef.current = structuredClone(currentAddingDraft);
-
+            setCurNote(currentAddingDraft);
             currentAddingDraft.fields.forEach((field, idx) => {
                 fieldRefs.current[idx]?.reset(field.content);
             });
@@ -59,11 +56,16 @@ const AddPage = ({}) => {
           }} style={{'cursor': 'pointer', margin: '5px'}}/>
           <Icon url={SaveIcon} handleClick={()=>{
             setIsChanged(false);
-            curNoteRef.current.fields = curNoteRef.current.fields.map((field, idx) => ({
-                ...field,
-                content: fieldRefs.current[idx].getContent()
-            }));
-            setCurrentAddingDraft(curNoteRef.current);
+            const newNote = {
+              ...curNote,
+              fields: curNote.fields.map((field, idx) => ({
+                  ...field,
+                  content: fieldRefs.current[idx].getContent()
+              }))
+            };
+        
+            setCurNote(newNote);
+            setCurrentAddingDraft(newNote);
             fieldRefs.current.forEach(f=>f.saved());
           }} style={{'cursor': 'pointer', margin: '5px'}}/>
         </div>
@@ -74,40 +76,41 @@ const AddPage = ({}) => {
         {isInspectionMode ?? <InspectionOverlay mode={INSPECTION_MODE.TEXT_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
         <div className={addPageStyle.formGroup}>
           <DeckInput label={tCommon('deck')} onChange={(e)=>{
-            curNoteRef.current = {...curNoteRef.current, deckId: e.target.value}; 
+            setCurNote({...curNote, deckId: e.target.value}); 
             setIsChanged(true);
-          }} initDeckId={curNoteRef.current.deckId}
+          }} initDeckId={curNote.deckId}
             errorMessages={errorMessages.deck}/>
         </div>
-        <ScanRuleInput defaultScanRule={curNoteRef.current.scanRuleId? curNoteRef.current.scanRuleId : ''} setScanRule={(scanRuleName:string)=>{
-          curNoteRef.current = {...curNoteRef.current, scanRuleId: scanRuleName};
+        <ScanRuleInput defaultScanRule={curNote.scanRuleId? curNote.scanRuleId : ''} setScanRule={(scanRuleName:string)=>{
           const scanRule = scanRules[scanRuleName];
           if (scanRule&& confirm(t('changeScanRuleWarning'))){
-            curNoteRef.current = {...curNoteRef.current, modelId: scanRule.modelId, fields: Object.keys(scanRule.fields).map((fieldName:string)=>({key: fieldName, content: ''})), tagIds: scanRule.tagIds};
+            setCurNote({...curNote, scanRuleId: scanRule.scanRuleName, modelId: scanRule.modelId, fields: Object.keys(scanRule.fields).map((fieldName:string)=>({key: fieldName, content: ''})), tagIds: scanRule.tagIds});
           }
           setIsChanged(true);
         }}/>
-        <ModelInput defaultModelId={curNoteRef.current.modelId} setModelId={(id:string)=>{
+        <ModelInput defaultModelId={curNote.modelId} setModelId={(newId:string)=>{
           if (confirm(t('changeModelFieldWarning'))){ 
-            curNoteRef.current = {...curNoteRef.current, modelId:id, fields: models[id].fields.map((fieldName:string)=>({key: fieldName, content: ''}))};
+            setCurNote({...curNote, modelId:newId, fields: models[newId].fields.map((fieldName:string)=>({key: fieldName, content: ''}))});
             setIsChanged(true);
+            return true;
           }
+          return false;
         }}
           errorMessages={errorMessages.model}
         />
         <div className={addPageStyle.fakeLabel}>{t('tagsLabel')}</div>
-        <Tags givenTagIds={curNoteRef.current.tagIds} isModifying={true} 
+        <Tags givenTagIds={curNote.tagIds} isModifying={true} 
         onAddTag={(tag)=>{
           setIsChanged(true);
-          curNoteRef.current = {...curNoteRef.current, tagIds: [...curNoteRef.current.tagIds, tag.name]};
+          setCurNote({...curNote, tagIds: [...curNote.tagIds, tag.name]});
         }} 
         onRemoveTag={(tag)=>{
           setIsChanged(true);
-          curNoteRef.current = {...curNoteRef.current, tagIds: curNoteRef.current.tagIds.filter(t=>t !== tag.name)};
+          setCurNote({...curNote, tagIds: curNote.tagIds.filter(t=>t !== tag.name)});
         }}/>
         <div className={addPageStyle.fakeLabel}>{t('fieldsLabel')}</div>
         {
-          curNoteRef.current.fields.map((item, idx)=>{
+          curNote.fields.map((item, idx)=>{
           return (            
             <FieldInput key={idx} 
             field={item} 
@@ -120,7 +123,6 @@ const AddPage = ({}) => {
       <SimpleButton src={AddIcon} 
         className={addPageStyle.addBtn}
         onClick={async ()=>{
-          const curNote = curNoteRef.current;
           const res = isNoteValid(curNote, models[curNote.modelId], tError);
           if (res.result!== 'ok'){
             for (const code of res.error){
@@ -138,7 +140,10 @@ const AddPage = ({}) => {
 
             return;
           }
-          const updatedFields  = [...curNote.fields];
+          const updatedFields = curNote.fields.map((field, idx) => ({
+            ...field,
+            content: fieldRefs.current[idx].getContent()
+          }));
           for (const fieldName in updatedFields){
             let content = updatedFields[fieldName].content;
             let res = await processMediaInHtml(content);

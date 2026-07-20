@@ -36,6 +36,7 @@ const ScanRuleCommonEditor = ({scanRule, setData}:Props) => {
       newFields[field] = [{ content: field, dataType: "text", selectorType: "literal" }] as FieldProperties[];
     });
     setData({ ...scanRule, modelId: id, fields: newFields });
+    return true;
   };
   //TODO : Make rerender ModelInput when change cancled.
   return (<div>

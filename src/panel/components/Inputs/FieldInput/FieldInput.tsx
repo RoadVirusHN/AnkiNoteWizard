@@ -83,7 +83,7 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
         }
       }
     );
-    editorQuill.setText(content);
+    editorQuill.clipboard.dangerouslyPasteHTML(content);
     quillRef.current = editorQuill;
     editorQuill.on('text-change', function(delta, oldDelta, source) {
       if (source === 'user') {

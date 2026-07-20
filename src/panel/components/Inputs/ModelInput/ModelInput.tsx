@@ -2,14 +2,21 @@ import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
 import { useState } from "react";
 import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
-const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (modelId:string)=>void, defaultModelId: string, errorMessages: string[]}) => {
+
+interface ModelInputProps {
+  setModelId: (newModelId:string)=>boolean;
+  defaultModelId: string;
+  errorMessages: string[];
+}
+
+const ModelInput = ({setModelId, defaultModelId ,errorMessages}:ModelInputProps) => {
   const {models} = useAnkiConnectionStore();
   const modelKeys = Object.keys(models);
   const [curVal, setCurVal] = useState(modelKeys.includes(defaultModelId) ? defaultModelId : (modelKeys.length > 0 ? modelKeys[0] : ''));
   
   const onChangeModel = (modelId:string) => {
     if (!modelId||!models[modelId]||Object.keys(models).length===0) return;
-    setModelId(modelId);
+    return setModelId(modelId);
   }
   const {t} = useTranslation('common');
   const errorMessage = errorMessages.length > 0 ? errorMessages.join(',\n') : '';
@@ -28,7 +35,11 @@ const ModelInput = ({setModelId, defaultModelId ,errorMessages}:{setModelId: (mo
           return {key: model.name, val: model.id};
         })]
       }
-      onChange={(e)=>{onChangeModel(e.currentTarget.value); setCurVal(e.currentTarget.value);}} 
+      onChange={(e)=>{
+        if (onChangeModel(e.currentTarget.value)){
+          setCurVal(e.currentTarget.value);
+        } 
+      }} 
       />
   );
 };
