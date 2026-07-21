@@ -2,7 +2,7 @@ import useScanRule from "@/panel/stores/useScanRule";
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import { Draft, FieldData, ScanRule } from "@/types/scanRule.types";
-import FieldScanInput from "./FieldScanInput";
+import FieldScanInput, { FieldScanInputHandle } from "./FieldScanInput";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
@@ -32,6 +32,8 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
   const {t} = useTranslation('common');
   const {t:tDraft} = useTranslation('components', {keyPrefix: 'detectedDraft'});
   const [currentDraft, setCurrentDraft] = useState(note);
+  const fieldRefs = useRef<FieldScanInputHandle[]>([]);
+  
   const [isEditing, setIsEditing] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
   const {enterInspectionMode,isInspectionMode} = useInspection();
@@ -39,7 +41,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
   if (checkRef.current){
     checkRef.current.checked = isChecked;
   }
-  const onClick = (e:MouseEvent)=>{
+  const onClickDraft = (e:MouseEvent)=>{
     if (isEditing){
       onReset(e);
     }
@@ -48,6 +50,9 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
   const onReset = (e:MouseEvent)=>{
     e.stopPropagation();
     setCurrentDraft(note);
+    currentDraft.fields.forEach((field, idx)=>{
+      fieldRefs.current[idx]?.reset(field.content);
+    });
     setIsChanged(false);
   };
   useEffect(() => {
@@ -55,7 +60,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
   }, [note]);
   return (  
   <article className={`${detectedDraftStyles.detectedDraftContainer}` + (isEditing? ` ${detectedDraftStyles.editing}` : '')} 
-  onClick={onClick} title={isEditing ? tDraft('clickToStopEditingAndRevert') : tDraft('clickToEdit')}>
+  onClick={onClickDraft} title={isEditing ? tDraft('clickToStopEditingAndRevert') : tDraft('clickToEdit')}>
     <div className={detectedDraftStyles.detectedDraftContent}>
       <div className={detectedDraftStyles.detectedDraftHeader}>
         <div className={detectedDraftStyles.scanRuleNameContainer}>
@@ -83,16 +88,19 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
               e.stopPropagation();
               enterInspectionMode();
             }}/> 
-            <img src={SaveIcon} onClick={(e)=>{
+            {isChanged && <img src={SaveIcon} onClick={(e)=>{
               e.stopPropagation();
               updateDraft(idx,
                 {
-                  fields: currentDraft.fields,
+                  fields: currentDraft.fields.map((field, idx)=> ({
+                    ...field,
+                    content: fieldRefs.current[idx].getContent()
+                  })),
                   tagIds: currentDraft.tagIds
                 }
               );
-              setIsEditing(false);
-            }}/>
+              setIsChanged(false);
+            }}/>}
             {isChanged &&
               <img src={ResetIcon} onClick={onReset}/>}
             </> :
@@ -105,13 +113,18 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
       </div>
       {
         currentDraft.fields.map((item, idx)=>{
-          return <FieldScanInput key={idx} field={item} isEditing={isEditing} defaultFocus={idx===0} 
-          setCurrentField={(newField:FieldData)=>{
-            const newFields = [...currentDraft.fields,];
-            newFields[idx] = newField;
-            setCurrentDraft({...currentDraft, fields: newFields});
-            setIsChanged(true);
-          }}/>
+          return <FieldScanInput key={idx} field={item} 
+          isEditing={isEditing} 
+          defaultFocus={idx===0} 
+          onDirty={()=>{setIsChanged(true);}}
+          ref={e=>{if (e) fieldRefs.current[idx]=e;}}
+          />
+          // setCurrentField={(newField:FieldData)=>{
+          //   const newFields = [...currentDraft.fields,];
+          //   newFields[idx] = newField;
+          //   setCurrentDraft({...currentDraft, fields: newFields});
+          //   setIsChanged(true);
+          // }}
         })
       }
     </div>

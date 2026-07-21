@@ -41,6 +41,7 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
   const focus = () => setIsFocusing(true);
   const blur = () => setIsFocusing(false);
 
+  //TODO: 요부분 훅으로 빼서 공통 코드로
   const dirtyRef = useRef(false);
   useImperativeHandle(ref, () => ({
       getContent() {
@@ -57,7 +58,7 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
 
         editor.clipboard.dangerouslyPasteHTML(content);
 
-        if (range) {
+        if (range) { // 이거 안하면 quill.js가 멋대로 렌더링하면서 focus를 뺏어감.
             editor.setSelection(range);
         } else {
             editor.blur();
@@ -116,16 +117,6 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
         style={{border: "1px solid var(--color-primary)", width: '100%'}}
         />
     </div>
-    {/* <textarea  
-      id={key}
-      className={fieldInputStyle.textarea}
-      placeholder={t("fieldContentPlaceholder")}
-      value={content}
-      onChange={onChange}
-      onPaste={onFieldPaste(onChange)}
-      onDrop={onFieldDrop(onChange)}
-      onDragOver={(e)=>{e.preventDefault()}}
-    /> */}
   </div>;
 });
 export default FieldInput;

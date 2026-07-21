@@ -52,6 +52,7 @@ const DetectPage: React.FC = () => {
     // - 근데 왜 이놈은 되는가?
     setCurDrafts(drafts);
   },[drafts]);
+  
   const {t} = useTranslation('page', {keyPrefix: 'detectPage'});  
   const {t:tError} = useTranslation('error');
   const {t:tCommon} = useTranslation('common');
@@ -64,7 +65,6 @@ const DetectPage: React.FC = () => {
       type: MESSAGE_TYPE.REQUEST_DETECTED_DRAFTS_FROM_PANEL,
       data: scanRuleArray,
     }, (response: Response) => {
-        console.log("receive detected drafts", response);
         if (response.res==='error') {
           if (response.error === 'Could not establish connection. Receiving end does not exist.'){
             alert(tError('common.noContentErrorSolution'));
@@ -101,15 +101,8 @@ const DetectPage: React.FC = () => {
     else newSelected.delete(id);
     setSelected(newSelected);
   }
-
-  const checkAll = ()=>{
-    setSelected(new Set(curDraftsKeys));
-  };
-
-  const uncheckAll = ()=>{
-    setSelected(new Set());
-  }
-
+  const checkAll = ()=>{setSelected(new Set(curDraftsKeys));};
+  const uncheckAll = ()=>{setSelected(new Set());}
 
   const getNote = (scanRule : ScanRule, extracted : ExtractedFields) =>{    
     let fields = [] as Draft['fields'];
