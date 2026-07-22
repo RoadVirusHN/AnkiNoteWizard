@@ -43,7 +43,7 @@ const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: strin
           navigate(`/scanRules/modify/${idx}`);
         }}/>      
         {/* TODO : Scanrule Link 기능 */}
-        <img src={LinkSvg} onClick={()=>{}}/>
+        <img src={LinkSvg} onClick={()=>{}} title={"Share feature Coming soon!"}/>
     </div>
   </div>);
 };

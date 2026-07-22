@@ -1,4 +1,5 @@
 import { FieldData } from "@/types/scanRule.types";
+// TODO: separate FieldScanInput style && folder
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import { useTranslation } from "react-i18next";
 import { convertQuillToAnkiPureHtml, onFieldDrop, onFieldPaste } from "@/panel/utils/functions";

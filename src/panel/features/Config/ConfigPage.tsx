@@ -146,6 +146,7 @@ const ConfigPage: React.FC = () => {
           {t('exportScanRules')}
         </SimpleButton>
       </div>
+      <p className={configPageStyle.about}>Developer : RoadvirusHN</p>
       <div className={configPageStyle.floatingBtnContainer}>
         <SimpleButton onClick={()=>{
           setLocale(curLocale);

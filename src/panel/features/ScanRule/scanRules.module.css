@@ -3,6 +3,7 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  padding-top: 8px;
 }
 
 .buttonGroup{

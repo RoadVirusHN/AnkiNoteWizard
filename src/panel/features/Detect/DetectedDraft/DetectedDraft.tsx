@@ -111,22 +111,25 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
         }
         </div>
       </div>
-      {
-        currentDraft.fields.map((item, idx)=>{
-          return <FieldScanInput key={idx} field={item} 
-          isEditing={isEditing} 
-          defaultFocus={idx===0} 
-          onDirty={()=>{setIsChanged(true);}}
-          ref={e=>{if (e) fieldRefs.current[idx]=e;}}
-          />
-          // setCurrentField={(newField:FieldData)=>{
-          //   const newFields = [...currentDraft.fields,];
-          //   newFields[idx] = newField;
-          //   setCurrentDraft({...currentDraft, fields: newFields});
-          //   setIsChanged(true);
-          // }}
-        })
-      }
+      {/* TODO : make scrollable but unclickable field List. */}
+      <div className={detectedDraftStyles.fieldList}>
+        {
+          currentDraft.fields.map((item, idx)=>{
+            return <FieldScanInput key={idx} field={item} 
+            isEditing={isEditing} 
+            defaultFocus={idx===0} 
+            onDirty={()=>{setIsChanged(true);}}
+            ref={e=>{if (e) fieldRefs.current[idx]=e;}}
+            />
+            // setCurrentField={(newField:FieldData)=>{
+            //   const newFields = [...currentDraft.fields,];
+            //   newFields[idx] = newField;
+            //   setCurrentDraft({...currentDraft, fields: newFields});
+            //   setIsChanged(true);
+            // }}
+          })
+        }
+      </div>
     </div>
   </article>);
 };

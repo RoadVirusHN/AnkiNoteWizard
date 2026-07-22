@@ -82,6 +82,10 @@ input.checkBox{
   flex: 1;
   overflow: hidden;
 }
+.fieldList {
+  /* max-height: 100px;
+  overflow-y: auto; */
+}
 
 .fieldInput {
   text-align: start;
