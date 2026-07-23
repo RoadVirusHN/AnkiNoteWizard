@@ -12,7 +12,10 @@ export default {
     addNoteFail: 'Failed to add note :',
     addNoteSuccess: 'Note added successfully.',
     checkAll: 'Check All',
-    uncheckAll: 'Uncheck All'
+    uncheckAll: 'Uncheck All',
+    'add|count|DraftConfirm': 'Add {{count}} drafts to your anki?',
+    'delete|count|DraftConfirm': 'Delete {{count}} drafts?',
+
   },
   addPage: {
     addNoteToAnki: 'Add Note to Anki',

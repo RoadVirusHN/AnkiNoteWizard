@@ -59,14 +59,19 @@
   margin-top: 20px;
 }
 
-.addBtn {
+.floatBtns {
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  bottom : 5px;
+  left: 10%;
+}
+
+.floatBtns button {
   background-color: var(--color-dark);
   color: var(--color-primary);
   width: 80%;
   padding: 4px 8px;
-  position: fixed;
-  display: flex;
-  justify-content: center;
-  bottom : 5px;
-  left: 10%;
+  flex : 1;
 }

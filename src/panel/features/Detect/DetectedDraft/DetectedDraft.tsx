@@ -111,7 +111,6 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
         }
         </div>
       </div>
-      {/* TODO : make scrollable but unclickable field List. */}
       <div className={detectedDraftStyles.fieldList}>
         {
           currentDraft.fields.map((item, idx)=>{
@@ -121,12 +120,6 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
             onDirty={()=>{setIsChanged(true);}}
             ref={e=>{if (e) fieldRefs.current[idx]=e;}}
             />
-            // setCurrentField={(newField:FieldData)=>{
-            //   const newFields = [...currentDraft.fields,];
-            //   newFields[idx] = newField;
-            //   setCurrentDraft({...currentDraft, fields: newFields});
-            //   setIsChanged(true);
-            // }}
           })
         }
       </div>

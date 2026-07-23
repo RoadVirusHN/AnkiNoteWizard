@@ -2,10 +2,14 @@ import detectPageStyle from '@/panel/features/Detect/detectPage.module.css';
 import { useEffect, useState } from 'react';
 import DetectedDraft from './DetectedDraft/DetectedDraft';
 import DeckInput from '@/panel/components/Inputs/DeckInput/DeckInput';
+
 import CheckIcon from "@/public/Icon/Icon-Check.svg";
 import UncheckIcon from "@/public/Icon/Icon-Uncheck.svg";
 import AddIcon from "@/public/Icon/Icon-Add.svg";
 import DeckIcon from '@/public/Icon/Icon-Decks.svg';
+import DelIcon from "@/public/Icon/Icon-Dump.svg";
+
+import Icon from '@/panel/components/Icon/Icon';
 import useAnkiConnectionStore from '@/panel/stores/useAnkiConnectionStore';
 import useGlobalVarStore from '@/panel/stores/useGlobalVarStore';
 import useScanRule from '@/panel/stores/useScanRule';
@@ -13,14 +17,11 @@ import { ExtractedFields, ExtractedInfos,  FIELD_DATA_TYPES,  Draft, ScanRule } 
 import { MESSAGE_TYPE, Response } from '@/types/chrome.types';
 import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
 import { useTranslation } from 'react-i18next';
-import Icon from '@/panel/components/Icon/Icon';
 import { processMediaInHtml } from '@/panel/utils/functions';
 import InspectionOverlay from '@/panel/components/InspectionOverlay/InspectionOverlay';
 import { INSPECTION_MODE } from '@/types/app.types';
 import useInspection from '@/panel/hooks/useInspection';
 import { useShallow } from 'zustand/react/shallow';
-import { flushSync } from 'react-dom';
-import i18next from 'i18next';
 
 //TODO : Apply SCSS for css.
 
@@ -124,7 +125,18 @@ const DetectPage: React.FC = () => {
             } : undefined,
           }) as Draft;
   }
+
+  const deleteSelected = ()=>{
+    if (confirm(t('delete|count|DraftConfirm', {count: selected.size}))){
+      let newDrafts = {} as typeof drafts;
+      Object.keys(drafts).filter((key)=>!selected.has(key)).forEach((key)=>{
+        newDrafts[key] = drafts[key];
+      })
+      setDrafts(newDrafts);
+    }
+  }
   const addSelected = async ()=>{   
+    if (!confirm(t('add|count|DraftConfirm', {count: selected.size}))) return;
     if (!isConnected) {
       alert(tError('addNote.addNoteFail.statusText') +' ' +tError('common.ankiNotConnected'));
       return;
@@ -225,8 +237,15 @@ const DetectPage: React.FC = () => {
         )}
       </div>
       {isInspectionMode && <InspectionOverlay mode={INSPECTION_MODE.FIELD_EXTRACTION} cancleInspectionMode={cancleInspectionMode}/>}
-      <div style={{height:'45px'}} /> {/* for button space */} 
-      <SimpleButton src={AddIcon} className={detectPageStyle.addBtn} onClick={addSelected} text={selected.size > 0 ? `${selected.size}` : t('add')}/>
+      
+      {/* Add & Delete Selected Drafts buttons*/}
+      {selected.size > 0 ? <>
+        <div style={{height:'45px'}} /> {/* for button space */} 
+        <div className={detectPageStyle.floatBtns}>
+          <SimpleButton src={AddIcon} onClick={addSelected} text={selected.size > 0 ? `${selected.size}` : t('add')}/>
+          <SimpleButton src={DelIcon} onClick={deleteSelected} text={selected.size > 0 ? `${selected.size}` : tCommon('delete')}/>
+        </div>
+      </>:null}
     </div>
   );
 };

@@ -14,7 +14,9 @@ export default {
     addNoteFail: '노트 추가 실패 :',
     addNoteSuccess: '노트가 성공적으로 추가되었습니다.',
     checkAll: '전부 선택',
-    uncheckAll: '전부 제외'
+    uncheckAll: '전부 제외',
+    'delete|count|DraftConfirm': '{{count}}개의 초안을 삭제하시겠습니까?',
+    'add|count|DraftConfirm': '{{count}}개의 초안을 안키에 추가하겠습니까??',
   },
   addPage: {
     addNoteToAnki: '노트 직접 추가',
