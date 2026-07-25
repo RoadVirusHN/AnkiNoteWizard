@@ -66,3 +66,11 @@
   margin: 5px;
   cursor: pointer;
 }
+input.checkBox{
+  flex: 0;
+  transform: scale(1.6);
+  -webkit-transform: scale(1.6); 
+  -moz-transform: scale(1.6);   
+  -ms-transform: scale(1.6);   
+  margin: 8px;                
+}

@@ -77,9 +77,9 @@ const blobUrlToBase64 = async (blobUrl: string): Promise<string> => {
 // 2. 노트 저장시 순회하며 모든 URL revokeObjectURL() 호출하여 메모리 해제
 // 메모리 사용률을 모니터링해서 많아지면, 매핑과 blob url 기능을 제거하고, 이용할때마다 느리지만 fetch, base64 변환하도록 변경?
 const localMediaMap: Map<string, string> = new Map();
-
 // Anki에 노트 추가 시 미디어 파일이 포함된 경우, HTML 내의 미디어 태그를 Anki의 미디어 저장 방식에 맞게 변환하여 처리
 export const processMediaInHtml = async (html: string) => {
+  //TODO : Unsupported SRC with quill.js
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
   const mediaElements = doc.querySelectorAll('img, audio, video');

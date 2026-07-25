@@ -1,4 +1,4 @@
-import { ChangeEvent, JSX, useState } from "react";
+import { ChangeEvent, JSX, useEffect, useState } from "react";
 import simpleSelectStyle from "./simpleSelect.module.css";
 import { useForceUpdate } from "@/panel/hooks/useForceUpdate";
 
@@ -26,6 +26,9 @@ const SimpleSelect = ({inputId, label,placeholder,defaultValue,isEssential,error
   // 2. when width is too long, make the label and select box stack horizontally.
   // Sucky width...
   const [errorMessageState, setErrorMessageState] = useState(errorMessage);
+  useEffect(()=>{
+    setErrorMessageState(errorMessage);
+  },[errorMessage])
   return <div className={simpleSelectStyle.formGroup}>
     <label htmlFor={inputId+'-select'}>{isEssential? <span style={{color:'var(--color-danger)'}}>*</span>:null} {label}</label>
     <select id={inputId} name={inputId+'-select'} className={`${simpleSelectStyle.select}`+(errorMessageState ? ` ${simpleSelectStyle.error}`:'')} onChange={onChange} value={defaultValue}

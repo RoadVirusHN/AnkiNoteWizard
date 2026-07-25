@@ -111,7 +111,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
         }
         </div>
       </div>
-      <div className={detectedDraftStyles.fieldList}>
+      <div className={detectedDraftStyles.fieldList} style={{maxHeight:isEditing ? 'fit-content' : '250px'}}> 
         {
           currentDraft.fields.map((item, idx)=>{
             return <FieldScanInput key={idx} field={item} 

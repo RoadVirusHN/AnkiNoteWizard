@@ -19,6 +19,7 @@ const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: strin
     <div className={scanRuleDetailStyle.main}>
       <div className={scanRuleDetailStyle.meta}>
         <div className={scanRuleDetailStyle.title}>
+          <input type="checkbox" className={scanRuleDetailStyle.checkBox} onClick={onCheck}/>
           <h2>{scanRule.scanRuleName}</h2>
           <p>
             {scanRule.meta.author ? <p>by {scanRule.meta.author}</p> : null}
@@ -26,7 +27,7 @@ const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: strin
         </div>
       </div>
       <div className={scanRuleDetailStyle.description}>
-        {scanRule.meta.description?.slice(0,135)}{scanRule.meta.description && scanRule.meta.description.length > 135 ? '...' : ''}
+        {scanRule.meta.description ? (scanRule.meta.description?.slice(0,135) + (scanRule.meta.description && scanRule.meta.description.length > 135 ? '...' : '')): "No Description"}
       </div>
       <div className={scanRuleDetailStyle.info}>
         {isContainModel ? 
@@ -38,7 +39,6 @@ const ScanRuleDetail = ({scanRule, idx, onCheck}:{scanRule: ScanRule, idx: strin
       </div>
     </div> 
     <div className={scanRuleDetailStyle.buttonGroup}>
-        <input type="checkbox" onClick={onCheck}/>
         <img src={ModifySvg} onClick={()=>{
           navigate(`/scanRules/modify/${idx}`);
         }}/>      
