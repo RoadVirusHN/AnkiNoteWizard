@@ -15,7 +15,14 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 
 import { loader } from '@monaco-editor/react';
 import App from "./App";
+import localforage from "localforage";
 
+localforage.config({
+    driver      : [localforage.INDEXEDDB, localforage.LOCALSTORAGE], 
+    name        : 'AnkiNoteWizard',
+    version     : 1.0,
+    storeName   : 'anki_note_wizard_db',  
+});
 // // Webpack이 복사한 로컬 경로(dist/vs)를 명시적으로 지정
 loader.config({monaco});
 

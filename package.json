@@ -23,7 +23,8 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "i18next": "^25.7.4",
-    "monaco-editor": "^0.54.0",
+    "localforage": "^1.10.0",
+    "monaco-editor": "^0.56.0",
     "monaco-editor-webpack-plugin": "^7.1.1",
     "quill": "^2.0.3",
     "react": "^19.2.3",
