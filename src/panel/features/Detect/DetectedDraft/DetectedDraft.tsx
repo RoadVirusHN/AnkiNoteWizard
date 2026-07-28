@@ -55,6 +55,19 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
     });
     setIsChanged(false);
   };
+  const onSave = (e:MouseEvent)=>{
+    e.stopPropagation();
+    updateDraft(idx,
+      {
+        fields: currentDraft.fields.map((field, idx)=> ({
+          ...field,
+          content: fieldRefs.current[idx].getContent()
+        })),
+        tagIds: currentDraft.tagIds
+      }
+    );
+    setIsChanged(false);
+  };
   useEffect(() => {
     setCurrentDraft(note);
   }, [note]);
@@ -77,9 +90,9 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
               onRemoveTag={(targetTag)=>{
                 setCurrentDraft({...currentDraft,tagIds:[...currentDraft.tagIds].filter((tagName)=>tagName!==targetTag.name)});
                 setIsChanged(true);
-              }}/>
+            }}/>
           </div>
-        </div>
+      </div>
         <div className={detectedDraftStyles.buttons}>
         {
           isEditing ? 
@@ -88,19 +101,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
               e.stopPropagation();
               enterInspectionMode();
             }}/> 
-            {isChanged && <img src={SaveIcon} onClick={(e)=>{
-              e.stopPropagation();
-              updateDraft(idx,
-                {
-                  fields: currentDraft.fields.map((field, idx)=> ({
-                    ...field,
-                    content: fieldRefs.current[idx].getContent()
-                  })),
-                  tagIds: currentDraft.tagIds
-                }
-              );
-              setIsChanged(false);
-            }}/>}
+            {isChanged && <img src={SaveIcon} onClick={onSave}/>}
             {isChanged &&
               <img src={ResetIcon} onClick={onReset}/>}
             </> :

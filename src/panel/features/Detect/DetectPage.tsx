@@ -135,6 +135,7 @@ const DetectPage: React.FC = () => {
       setDrafts(newDrafts);
     }
   }
+  
   const addSelected = async ()=>{   
     if (!confirm(t('add|count|DraftConfirm', {count: selected.size}))) return;
     if (!isConnected) {

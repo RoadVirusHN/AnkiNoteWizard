@@ -83,12 +83,12 @@ input.checkBox{
   overflow: hidden;
 }
 .fieldList {
-  max-height: 250px;
   width: 100%;
   overflow-y: auto;
   pointer-events: auto !important;
   padding: 5px;
 }
+.detectedDraftContainer:not(.editing) 
 
 .fieldInput {
   text-align: start;

@@ -6,8 +6,6 @@ import { useTranslation } from "react-i18next";
 const DeckInput = ({initDeckId,onChange,label, errorMessages}:{initDeckId? : string, onChange : (e:ChangeEvent<HTMLSelectElement>)=>void, label?:string|JSX.Element, errorMessages: string[]}) => {
   const {decks} = useAnkiConnectionStore();
   const [curVal, setCurVal] = useState(initDeckId || (Object.keys(decks).length>0? Object.keys(decks)[0]: ''));
-  const errorMessage = errorMessages.length > 0 ? errorMessages.join(',\n') : '';
-  console.log('error in Deck', errorMessage);
   const {t} = useTranslation('common');
   return (
     <SimpleSelect
