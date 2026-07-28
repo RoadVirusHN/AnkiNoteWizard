@@ -268,7 +268,6 @@ export const onWebMediaDrop = (quillInstance:Quill)=> async (e: DragEvent) => {
     if (imgNode && imgNode.src) {
       
       if (quillInstance) {
-        // 커서 위치나 맨 끝에 이미지 쏙 박아넣기
         const range = quillInstance.getSelection();
         const index = range ? range.index : quillInstance.getLength();
         quillInstance.insertEmbed(index, 'image', imgNode.src);

@@ -2,12 +2,13 @@ import useInspection from "@/panel/hooks/useInspection";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import { FieldData } from "@/types/scanRule.types";
 import { useTranslation } from "react-i18next";
-import { convertQuillToAnkiPureHtml, onFieldDrop, onFieldPaste } from "@/panel/utils/functions";
+import { convertQuillToAnkiPureHtml, onWebMediaDrop, restoreMediaPreviews } from "@/panel/utils/functions";
 import { ChangeEventHandler, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import fieldInputStyle from "./fieldInput.module.css";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
 import EditorToolbar from "../../Editor/EditorToolbar";
+import localforage from "localforage";
 export interface FieldInputHandle {
     getContent(): string;
     reset(content: string): void;
@@ -68,6 +69,9 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
         dirtyRef.current=false;
       }
   }));
+  const onFieldDragOver = (e: DragEvent) => {
+    e.preventDefault(); 
+  };
   useEffect(()=>{
     if (!editorRef.current||!editorToolbarRef.current) return;
     if (!isMounted.current) {
@@ -81,9 +85,33 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
         theme: 'snow',
         modules: {
           toolbar: editorToolbarRef.current,
+          uploader: {
+            mimetypes: ['image/*','audio/*','video/*'],
+            handler: async function(range: { index: number; }, files: File[]) {
+              files.forEach(async (file: File) => {
+                const ext = file.type.split('/')[1] || 'bin';
+                const mediaId = `anki_media_${Date.now()}_${Math.random().toString(36).substring(2,5)}.${ext}`;
+                await localforage.setItem(mediaId, file);              
+                const tempUrl = URL.createObjectURL(file);
+                if (file.type.startsWith('image/')) {
+                  editorQuill.insertEmbed(range.index, 'image', mediaId);
+                  
+                  const imgEl = editorRef.current?.querySelector(`img[src="${mediaId}"]`) as HTMLImageElement;
+                  if (imgEl) {
+                    imgEl.src = tempUrl + '?file=' + mediaId;
+                  }
+                } 
+                else if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
+                  //TODO: video 어케 보여주지??
+                  editorQuill.insertText(range.index, `[sound:${tempUrl}?file=${mediaId}]`);
+                }
+              });
+            }
+          }
         }
       }
     );
+    const drop = onWebMediaDrop(editorQuill);
     editorQuill.clipboard.dangerouslyPasteHTML(content);
     quillRef.current = editorQuill;
     editorQuill.on('text-change', function(delta, oldDelta, source) {
@@ -92,12 +120,42 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
             dirtyRef.current = true;
             onDirty();
         }
+           const oldBlobUrls: string[] = [];
+        oldDelta.ops.forEach(op => {
+          if (op.insert && typeof op.insert === 'object' && 'image' in op.insert) {
+            oldBlobUrls.push((op.insert as { image: string }).image);
+          }
+        });
+    
+        const currentContents = editorQuill.getContents();
+        const currentBlobUrls = new Set<string>();
+        
+        currentContents.ops.forEach(op => {
+          if (op.insert && typeof op.insert === 'object' && 'image' in op.insert) {
+            currentBlobUrls.add((op.insert as { image: string }).image);
+          }
+        });
+    
+        oldBlobUrls.forEach(oldBlobUrl => {
+          if (!currentBlobUrls.has(oldBlobUrl) && oldBlobUrl.startsWith('blob:')) {
+            const match = oldBlobUrl.match(/file=(anki_media_[^&]+)/);
+            if (match){
+              const filename = match[1];
+              localforage.removeItem(filename);
+            }
+          }
+        });
       }
     });
+    restoreMediaPreviews(editorQuill);
+    editorQuill.root.addEventListener('dragover', onFieldDragOver);
+    editorQuill.root.addEventListener('drop', drop);
     editorQuill.root.addEventListener('focus',focus);
     editorQuill.root.addEventListener('blur', blur)
     return ()=>{
       editorQuill.off('text-change');  
+      editorQuill.root.removeEventListener('dragover', onFieldDragOver);
+      editorQuill.root.removeEventListener('drop', drop);
       editorQuill.root.removeEventListener('focus',focus);
       editorQuill.root.removeEventListener('blur',blur);
     };

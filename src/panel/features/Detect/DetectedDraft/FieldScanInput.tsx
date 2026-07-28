@@ -2,7 +2,7 @@ import { FieldData } from "@/types/scanRule.types";
 // TODO: separate FieldScanInput style && folder
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import { useTranslation } from "react-i18next";
-import { convertQuillToAnkiPureHtml, fileToBase64, onWebMediaDrop, restoreMediaPreviews } from "@/panel/utils/functions";
+import { convertQuillToAnkiPureHtml, onWebMediaDrop, restoreMediaPreviews } from "@/panel/utils/functions";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
