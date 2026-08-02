@@ -71,6 +71,8 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
       isMounted.current = true;
       return;
     }
+    //TODO : 버그 : blob url이 제대로 생성이 안됨, 인터넷 파일의 경우 그냥 blob url 말고 원본 url 쓰기
+    // TODO: 이미지 클릭시 스타일 변경 기능 구현.
     const editorQuill = new Quill(editorRef.current,
       {
         debug: 'warn',
@@ -78,8 +80,10 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
         modules: {
           toolbar: editorToolbarRef.current,
           uploader: {
-            mimetypes: ['image/*','audio/*','video/*'],
+            //mimetypes: ['image/*','audio/*','video/*'],
             handler: async function(range: { index: number; }, files: File[]) {
+              // 파일을 localforage에 저장하고, Quill 에디터에 임시 URL로 삽입
+              console.log("processing media file");
               files.forEach(async (file: File) => {
                 const ext = file.type.split('/')[1] || 'bin';
                 const mediaId = `anki_media_${Date.now()}_${Math.random().toString(36).substring(2,5)}.${ext}`;
@@ -103,6 +107,7 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
         }
       }
     );
+    // Web에서 파일을 끌어서 놓을 때 처리하는 이벤트 핸들러 등록
     const drop = onWebMediaDrop(editorQuill);
     editorQuill.clipboard.dangerouslyPasteHTML(field.content);
     quillRef.current = editorQuill;

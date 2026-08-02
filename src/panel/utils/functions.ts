@@ -236,19 +236,18 @@ export async function restoreMediaPreviews(quillInstance: Quill) {
 export const onWebMediaDrop = (quillInstance:Quill)=> async (e: DragEvent) => {
   const dataTransfer = e.dataTransfer;
   if (!dataTransfer) return;
-  // const debugInfo = {
-  //   types: Array.from(dataTransfer.types),
-  //   filesLength: dataTransfer.files?.length,
-  //   files: Array.from(dataTransfer.files || []).map(f => ({ name: f.name, size: f.size, type: f.type })),
-  //   items: Array.from(dataTransfer.items || []).map(item => ({ kind: item.kind, type: item.type })),
-  //   htmlData: dataTransfer.getData('text/html'),
-  //   textData: dataTransfer.getData('text/plain')
-  // };
+  const debugInfo = {
+    types: Array.from(dataTransfer.types),
+    filesLength: dataTransfer.files?.length,
+    files: Array.from(dataTransfer.files || []).map(f => ({ name: f.name, size: f.size, type: f.type })),
+    items: Array.from(dataTransfer.items || []).map(item => ({ kind: item.kind, type: item.type })),
+    htmlData: dataTransfer.getData('text/html'),
+    textData: dataTransfer.getData('text/plain')
+  };
 
-  // console.log("🔥 [DataTransfer 실제 데이터 원본 스냅샷]:", JSON.parse(JSON.stringify(debugInfo)));
+  console.log("🔥 [DataTransfer 실제 데이터 원본 스냅샷]:", JSON.parse(JSON.stringify(debugInfo)));
 
-  
-  const isRealLocalFile = dataTransfer.files && dataTransfer.files.length > 0 && dataTransfer.types.includes('Files');
+  const isRealLocalFile = dataTransfer.files && dataTransfer.files.length > 0 && dataTransfer.types.includes('Files') && !dataTransfer.types.includes('text/html');
   console.log('droop1', e, isRealLocalFile);
   if (isRealLocalFile) {
     return; 
@@ -266,7 +265,6 @@ export const onWebMediaDrop = (quillInstance:Quill)=> async (e: DragEvent) => {
     const imgNode = doc.querySelector('img');
 
     if (imgNode && imgNode.src) {
-      
       if (quillInstance) {
         const range = quillInstance.getSelection();
         const index = range ? range.index : quillInstance.getLength();
