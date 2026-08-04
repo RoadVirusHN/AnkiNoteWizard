@@ -71,6 +71,31 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
       isMounted.current = true;
       return;
     }
+    const ImageBlot = Quill.import('formats/image') as any;
+
+    class AnkiImageBlot extends ImageBlot {
+      static create(value: { src: string; mediaId: string } | string) {
+        const node = super.create(typeof value === 'string' ? value : value.src);
+        
+        if (typeof value === 'object') {
+          node.setAttribute('src', value.src);
+          node.setAttribute('data-file', value.mediaId);
+        }
+        return node;
+      }
+
+      static value(node: HTMLElement) {
+        return {
+          src: node.getAttribute('src'),
+          mediaId: node.getAttribute('data-file')
+        };
+      }
+    }
+
+    // 오버라이딩 등록
+    AnkiImageBlot.blotName = 'image';
+    AnkiImageBlot.tagName = 'IMG';
+    Quill.register(AnkiImageBlot, true);
     //TODO : 버그 : blob url이 제대로 생성이 안됨, 인터넷 파일의 경우 그냥 blob url 말고 원본 url 쓰기
     // TODO: 이미지 클릭시 스타일 변경 기능 구현.
     const editorQuill = new Quill(editorRef.current,
@@ -80,28 +105,45 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
         modules: {
           toolbar: editorToolbarRef.current,
           uploader: {
-            //mimetypes: ['image/*','audio/*','video/*'],
+            mimetypes: [
+              // 이미지 (WebP 포함)
+              'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp', 'image/tiff', 'image/avif',
+              // 오디오
+              'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/webm', 'audio/aac', 'audio/flac', 'audio/mp4', 'audio/m4a',
+              // 비디오
+              'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-msvideo', 'video/mpeg'
+            ],
             handler: async function(range: { index: number; }, files: File[]) {
-              // 파일을 localforage에 저장하고, Quill 에디터에 임시 URL로 삽입
-              console.log("processing media file");
-              files.forEach(async (file: File) => {
+              console.log("processing media file", files);
+              
+              // 수정한 부분: async/await가 루프 내에서 올바르게 작동하도록 for...of 사용
+              let currentIndex = range.index;
+            
+              for (const file of files) {
                 const ext = file.type.split('/')[1] || 'bin';
                 const mediaId = `anki_media_${Date.now()}_${Math.random().toString(36).substring(2,5)}.${ext}`;
-                await localforage.setItem(mediaId, file);              
+                
+                // 1. localforage 저장 완료 대기
+                await localforage.setItem(mediaId, file);
+                console.log("local item 저장 완료:", mediaId);
+            
+                // 2. 임시 URL 생성
                 const tempUrl = URL.createObjectURL(file);
+                const finalSrc = `${tempUrl}?file=${mediaId}`;
+            
                 if (file.type.startsWith('image/')) {
-                  editorQuill.insertEmbed(range.index, 'image', mediaId);
+                  // 3. 커스텀 Blot 덕분에 객체 형태로 주입 가능 (src 검증 우회 및 속성 동시 주입)
+                  editorQuill.insertEmbed(currentIndex, 'image', {
+                    src: finalSrc,
+                    mediaId: mediaId
+                  });
+                  currentIndex += 1; // 이미지가 삽입된 만큼 인덱스 이동
                   
-                  const imgEl = editorRef.current?.querySelector(`img[src="${mediaId}"]`) as HTMLImageElement;
-                  if (imgEl) {
-                    imgEl.src = tempUrl + '?file=' + mediaId;
-                  }
-                } 
-                else if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
-                  //TODO: video 어케 보여주지??
-                  editorQuill.insertText(range.index, `[sound:${tempUrl}?file=${mediaId}]`);
+                } else if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
+                  editorQuill.insertText(currentIndex, `[sound:${finalSrc}]`);
+                  currentIndex += `[sound:${finalSrc}]`.length;
                 }
-              });
+              }
             }
           }
         }
@@ -148,13 +190,13 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
     });
     restoreMediaPreviews(editorQuill);
     editorQuill.root.addEventListener('dragover', onFieldDragOver);
-    editorQuill.root.addEventListener('drop', drop);
+    //editorQuill.root.addEventListener('drop', drop);
     editorQuill.root.addEventListener('focus',focus);
     editorQuill.root.addEventListener('blur', blur);
     return ()=>{
       editorQuill.off('text-change');
       editorQuill.root.removeEventListener('dragover', onFieldDragOver);
-      editorQuill.root.removeEventListener('drop', drop);
+      //editorQuill.root.removeEventListener('drop', drop);
       editorQuill.root.removeEventListener('focus',focus);
       editorQuill.root.removeEventListener('blur',blur);
     };
