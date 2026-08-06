@@ -216,21 +216,69 @@ export const convertQuillToAnkiPureHtml = (quillHtml: string, outerTag='p') => {
 }
 
 export async function restoreMediaPreviews(quillInstance: Quill) {
-  const imgElements = quillInstance.root.querySelectorAll('img') || [];
+  // 1. 현재 에디터의 순수 Delta 상태 가져오기
+  const currentDelta = quillInstance.getContents();
   
-  for (const imgEl of Array.from(imgElements)) {
+  // 2. 새롭게 주소(src)를 갱신할 목적의 빈 델타 객체 생성
+  const newOps = [];
 
-    const match = imgEl.src.match(/file=(anki_media_[^&]+)/);
-    
-    if (match) {
-      const filename = match[1];
-      const fileBlob = await localforage.getItem<Blob>(filename);
-      if (fileBlob) {
-        const liveTempUrl = URL.createObjectURL(fileBlob);
-        imgEl.src = liveTempUrl; 
+  // 3. 델타 연산 배열 순회
+  for (const op of currentDelta.ops) {
+    // 텍스트 등의 기본 포맷은 그대로 복사
+    if (!op.insert || typeof op.insert !== 'object') {
+      newOps.push(op);
+      continue;
+    }
+
+    // 📸 [Case 1] 이미지 복구 대상인 경우
+    if ('image' in op.insert) {
+      const imgData = op.insert.image as { src?: string; mediaId?: string };
+      const mediaId = imgData?.mediaId;
+
+      if (mediaId) {
+        const fileBlob = await localforage.getItem<Blob>(mediaId);
+        if (fileBlob) {
+          const liveTempUrl = URL.createObjectURL(fileBlob);
+          // 새로운 Blob URL로 교체된 가상 구조 주입
+          newOps.push({
+            ...op,
+            insert: {
+              image: { src: liveTempUrl, mediaId }
+            }
+          });
+          continue;
+        }
       }
     }
+
+    // 🔊 [Case 2] 사운드 복구 대상인 경우
+    if ('anki-sound' in op.insert) {
+      const soundData = op.insert['anki-sound'] as { mediaId?: string; src?: string };
+      const mediaId = soundData?.mediaId;
+
+      if (mediaId) {
+        const fileBlob = await localforage.getItem<Blob>(mediaId);
+        if (fileBlob) {
+          const liveTempUrl = URL.createObjectURL(fileBlob);
+          // 임시 재생용 주소(src)를 수혈하여 새 연산에 주입
+          newOps.push({
+            ...op,
+            insert: {
+              'anki-sound': { mediaId, src: liveTempUrl }
+            }
+          });
+          continue;
+        }
+      }
+    }
+
+    // 변경사항이 없는 다른 임베드 데이터는 그대로 패스
+    newOps.push(op);
   }
+
+  // 4. 조립 완료된 새 Delta 데이터를 에디터에 세팅 (화면이 일괄 리렌더링됨)
+  quillInstance.setContents({ ops: newOps } as any);
+  console.log("Delta 방식으로 이미지 및 사운드 프리뷰 복구 완료!");
 }
 
 export const onWebMediaDrop = (quillInstance:Quill)=> async (e: DragEvent) => {
