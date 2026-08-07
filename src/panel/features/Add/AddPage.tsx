@@ -17,11 +17,10 @@ import { NavLink } from "react-router";
 import { INSPECTION_MODE } from "@/types/app.types";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
-import { isNoteValid, processMediaInHtml } from "@/panel/utils/functions";
+import { processMediaInHtml } from "@/panel/utils/quillUtils";
 import FieldInput, { FieldInputHandle } from "@/panel/components/Inputs/FieldInput/FieldInput";
 import useScanRule from "@/panel/stores/useScanRule";
-import i18next from "i18next";
-import { useForceUpdate } from "@/panel/hooks/useForceUpdate";
+import { isNoteValid } from "@/panel/utils/functions";
 
 
 const AddPage = ({}) => {

@@ -17,7 +17,7 @@ import { ExtractedFields, ExtractedInfos,  FIELD_DATA_TYPES,  Draft, ScanRule } 
 import { MESSAGE_TYPE, Response } from '@/types/chrome.types';
 import SimpleButton from '@/panel/components/Inputs/SimpleButton/SimpleButton';
 import { useTranslation } from 'react-i18next';
-import { processMediaInHtml } from '@/panel/utils/functions';
+import { processMediaInHtml } from '@/panel/utils/quillUtils';
 import InspectionOverlay from '@/panel/components/InspectionOverlay/InspectionOverlay';
 import { INSPECTION_MODE } from '@/types/app.types';
 import useInspection from '@/panel/hooks/useInspection';
