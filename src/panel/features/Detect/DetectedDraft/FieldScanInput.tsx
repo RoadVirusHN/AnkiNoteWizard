@@ -3,12 +3,10 @@ import { FieldData } from "@/types/scanRule.types";
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import { useTranslation } from "react-i18next";
 import { convertQuillToAnkiPureHtml, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { DragEvent, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
 import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
-import localforage from "localforage";
-const MAX_CONTENT_LENGTH = 100;
 
 export interface FieldScanInputHandle {
     getContent(): string;
@@ -30,12 +28,40 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill>(null);
   const editorToolbarRef = useRef<HTMLDivElement>(null);
+  const fieldRef = useRef<HTMLDivElement>(null);
   const isMounted = useRef(false);
 
   const [isFocusing, setIsFocusing] = useState(false);
   const focus = () => setIsFocusing(true);
   const blur = () => setIsFocusing(false);
 
+  const onFieldDragEnter = (e:DragEvent) => {
+    e.preventDefault(); 
+    setIsFocusing(true);
+    editorRef.current?.classList.add(detectedDraftStyles.dragOver);
+  };
+  const onFieldDragLeave = (e:DragEvent) => {
+    e.preventDefault(); 
+    if (fieldRef.current && !fieldRef.current.contains(e.relatedTarget as Node)) {
+      setIsFocusing(false);
+      editorRef.current?.classList.remove(detectedDraftStyles.dragOver);
+    }
+  };
+  const onFieldDragOver = (e:DragEvent) => {
+    e.preventDefault(); 
+  };
+  const onFieldDragDrop= (e:DragEvent) => {
+    e.preventDefault(); 
+    setIsFocusing(false);
+    editorRef.current?.classList.remove(detectedDraftStyles.dragOver);
+  };
+  const makeDirty = ()=>{
+    if (!dirtyRef.current) {
+      dirtyRef.current = true;
+      onDirty();
+    }        
+  }
+  //TODO: Ctrl + Z 시 이상현상
   const dirtyRef = useRef(false);
   useImperativeHandle(ref, () => ({
       getContent() {
@@ -51,6 +77,11 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
 
         editor.clipboard.dangerouslyPasteHTML(content);
 
+        if (editor.history) {
+          // reset history(Ctrl+z) to prevent deleting the previous content.
+          editor.history.clear();
+        }
+
         if (range) {// 이거 안하면 quill.js가 멋대로 렌더링할 때마다 focus를 뺏어감.
             editor.setSelection(range);
         } else {
@@ -61,9 +92,7 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
         dirtyRef.current=false;
       }
   }));
-  const onFieldDragOver = (e: DragEvent) => {
-    e.preventDefault(); 
-  };
+
   useEffect(()=>{
     if (!editorRef.current||!editorToolbarRef.current) return;
     if (!isMounted.current) {
@@ -72,28 +101,25 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
       return;
     }
 
-    const editorQuill = getEditorQuill(editorRef.current, editorToolbarRef.current);
-
-    const drop = onWebMediaDrop(editorQuill);
+    const editorQuill = getEditorQuill(editorRef.current, editorToolbarRef.current, makeDirty);
     editorQuill.clipboard.dangerouslyPasteHTML(field.content);
+    if (editorQuill.history) {
+      // reset history(Ctrl+z) to prevent deleting the previous content.
+      editorQuill.history.clear();
+    }
     quillRef.current = editorQuill;
     editorQuill.on('text-change', function(delta, oldDelta, source) {
       if (source === 'user') {
-        if (!dirtyRef.current) {
-          dirtyRef.current = true;
-          onDirty();
-        }        
+        makeDirty();
         removeDeletedMediaTags(editorQuill, oldDelta);
       }
     });
   
     restoreMediaPreviews(editorQuill);
-    editorQuill.root.addEventListener('dragover', onFieldDragOver);
     editorQuill.root.addEventListener('focus',focus);
     editorQuill.root.addEventListener('blur', blur);
     return ()=>{
       editorQuill.off('text-change');
-      editorQuill.root.removeEventListener('dragover', onFieldDragOver);
       editorQuill.root.removeEventListener('focus',focus);
       editorQuill.root.removeEventListener('blur',blur);
     };
@@ -101,7 +127,7 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
   if (isEditing && editorRef.current && defaultFocus) {
     editorRef.current.focus();
   }
-  return <div className={detectedDraftStyles.fieldInput}>
+  return <div className={detectedDraftStyles.fieldInput} ref={fieldRef} onDragEnter={onFieldDragEnter} onDragLeave={onFieldDragLeave} onDragOver={onFieldDragOver} onDrop={onFieldDragDrop}>
        <label 
       className={`${detectedDraftStyles.fieldLabel}` + (containedTooManyEmpty ? ` ${detectedDraftStyles.veryEmpty}` : '')}
       htmlFor="content"
@@ -113,7 +139,7 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
           <div
             id='content'
             ref={editorRef}
-            style={{border: "1px solid var(--color-primary)", width: '100%'}}/> 
+            className={detectedDraftStyles.editor}/>
         </div>
       </div>
     </div>;

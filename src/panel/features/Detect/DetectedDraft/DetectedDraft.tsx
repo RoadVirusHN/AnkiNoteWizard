@@ -73,7 +73,13 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
   }, [note]);
   return (  
   <article className={`${detectedDraftStyles.detectedDraftContainer}` + (isEditing? ` ${detectedDraftStyles.editing}` : '')} 
-  onClick={onClickDraft} title={isEditing ? tDraft('clickToStopEditingAndRevert') : tDraft('clickToEdit')}>
+  onClick={onClickDraft} title={isEditing ? tDraft('clickToStopEditingAndRevert') : tDraft('clickToEdit')} 
+  onDragEnter={(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    setIsEditing(true);
+  }}
+  >
     <div className={detectedDraftStyles.detectedDraftContent}>
       <div className={detectedDraftStyles.detectedDraftHeader}>
         <div className={detectedDraftStyles.scanRuleNameContainer}>
