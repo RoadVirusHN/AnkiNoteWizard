@@ -2,7 +2,206 @@ import i18next from 'i18next';
 import useAnkiConnectionStore from '../stores/useAnkiConnectionStore';
 import localforage from 'localforage';
 import Quill, { Delta } from 'quill';
+import Embed from 'quill/blots/embed';
+import Image from 'quill/formats/image';
 
+export const initQuill = () => {
+  class AnkiSoundBlot extends Embed {
+    static create(value: { mediaId: string; src?: string } | string) {
+      const node = super.create() as HTMLElement;
+
+      // value가 문자열(mediaId)일 수도 있고, 객체({mediaId, src})일 수도 있도록 방어 코드 구성
+      const mediaId = typeof value === 'string' ? value : value.mediaId;
+      const src = typeof value === 'object' ? value.src : '';
+      node.setAttribute('data-file', mediaId);
+      if (src) node.setAttribute('data-src', src);
+      node.setAttribute('contenteditable', 'false');
+      node.className = 'anki-sound-tag';
+
+      // 실제 Anki 스타일의 시각적 버튼 레이아웃 출력
+      node.innerHTML = `
+      <span style="display: inline-flex; align-items: center; background: #eaecf0; border: 1px solid #d0d5dd; padding: 2px 8px; border-radius: 4px; margin: 0 4px; cursor: pointer; user-select: none;" class="sound-click-zone">
+        <span style="margin-right: 4px;">🔊</span>
+        <code style="color: #344054; font-family: monospace;">[sound:${mediaId}]</code>
+      </span>
+      `;
+
+      // 클릭 시 외부 백그라운드 오디오 플레이어 연동
+      node.querySelector('.sound-click-zone')?.addEventListener('click', async (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        try {
+          // data-src 속성에 임시 URL이 있으면 바로 쓰고, 없으면 localforage에서 실시간 추출
+          let playUrl = node.getAttribute('data-src');
+          let shouldRevoke = false;
+
+          if (!playUrl) {
+            const file = await localforage.getItem<File>(mediaId);
+            if (!file) return alert('미디어 파일을 찾을 수 없습니다.');
+            playUrl = URL.createObjectURL(file);
+            shouldRevoke = true;
+          }
+
+          const audio = new Audio(playUrl);
+          audio.play();
+
+          audio.onended = () => {
+            if (shouldRevoke && playUrl) URL.revokeObjectURL(playUrl);
+          };
+        } catch (err) {
+          console.error('오디오 재생 실패:', err);
+        }
+      });
+
+      return node;
+    }
+
+    // getContents() 호출 시 Delta 안에 박힐 값 정의
+    static value(node: HTMLElement) {
+      return {
+        mediaId: node.getAttribute('data-file') || '',
+        src: node.getAttribute('data-src') || '',
+      };
+    }
+  }
+
+  // 중요: 델타가 'anki-sound' 키를 바인딩하도록 설정
+  AnkiSoundBlot.blotName = 'anki-sound';
+  AnkiSoundBlot.tagName = 'SPAN';
+  Quill.register(AnkiSoundBlot, true);
+
+  // TODO: 이미지 클릭시 스타일 변경 기능 구현.
+  class AnkiImageBlot extends Embed {
+    static create(value: { src: string; mediaId: string } | string) {
+      const node = Image.create(typeof value === 'string' ? value : value.src);
+
+      if (typeof value === 'object') {
+        node.setAttribute('src', value.src);
+        node.setAttribute('data-file', value.mediaId);
+      }
+      return node;
+    }
+
+    static value(node: HTMLElement) {
+      return {
+        src: node.getAttribute('src') || '',
+        mediaId: node.getAttribute('data-file') || '',
+      };
+    }
+  }
+
+  // 오버라이딩 등록
+  AnkiImageBlot.blotName = 'anki-image';
+  AnkiImageBlot.tagName = 'IMG';
+  Quill.register(AnkiImageBlot, true);
+};
+
+export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLElement) => {
+  const editorQuill = new Quill(editorElement, {
+    debug: 'warn',
+    theme: 'snow',
+    modules: {
+      toolbar: toolbarElement,
+      uploader: {
+        mimetypes: [
+          // 이미지
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'image/webp',
+          'image/svg+xml',
+          'image/bmp',
+          'image/tiff',
+          'image/avif',
+          // 오디오
+          'audio/mpeg',
+          'audio/ogg',
+          'audio/wav',
+          'audio/webm',
+          'audio/aac',
+          'audio/flac',
+          'audio/mp4',
+          'audio/m4a',
+          // 비디오
+          'video/mp4',
+          'video/webm',
+          'video/ogg',
+          'video/quicktime',
+          'video/x-msvideo',
+          'video/mpeg',
+        ],
+        handler: async function (range: { index: number }, files: File[]) {
+          let currentIndex = range.index;
+          console.log("Uploader handler called with files:", files);
+          for (const file of files) {
+            const ext = file.type.split('/')[1] || 'bin';
+            const mediaId = `anki_media_${Date.now()}_${Math.random().toString(36).substring(2, 5)}.${ext}`;
+            await localforage.setItem(mediaId, file);
+
+            const tempUrl = URL.createObjectURL(file);
+
+            if (file.type.startsWith('image/')) {
+              console.log("process image in", editorQuill, file, mediaId, tempUrl);
+              editorQuill.insertEmbed(currentIndex, 'anki-image', {
+                src: tempUrl,
+                mediaId: mediaId,
+              });
+              currentIndex += 1;
+            } else if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
+              // 사운드도 임베드 데이터 형식으로 삽입
+              editorQuill.insertEmbed(currentIndex, 'anki-sound', {
+                mediaId: mediaId,
+                src: tempUrl, // 현재 켜져 있는 창에서 바로 들을 수 있도록 매핑
+              });
+              currentIndex += 1;
+            }
+          }
+        },
+      },
+    },
+  });
+
+  return editorQuill;
+};
+
+export const removeDeletedMediaTags = (editorQuill: Quill, oldDelta: Delta) => {
+  //TODO : video, audio 삭제시 로직도 완성하기
+  const oldMediaIds: string[] = [];
+  oldDelta.ops.forEach((op) => {
+    if (op.insert && typeof op.insert === 'object' && 'image' in op.insert) {
+      const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
+      if (typeof imgData === 'object' && imgData.mediaId) {
+        oldMediaIds.push(imgData.mediaId);
+      }
+    }
+  });
+
+  const currentContents = editorQuill.getContents();
+  const currentMediaIds = new Set<string>();
+
+  currentContents.ops.forEach((op) => {
+    if (op.insert && typeof op.insert === 'object' && 'image' in op.insert) {
+      const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
+      if (typeof imgData === 'object' && imgData.mediaId) {
+        currentMediaIds.add(imgData.mediaId);
+      }
+    }
+  });
+
+  oldMediaIds.forEach((oldId) => {
+    if (!currentMediaIds.has(oldId)) {
+      localforage
+        .removeItem(oldId)
+        .then(() => {
+          console.log(`DB 미디어 자원 삭제: ${oldId}`);
+        })
+        .catch((err) => {
+          console.error('DB 자원 삭제 실패:', err);
+        });
+    }
+  });
+};
 export function extractAnkiSoundFiles(htmlString: string): string[] {
   const soundRegex = /\[sound:([^\]]+)\]/g;
 
@@ -18,7 +217,7 @@ export function extractAnkiSoundFiles(htmlString: string): string[] {
 
 // Anki에 노트 추가 시 미디어 파일이 포함된 경우, HTML 내의 미디어 태그를 Anki의 미디어 저장 방식에 맞게 변환하여 처리
 export const processMediaInHtml = async (html: string) => {
-  //TODO : Unsupported SRC with quill.js
+  // TODO : blot 기반으로 바꾸기
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
   const mediaElements = Array.from(doc.querySelectorAll('img, audio, video'));

@@ -33,7 +33,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
   const {t:tDraft} = useTranslation('components', {keyPrefix: 'detectedDraft'});
   const [currentDraft, setCurrentDraft] = useState(note);
   const fieldRefs = useRef<FieldScanInputHandle[]>([]);
-  
+  // TODO: file drag over 시 editing & focus 모드 전환시키기 
   const [isEditing, setIsEditing] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
   const {enterInspectionMode,isInspectionMode} = useInspection();
