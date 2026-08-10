@@ -79,6 +79,7 @@ export default {
     },
     noContentErrorSolution: 'No Receiving end founded, Refresh your web page and retry it.',
     ankiNotConnected: 'Anki is not connected. Please check your Anki connection.',
+    mediaFileNotFound: 'Media file not found.', 
   },
   addNote: {
     modelNotFoundError: {
