@@ -48,3 +48,11 @@ h1, h2, h3, h4, h5, h6 {
 label {
   color: var(--color-primary);
 }
+@keyframes ankiBlink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+.anki-playing-blink {
+  animation: ankiBlink 0.8s infinite ease-in-out;
+}

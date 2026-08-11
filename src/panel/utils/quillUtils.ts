@@ -7,50 +7,111 @@ import Image from 'quill/formats/image';
 
 export const initQuill = () => {
   class AnkiSoundBlot extends Embed {
-    static create(value: { mediaId: string; src?: string } | string) {
+    static create(mediaId: string) {
       const node = super.create() as HTMLElement;
 
-      // value가 문자열(mediaId)일 수도 있고, 객체({mediaId, src})일 수도 있도록 방어 코드 구성
-      const mediaId = typeof value === 'string' ? value : value.mediaId;
-      const src = typeof value === 'object' ? value.src : '';
       node.setAttribute('data-file', mediaId);
-      if (src) node.setAttribute('data-src', src);
       node.setAttribute('contenteditable', 'false');
       node.className = 'anki-sound-tag';
-
-      // 실제 Anki 스타일의 시각적 버튼 레이아웃 출력
-      node.innerHTML = `
-      <span style="display: inline-flex; align-items: center; background: #eaecf0; border: 1px solid #d0d5dd; padding: 2px 8px; border-radius: 4px; margin: 0 4px; cursor: pointer; user-select: none;" class="sound-click-zone">
-        <span style="margin-right: 4px;">🔊</span>
-        <code style="color: #344054; font-family: monospace;">[sound:${mediaId}]</code>
-      </span>
-      `;
-
-      // 클릭 시 외부 백그라운드 오디오 플레이어 연동
+      node.innerHTML = `[sound:${mediaId}]<span class="sound-click-zone" style="margin-left: 4px; cursor: pointer;">🔊</span>`;
+   
+      // // 클릭 시 외부 백그라운드 오디오 플레이어 연동
       node.querySelector('.sound-click-zone')?.addEventListener('click', async (e: Event) => {
         e.preventDefault();
         e.stopPropagation();
 
+        const clickZone = e.currentTarget as HTMLElement;
+        console.log("media clicked!!!");
         try {
-          // data-src 속성에 임시 URL이 있으면 바로 쓰고, 없으면 localforage에서 실시간 추출
-          let playUrl = node.getAttribute('data-src');
-          let shouldRevoke = false;
-
-          if (!playUrl) {
-            const file = await localforage.getItem<File>(mediaId);
-            if (!file) return alert('미디어 파일을 찾을 수 없습니다.');
-            playUrl = URL.createObjectURL(file);
-            shouldRevoke = true;
+          const fileName = node.getAttribute('data-file');
+          if (!fileName) {
+            console.error('미디어 파일을 찾을 수 없습니다');
+            return;
           }
+          const file = await localforage.getItem<File>(fileName);
+          if (!file) {
+            console.error('미디어 파일을 찾을 수 없습니다:', fileName);
+            return;
+          }
+          const playUrl = URL.createObjectURL(file);
+          const shouldRevoke = true; // 팝업 창이 닫힐 때 Blob URL을 해제할지 여부
 
-          const audio = new Audio(playUrl);
-          audio.play();
+          // 파일명을 기반으로 확장자 추출 (쿼리 스트링 제거 안전장치 포함)
+          const extension = fileName.split('.').pop()?.toLowerCase() || '';
+          console.log(extension, fileName);
+          // 🎵 1. 오디오 파일 처리 분기S
+          if (extension && audioExtensions.includes(extension)) {
+            // 이미 재생 중인 경우 중복 실행 방지 및 깜빡임 클래스 추가
+            console.log("audio processing");
+            if (clickZone.classList.contains('anki-playing-blink')) return;
+            clickZone.classList.add('anki-playing-blink');
 
-          audio.onended = () => {
-            if (shouldRevoke && playUrl) URL.revokeObjectURL(playUrl);
-          };
+            const audio = new Audio(playUrl);
+            audio.play();
+
+            // 재생이 끝나면 깜빡임 멈추고 메모리 해제
+            audio.onended = () => {
+              clickZone.classList.remove('anki-playing-blink');
+              if (shouldRevoke) {
+                URL.revokeObjectURL(playUrl);
+              }
+            };
+            
+            // 에러 발생 시에도 깜빡임 해제
+            audio.onerror = () => {
+              clickZone.classList.remove('anki-playing-blink');
+              if (shouldRevoke) {
+                URL.revokeObjectURL(playUrl);
+              }
+            };
+
+          // 🎬 2. 비디오 파일 처리 분기 (새창 팝업)
+          } else if (extension && videoExtensions.includes(extension)) {
+            console.log("video processing");
+            // 팝업 창의 크기 및 옵션 설정
+            const popupWidth = 800;
+            const popupHeight = 600;
+            const left = (window.screen.width - popupWidth) / 2;
+            const top = (window.screen.height - popupHeight) / 2;
+            
+            const popupWindow = window.open(
+              '', 
+              `AnkiVideoPlayer_${mediaId}`, 
+              `width=${popupWidth},height=${popupHeight},top=${top},left=${left},scrollbars=no,resizable=yes`
+            );
+
+            if (popupWindow) {
+              // 새 창 내부에 HTML5 비디오 플레이어를 주입하여 자동 재생 (`autoplay`)
+              popupWindow.document.write(`
+                <html>
+                <head>
+                  <title>Anki Video Player - ${mediaId}</title>
+                  <style>
+                    body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+                    video { max-width: 100%; max-height: 100%; object-fit: contain; }
+                  </style>
+                </head>
+                <body>
+                  <video src="${playUrl}" controls autoplay></video>
+                  <script>
+                    // 부모 창이 닫힐 때 Blob URL 메모리 누수를 방지하기 위한 안전장치
+                    window.onbeforeunload = function() {
+                      if (${shouldRevoke}) {
+                        window.opener.URL.revokeObjectURL("${playUrl}");
+                      }
+                    };
+                  </script>
+                </body>
+                </html>
+              `);
+              popupWindow.document.close();
+            } else {
+              alert('팝업 차단이 활성화되어 있어 비디오를 재생할 수 없습니다.');
+            }
+          }
         } catch (err) {
-          console.error('오디오 재생 실패:', err);
+          console.error('미디어 재생 실패:', err);
+          clickZone.classList.remove('anki-playing-blink');
         }
       });
 
@@ -59,10 +120,7 @@ export const initQuill = () => {
 
     // getContents() 호출 시 Delta 안에 박힐 값 정의
     static value(node: HTMLElement) {
-      return {
-        mediaId: node.getAttribute('data-file') || '',
-        src: node.getAttribute('data-src') || '',
-      };
+      return  node.getAttribute('data-file') || '';
     }
   }
 
@@ -97,40 +155,18 @@ export const initQuill = () => {
   Quill.register(AnkiImageBlot, true);
 };
 
-export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLElement) => {
+const imageExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'svg+xml', 'bmp', 'tiff', 'avif'];
+const audioExtensions = ['mpeg', 'ogg', 'wav', 'webm', 'aac', 'flac', 'mp4', 'm4a'];
+const videoExtensions = ['mp4', 'webm', 'ogg', 'quicktime', 'x-msvideo', 'mpeg'];
+
+export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLElement, makeDirty:()=>void) => {
   const editorQuill = new Quill(editorElement, {
     debug: 'warn',
     theme: 'snow',
     modules: {
       toolbar: toolbarElement,
       uploader: {
-        mimetypes: [
-          // 이미지
-          'image/jpeg',
-          'image/png',
-          'image/gif',
-          'image/webp',
-          'image/svg+xml',
-          'image/bmp',
-          'image/tiff',
-          'image/avif',
-          // 오디오
-          'audio/mpeg',
-          'audio/ogg',
-          'audio/wav',
-          'audio/webm',
-          'audio/aac',
-          'audio/flac',
-          'audio/mp4',
-          'audio/m4a',
-          // 비디오
-          'video/mp4',
-          'video/webm',
-          'video/ogg',
-          'video/quicktime',
-          'video/x-msvideo',
-          'video/mpeg',
-        ],
+        mimetypes: [...imageExtensions.map((ext) => `image/${ext}`), ...audioExtensions.map((ext) => `audio/${ext}`), ...videoExtensions.map((ext) => `video/${ext}`)],
         handler: async function (range: { index: number }, files: File[]) {
           let currentIndex = range.index;
           console.log("Uploader handler called with files:", files);
@@ -138,23 +174,21 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
             const ext = file.type.split('/')[1] || 'bin';
             const mediaId = `anki_media_${Date.now()}_${Math.random().toString(36).substring(2, 5)}.${ext}`;
             await localforage.setItem(mediaId, file);
-
-            const tempUrl = URL.createObjectURL(file);
-
+            
             if (file.type.startsWith('image/')) {
+              const tempUrl = URL.createObjectURL(file);
               console.log("process image in", editorQuill, file, mediaId, tempUrl);
               editorQuill.insertEmbed(currentIndex, 'anki-image', {
                 src: tempUrl,
                 mediaId: mediaId,
               });
               currentIndex += 1;
+              makeDirty();
             } else if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
               // 사운드도 임베드 데이터 형식으로 삽입
-              editorQuill.insertEmbed(currentIndex, 'anki-sound', {
-                mediaId: mediaId,
-                src: tempUrl, // 현재 켜져 있는 창에서 바로 들을 수 있도록 매핑
-              });
+              editorQuill.insertEmbed(currentIndex, 'anki-sound',mediaId);
               currentIndex += 1;
+              makeDirty();
             }
           }
         },
@@ -169,10 +203,15 @@ export const removeDeletedMediaTags = (editorQuill: Quill, oldDelta: Delta) => {
   //TODO : video, audio 삭제시 로직도 완성하기
   const oldMediaIds: string[] = [];
   oldDelta.ops.forEach((op) => {
-    if (op.insert && typeof op.insert === 'object' && 'image' in op.insert) {
+    if (op.insert && typeof op.insert === 'object' && 'anki-image' in op.insert) {
       const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
       if (typeof imgData === 'object' && imgData.mediaId) {
         oldMediaIds.push(imgData.mediaId);
+      }
+    } else if (op.insert && typeof op.insert === 'object' && 'anki-sound' in op.insert) {
+      const soundData = op.insert['anki-sound'] as string;
+      if (soundData) {
+        oldMediaIds.push(soundData);
       }
     }
   });
@@ -181,10 +220,15 @@ export const removeDeletedMediaTags = (editorQuill: Quill, oldDelta: Delta) => {
   const currentMediaIds = new Set<string>();
 
   currentContents.ops.forEach((op) => {
-    if (op.insert && typeof op.insert === 'object' && 'image' in op.insert) {
+    if (op.insert && typeof op.insert === 'object' && 'anki-image' in op.insert) {
       const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
       if (typeof imgData === 'object' && imgData.mediaId) {
         currentMediaIds.add(imgData.mediaId);
+      }
+    } else if (op.insert && typeof op.insert === 'object' && 'anki-sound' in op.insert) {
+      const soundData = op.insert['anki-sound'] as string;
+      if (soundData) {
+        currentMediaIds.add(soundData);
       }
     }
   });
