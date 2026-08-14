@@ -4,6 +4,8 @@ import localforage from 'localforage';
 import Quill, { Delta } from 'quill';
 import Embed from 'quill/blots/embed';
 import Image from 'quill/formats/image';
+import { createRoot } from 'react-dom/client';
+import VidPlayer from "@/panel/components/VidPlayer/VidPlayer";
 
 export const initQuill = () => {
   class AnkiSoundBlot extends Embed {
@@ -25,12 +27,15 @@ export const initQuill = () => {
         try {
           const fileName = node.getAttribute('data-file');
           if (!fileName) {
+            //TODO : i18n
+            alert(i18next.t('error:common.mediaFileNotFound'));
             console.error('미디어 파일을 찾을 수 없습니다');
             return;
           }
           const file = await localforage.getItem<File>(fileName);
           if (!file) {
             console.error('미디어 파일을 찾을 수 없습니다:', fileName);
+            alert(i18next.t('error:common.mediaFileNotFound'));
             return;
           }
           const playUrl = URL.createObjectURL(file);
@@ -39,8 +44,44 @@ export const initQuill = () => {
           // 파일명을 기반으로 확장자 추출 (쿼리 스트링 제거 안전장치 포함)
           const extension = fileName.split('.').pop()?.toLowerCase() || '';
           console.log(extension, fileName);
-          // 🎵 1. 오디오 파일 처리 분기S
-          if (extension && audioExtensions.includes(extension)) {
+          if (extension && videoExtensions.includes(extension)) {
+            // 🎬 2. 비디오 파일 처리 분기 (새창 팝업)
+            console.log("video processing");
+            // 팝업 창의 크기 및 옵션 설정
+            const popupWidth = 800;
+            const popupHeight = 600;
+            const left = (window.screen.width - popupWidth) / 2;
+            const top = (window.screen.height - popupHeight) / 2;
+            
+            const popupWindow = window.open(
+              '', 
+              `AnkiVideoPlayer_${mediaId}`, 
+              `width=${popupWidth},height=${popupHeight},top=${top},left=${left},scrollbars=no,resizable=yes`
+            );
+
+            if (popupWindow) {
+              // 새 창 내부에 HTML5 비디오 플레이어를 주입하여 자동 재생 (`autoplay`)
+              popupWindow.document.write(`
+                <html>
+                  <head>
+                    <title>Anki Video Player - ${mediaId}</title>
+                  </head>
+                  <body style="margin:0; background:#000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden;">
+                    <div id="popup-root"></div>
+                  </body>
+                </html>
+              `);
+              popupWindow.document.close();
+              const container = popupWindow.document.getElementById('popup-root');
+              if (container){
+                const root =createRoot(container);
+                root.render(<VidPlayer playUrl={playUrl} shouldRevoke={shouldRevoke as boolean} />);
+              }
+            } else {
+              alert(i18next.t('error:common.popupBlocked'));
+            }
+          } else if (extension && audioExtensions.includes(extension)) {
+            // 🎵 1. 오디오 파일 처리 분기S
             // 이미 재생 중인 경우 중복 실행 방지 및 깜빡임 클래스 추가
             console.log("audio processing");
             if (clickZone.classList.contains('anki-playing-blink')) return;
@@ -65,52 +106,10 @@ export const initQuill = () => {
               }
             };
 
-          // 🎬 2. 비디오 파일 처리 분기 (새창 팝업)
-          } else if (extension && videoExtensions.includes(extension)) {
-            console.log("video processing");
-            // 팝업 창의 크기 및 옵션 설정
-            const popupWidth = 800;
-            const popupHeight = 600;
-            const left = (window.screen.width - popupWidth) / 2;
-            const top = (window.screen.height - popupHeight) / 2;
-            
-            const popupWindow = window.open(
-              '', 
-              `AnkiVideoPlayer_${mediaId}`, 
-              `width=${popupWidth},height=${popupHeight},top=${top},left=${left},scrollbars=no,resizable=yes`
-            );
-
-            if (popupWindow) {
-              // 새 창 내부에 HTML5 비디오 플레이어를 주입하여 자동 재생 (`autoplay`)
-              popupWindow.document.write(`
-                <html>
-                <head>
-                  <title>Anki Video Player - ${mediaId}</title>
-                  <style>
-                    body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-                    video { max-width: 100%; max-height: 100%; object-fit: contain; }
-                  </style>
-                </head>
-                <body>
-                  <video src="${playUrl}" controls autoplay></video>
-                  <script>
-                    // 부모 창이 닫힐 때 Blob URL 메모리 누수를 방지하기 위한 안전장치
-                    window.onbeforeunload = function() {
-                      if (${shouldRevoke}) {
-                        window.opener.URL.revokeObjectURL("${playUrl}");
-                      }
-                    };
-                  </script>
-                </body>
-                </html>
-              `);
-              popupWindow.document.close();
-            } else {
-              alert('팝업 차단이 활성화되어 있어 비디오를 재생할 수 없습니다.');
-            }
-          }
+          } 
         } catch (err) {
           console.error('미디어 재생 실패:', err);
+          alert(i18next.t('error:common.playMediaFail') + `: ${err}`);
           clickZone.classList.remove('anki-playing-blink');
         }
       });
@@ -156,7 +155,7 @@ export const initQuill = () => {
 };
 
 const imageExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'svg+xml', 'bmp', 'tiff', 'avif'];
-const audioExtensions = ['mpeg', 'ogg', 'wav', 'webm', 'aac', 'flac', 'mp4', 'm4a'];
+const audioExtensions = ['mpeg', 'ogg', 'wav', 'webm', 'aac', 'flac', 'm4a', 'mp4', 'x-m4a'];
 const videoExtensions = ['mp4', 'webm', 'ogg', 'quicktime', 'x-msvideo', 'mpeg'];
 
 export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLElement, makeDirty:()=>void) => {

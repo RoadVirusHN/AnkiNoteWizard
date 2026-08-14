@@ -79,7 +79,9 @@ export default {
     },
     noContentErrorSolution: 'No Receiving end founded, Refresh your web page and retry it.',
     ankiNotConnected: 'Anki is not connected. Please check your Anki connection.',
-    mediaFileNotFound: 'Media file not found.', 
+    mediaFileNotFound: 'Media file not found. Please re-register the media file.', 
+    popupBlocked: 'Popup blocked. Please allow popups for this app and try again.',
+    playMediaFail: 'Failed to play media file. Please check the media file and try again.',
   },
   addNote: {
     modelNotFoundError: {

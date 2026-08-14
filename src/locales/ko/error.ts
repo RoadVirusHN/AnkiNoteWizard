@@ -80,7 +80,9 @@ export default {
     },
     noContentErrorSolution: '웹페이지 인식 불가, 웹 페이지를 새로고침하고 다시 시도하세요.',
     ankiNotConnected: 'Anki가 연결되지 않았습니다. Anki 연결을 확인하세요.',
-    mediaFileNotFound: '미디어 파일을 찾을 수 없습니다.', 
+    mediaFileNotFound: '미디어 파일을 찾을 수 없습니다. 재등록해주세요.', 
+    popupBlocked: '팝업이 차단되었습니다. 이 앱을 위해 팝업 차단을 해제하고 다시 시도하세요.',
+        playMediaFail: '미디어 파일 재생에 실패했습니다. 미디어 파일을 확인하고 다시 시도하세요.',
   },
   addNote: {
     modelNotFoundError: {

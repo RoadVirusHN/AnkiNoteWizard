@@ -52,7 +52,6 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
   };
   const onFieldDragDrop= (e:DragEvent) => {
     e.preventDefault(); 
-    setIsFocusing(false);
     editorRef.current?.classList.remove(detectedDraftStyles.dragOver);
   };
   const makeDirty = ()=>{
