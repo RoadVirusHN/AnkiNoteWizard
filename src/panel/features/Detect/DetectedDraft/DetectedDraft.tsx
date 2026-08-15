@@ -57,6 +57,9 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
   };
   const onSave = (e:MouseEvent)=>{
     e.stopPropagation();
+    fieldRefs.current.forEach((fieldRef)=>{
+      fieldRef.saved();
+    });
     updateDraft(idx,
       {
         fields: currentDraft.fields.map((field, idx)=> ({
@@ -113,6 +116,9 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
             </> :
           <img src={DelIcon} onClick={(e)=>{
             e.stopPropagation();
+            fieldRefs.current.forEach((fieldRef)=>{
+              fieldRef.deleted();
+            });
             removeDraft(idx);
           }} />
         }

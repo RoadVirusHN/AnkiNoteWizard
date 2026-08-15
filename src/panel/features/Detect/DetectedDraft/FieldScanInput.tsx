@@ -2,7 +2,7 @@ import { FieldData } from "@/types/scanRule.types";
 // TODO: separate FieldScanInput style && folder
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import { useTranslation } from "react-i18next";
-import { convertQuillToAnkiPureHtml, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
+import { convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
 import { DragEvent, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
@@ -12,6 +12,7 @@ export interface FieldScanInputHandle {
     getContent(): string;
     reset(content: string): void;
     saved():void;
+    deleted():void;
 }
 
 interface FieldScanInputProps {
@@ -64,7 +65,8 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
   const dirtyRef = useRef(false);
   useImperativeHandle(ref, () => ({
       getContent() {
-          return convertQuillToAnkiPureHtml(quillRef.current!.root.innerHTML);
+          if (!quillRef.current) return "";
+          return convertQuillToAnkiPureHtml(quillRef.current);
       },
 
       reset(content: string) {
@@ -73,9 +75,9 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
         const editor = quillRef.current;
         if (!editor) return;
         const range = editor.getSelection();
-
+        
         editor.clipboard.dangerouslyPasteHTML(content);
-
+        
         if (editor.history) {
           // reset history(Ctrl+z) to prevent deleting the previous content.
           editor.history.clear();
@@ -89,6 +91,18 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
       },
       saved(){
         dirtyRef.current=false;
+        const editorQuill = quillRef.current;
+        if (editorQuill) {
+          const oldDelta = editorQuill.clipboard.convert({html: field.content});
+          removeDeletedMediaTags(editorQuill, oldDelta);
+        }
+      },
+      deleted(){
+        dirtyRef.current=false;
+        const editorQuill = quillRef.current;
+        if (editorQuill) {
+          deleteAllMediaTags(editorQuill);
+        }
       }
   }));
 
@@ -110,7 +124,6 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
     editorQuill.on('text-change', function(delta, oldDelta, source) {
       if (source === 'user') {
         makeDirty();
-        removeDeletedMediaTags(editorQuill, oldDelta);
       }
     });
   
