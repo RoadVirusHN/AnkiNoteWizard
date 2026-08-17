@@ -65,24 +65,28 @@ export default {
     },
   },
   common: {
-    storeMediaError: '미디어 파일 등록에 실패',
+    noContentErrorSolution: '웹페이지 인식 불가, 웹 페이지를 새로고침하고 다시 시도하세요.',
+    ankiNotConnected: 'Anki가 연결되지 않았습니다. Anki 연결을 확인하세요.',
+    popupBlocked: '팝업이 차단되었습니다. 이 앱을 위해 팝업 차단을 해제하고 다시 시도하세요.',
+  },
+  media: {
+    storeMediaError: '미디어 파일 저장 실패',
+    mediaFileNotFound: '미디어 파일을 찾을 수 없습니다. 미디어 파일을 다시 등록하세요.',
+    playMediaFail: '미디어 파일 재생 실패. 미디어 파일을 확인하고 다시 시도하세요.',
+    fetchMediaError: '미디어 파일 가져오기 실패. src를 확인하고 다시 시도하세요.',
+    contentHeaderError: '콘텐츠 헤더 가져오기 실패. src를 확인하고 다시 시도하세요.',
     base64Error: {
       code: 'base64Error',
-      statusText: 'base64 변환 실패',
-      description: '미디어 파일을 base64로 변환하는 데 실패했습니다.',
-      solutions: ['미디어 파일을 확인 및 재작성하고 다시 시도하세요.'],
+      statusText: 'base64 변환 오류',
+      description: '미디어 파일을 base64 형식으로 변환하지 못했습니다.',
+      solutions: ['미디어 파일을 확인하고 다시 시도하세요.'],
     },
     unsupportedSrcFormatError: {
       code: 'unsupportedSrcFormatError',
       statusText: '지원되지 않는 src 형식',
-      description: '지원되지 않는 src 형식입니다.',
+      description: 'src 형식이 지원되지 않습니다.',
       solutions: ['src 형식을 확인하고 다시 시도하세요.'],
     },
-    noContentErrorSolution: '웹페이지 인식 불가, 웹 페이지를 새로고침하고 다시 시도하세요.',
-    ankiNotConnected: 'Anki가 연결되지 않았습니다. Anki 연결을 확인하세요.',
-    mediaFileNotFound: '미디어 파일을 찾을 수 없습니다. 재등록해주세요.', 
-    popupBlocked: '팝업이 차단되었습니다. 이 앱을 위해 팝업 차단을 해제하고 다시 시도하세요.',
-        playMediaFail: '미디어 파일 재생에 실패했습니다. 미디어 파일을 확인하고 다시 시도하세요.',
   },
   addNote: {
     modelNotFoundError: {
@@ -119,16 +123,20 @@ export default {
       code: 'addNoteFail',
       statusText: '노트 추가 실패',
       description: 'Anki에 노트를 추가하는 동안 오류가 발생했습니다.',
-      solutions: ['다시 시도하세요.', 'Anki Note Wizard 또는 Chrome의 최신 버전으로 업데이트하세요.'],
+      solutions: [
+        '다시 시도하세요.',
+        'Anki Note Wizard 또는 Chrome의 최신 버전으로 업데이트하세요.',
+      ],
     },
     fileTooLarge: {
       code: 'fileTooLarge',
       statusText: '파일이 너무 큼',
       description: '파일 크기가 허용된 크기 보다 큽니다. :',
       solutions: ['파일 크기를 줄이고 다시 시도하세요.'],
-    }
+    },
+    confirmAddAnyway: '일부 오류가 발생했습니다. 그래도 노트를 추가하시겠습니까?',
   },
-  scanRule:{
+  scanRule: {
     invallidScanRuleName: {
       code: 'invallidScanRuleName',
       statusText: '잘못된 스캔 규칙 이름',
@@ -152,7 +160,7 @@ export default {
       statusText: '잘못된 루트 태그',
       description: '스캔 규칙에 지정된 루트 태그가 유효하지 않습니다.',
       solutions: ['스캔 규칙에 유효한 루트 태그를 입력하세요.'],
-    }
+    },
   },
   detectPage: {
     selectDeckFirst: {
@@ -167,6 +175,6 @@ export default {
       statusText: '선택된 초안 없음',
       description: '선택된 초안이 없습니다.',
       solutions: ['노트를 추가하기 전에 초안을 선택하세요.'],
-    }
-  }
+    },
+  },
 } satisfies typeof error;

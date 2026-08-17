@@ -17,7 +17,7 @@ export const initQuill = () => {
       node.className = 'anki-sound-tag';
       node.innerHTML = `[sound:${mediaId}]<span class="sound-click-zone" style="margin-left: 4px; cursor: pointer;">🔊</span>`;
    
-      // // 클릭 시 외부 백그라운드 오디오 플레이어 연동
+      // // 클릭 시 비디오/오디오 실행
       node.querySelector('.sound-click-zone')?.addEventListener('click', async (e: Event) => {
         e.preventDefault();
         e.stopPropagation();
@@ -28,14 +28,14 @@ export const initQuill = () => {
           const fileName = node.getAttribute('data-file');
           if (!fileName) {
             //TODO : i18n
-            alert(i18next.t('error:common.mediaFileNotFound'));
+            alert(i18next.t('error:media.mediaFileNotFound'));
             console.error('미디어 파일을 찾을 수 없습니다');
             return;
           }
           const file = await localforage.getItem<File>(fileName);
           if (!file) {
             console.error('미디어 파일을 찾을 수 없습니다:', fileName);
-            alert(i18next.t('error:common.mediaFileNotFound'));
+            alert(i18next.t('error:media.mediaFileNotFound'));
             return;
           }
           const playUrl = URL.createObjectURL(file);
@@ -109,7 +109,7 @@ export const initQuill = () => {
           } 
         } catch (err) {
           console.error('미디어 재생 실패:', err);
-          alert(i18next.t('error:common.playMediaFail') + `: ${err}`);
+          alert(i18next.t('error:media.playMediaFail') + `: ${err}`);
           clickZone.classList.remove('anki-playing-blink');
         }
       });
@@ -245,122 +245,234 @@ export const removeDeletedMediaTags = (editorQuill: Quill, oldDelta: Delta) => {
     }
   });
 };
-export function extractAnkiSoundFiles(htmlString: string): string[] {
-  const soundRegex = /\[sound:([^\]]+)\]/g;
+export function deleteAllMediaTags(editorQuill: Quill) {
+  const currentContents = editorQuill.getContents();
+  const mediaIdsToDelete: string[] = [];
 
+  currentContents.ops.forEach((op) => {
+    if (op.insert && typeof op.insert === 'object' && 'anki-image' in op.insert) {
+      const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
+      if (typeof imgData === 'object' && imgData.mediaId) {
+        mediaIdsToDelete.push(imgData.mediaId);
+      }
+    } else if (op.insert && typeof op.insert === 'object' && 'anki-sound' in op.insert) {
+      const soundData = op.insert['anki-sound'] as string;
+      if (soundData) {
+        mediaIdsToDelete.push(soundData);
+      }
+    }
+  });
+
+  mediaIdsToDelete.forEach((mediaId) => {
+    localforage
+      .removeItem(mediaId)
+      .then(() => {
+        console.log(`DB 미디어 자원 삭제: ${mediaId}`);
+      })
+      .catch((err) => {
+        console.error('DB 자원 삭제 실패:', err);
+      });
+  });
+}
+function extractAnkiSoundFiles(htmlString: string): string[] {
+  const soundRegex = /\[sound:([^\]]+)\]/g;
   const fileNames: string[] = [];
   let match;
-
   while ((match = soundRegex.exec(htmlString)) !== null) {
     fileNames.push(match[1].trim());
   }
-
   return fileNames;
 }
 
 // Anki에 노트 추가 시 미디어 파일이 포함된 경우, HTML 내의 미디어 태그를 Anki의 미디어 저장 방식에 맞게 변환하여 처리
 export const processMediaInHtml = async (html: string) => {
-  // TODO : blot 기반으로 바꾸기
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
-  const mediaElements = Array.from(doc.querySelectorAll('img, audio, video'));
-
+  let mediaElements = Array.from(doc.querySelectorAll('img, audio, video')).map((element)=>{
+    return {
+      tagName : element.tagName.toLowerCase(),
+      src: element.getAttribute('src'),
+      node: element
+    }
+  });
+  extractAnkiSoundFiles(html).forEach((fileName) => {
+    mediaElements.push({
+      tagName: 'sound',
+      src:fileName,
+      node: null as any
+    });
+  });
+  let errors = [] as {error:string;src:string;}[];
   for (const element of mediaElements) {
-    const src = element.getAttribute('src');
+    const src = element['src'];
     if (!src) continue;
 
-    // src가 확장자로 끝난다면 이미 변환 완료된 상태.
-    if (
-      !src.startsWith('blob:') &&
-      !src.startsWith('http://') &&
-      !src.startsWith('https://') &&
-      /\.(png|jpg|jpeg|gif|mp3|mp4|wav|ogg)$/i.test(src)
-    ) {
-      continue;
-    }
-
-    const tagName = element.tagName.toLowerCase();
-    let filename;
-    if (tagName === 'img') {
-      filename = 'pasted_image.png';
-    } else if (tagName === 'audio') {
-      filename = 'pasted_audio.mp3';
-    } else if (tagName === 'video') {
-      filename = 'pasted_video.mp4';
-    } else {
-      console.warn('Unsupported media type:', element.tagName);
-      continue;
-    }
-
     let params = {
-      filename,
       deleteExisting: false,
     } as { filename: string; deleteExisting: boolean; url?: string; data?: string };
 
-    if (src.startsWith('blob:')) {
+    const tagName = element.tagName.toLowerCase();
+    let extension;
+    if (src.startsWith('http://') || src.startsWith('https://')) {
+      continue;
+      // 외부 파일이면 storeMediaFile 시, 헤더 파일 확인 후, url로 요청
+      // 일단 외부 링크면 storeMedia를 보류하기로 했음, 나중에 원복 시 아래코드 참조.
+      // const res = await fetch(src, { method: 'HEAD' });
+      // if (!res.ok) {
+      //   console.error('Failed to fetch media file header:', res.status, res.statusText);
+      //   errors.push({ error: i18next.t('error:media.fetchMediaError'), src });
+      //   continue;
+      // } else {
+      //   const contentType = res.headers.get('Content-Type');
+      //   if (contentType) {
+      //     extension = contentType.split('/')[1];
+      //   } else {
+      //     console.warn('Content-Type header not found for:', src);
+      //     errors.push({ error: i18next.t('error:media.contentHeaderError'), src });
+      //     continue;
+      //   }
+      // }
+      // params.url = src;
+    } else if (src.startsWith('blob:')){
+      // blob일 경우 blob url에서 파일 추출 후, base64로 변환 후, storeMediaFile로 요청
+      let base64;
+      const file = await fetch(src).then((res) => res.blob());
+      if (!file) {
+        errors.push({ error: i18next.t('error:media.fetchMediaError'), src });
+        continue;  
+      }
       try {
-        const File = (await localforage.getItem(src)) as File;
-        params.data = await fileToBase64(File);
+        base64 = await fileToBase64(file as File);
       } catch (err) {
         console.error('Failed to convert blob to base64:', err);
-        alert(
-          i18next.t('error:common.base64Error.statusText') +
-            ' : ' +
-            (
-              i18next.t('error:common.base64Error.solutions', { returnObjects: true }) as string[]
-            )[0]
-        );
-        return { result: 'error', error: 'base64_conversion_failed', data: '' };
+        errors.push({ error: i18next.t('error:media.base64Error.statusText'), src });
       }
-    } else if (src.startsWith('http://') || src.startsWith('https://')) {
-      // 일반 웹 URL(http://, https://)인 경우는 기존처럼 url로 요청 가능
-      params.url = src;
+      extension = file.type.split('/')[1];
+      params.data = base64;
+    } else if (src.startsWith('data:')) {
+      // data URL일 경우 base64로 변환 후, storeMediaFile로 요청
+      // 일단 사용자가 의도적으로 data를 넣은 경우 storeMedia를 보류하기로 했음, 나중에 원복 시 아래코드 참조.
+      continue;
+      // extension = src.split(';')[0].split('/')[1];
+      // params.data = src.split(',')[1];
+
+    } else if (src.startsWith('file://')) {
+      // file URL일 경우, 브라우저 환경에서는 접근 불가하므로, 사용자에게 알림
+      console.warn('Unsupported media type (file URL):', src);
+      errors.push({ error: i18next.t('error:media.unsupportedSrcFormatError.statusText') + ": 'file://'", src });
+      continue;
     } else {
-      // 알수없는 형식 에러
-      console.error('Unsupported src format:', src);
-      alert(
-        i18next.t('error:common.base64Error.statusText') +
-          ' : ' +
-          i18next.t('error:common.unsupportedSrcFormatError.statusText') +
-          ' : ' +
-          src
-      );
+      // 순수 파일명인 경우, localforage에서 base64로 변환 후, storeMediaFile로 요청, 존재하지 않은 경우 이미 요청한 경우일 수도 있으므로 무시
+      if (tagName === 'img') {
+        imageExtensions.forEach((ext) => {
+          if (src.endsWith(`.${ext}`)) {
+            // 이미지 파일명인 경우
+            extension = ext;
+            return;
+          }
+        });
+
+        try {
+          const file = await localforage.getItem<File>(src);
+          if (!file) {
+            errors.push({ error: i18next.t('error:media.mediaFileNotFound'), src });
+            continue;  
+          }
+          params.data = await fileToBase64(file);
+        } catch (err) {
+          console.error('Failed to convert blob to base64:', err);
+          errors.push({ error: i18next.t('error:media.base64Error.statusText'), src });
+          continue;
+        }
+      } else if (tagName === 'video'||tagName === 'sound') {
+        videoExtensions.forEach((ext) => {
+          if (src.endsWith(`.${ext}`)) {
+            // 비디오 파일명인 경우
+            extension = ext;
+            return;
+          }
+        });
+        try {
+          const file = await localforage.getItem<File>(src);
+          if (!file) {
+            errors.push({ error: i18next.t('error:media.mediaFileNotFound'), src });
+            continue;  
+          }
+          params.data = await fileToBase64(file);
+        } catch (err) {
+          console.error('Failed to convert blob to base64:', err);
+          errors.push({ error: i18next.t('error:media.base64Error.statusText'), src });
+          continue;
+        }
+      } else if (tagName === 'audio') {
+        audioExtensions.forEach((ext) => {
+          if (src.endsWith(`.${ext}`)) {
+            // 오디오 파일명인 경우
+            extension = ext;
+            return;
+          }
+        });
+        try {
+          const file = await localforage.getItem<File>(src);
+          if (!file) {
+            errors.push({ error: i18next.t('error:media.mediaFileNotFound'), src });
+            continue;  
+          }
+          params.data = await fileToBase64(file);
+        } catch (err) {
+          console.error('Failed to convert blob to base64:', err);
+        }
+      }
     }
+
+    // deleteExisting 옵션은 false로 고정, AnkiConnect에서 파일명 겹침 + 실제 파일 겹치면 알아서 존재하던 파일을 돌려줌
+    // 따라서 의도적으로 파일명을 동일하게 지정하여 요청
+    let filename;
+    if (tagName === 'img') {
+      filename = 'pasted_image.' + (extension || 'png');
+    } else if (tagName === 'audio') {
+      filename = 'pasted_audio.' + (extension || 'mp3');
+    } else if (tagName === 'video'||tagName === 'sound') {
+      filename = 'pasted_video.' + (extension || 'mp4');
+    } else {
+      console.warn('Unsupported media type:', element.tagName);
+      errors.push({ error: i18next.t('error:media.unsupportedSrcFormatError.statusText'), src });
+      continue;
+    }
+    params.filename = filename;
 
     const ankiStore = useAnkiConnectionStore.getState();
     console.log('storeMediaFile params:', params);
     let res = await ankiStore
-      .fetchAnki({
+      .fetchAnki<string>({
         action: 'storeMediaFile',
         params,
       })
-      .then((res) => {
-        if (res.result) {
-          element.setAttribute('src', res.result as string);
-
-          // 메모리 누수 방지: Anki에 업로드가 끝난 임시 blob URL은 메모리에서 해제.
-          // TODO : PREVIEW 기능 구현 후, 해제 기능 반려를 고려하고, note 삭제 시에만 해제하도록 변경 필요
-          if (src.startsWith('blob:')) {
-            URL.revokeObjectURL(src);
+      .then((res => {
+        if (res.error === 'error') {
+            console.error('Failed to store media file:', res.error);
+            return { result: 'error', error: res.error };
+        } else {
+          //HTML 내의 src, [sound:파일명]을 AnkiConnect에서 반환된 파일명으로 치환
+          if (tagName === 'img'||tagName ==='audio'||tagName === 'video') {
+            element.node.setAttribute('src', res.result);
+          } else if (tagName === 'sound') {
+            // [sound:파일명] 치환
+            const soundRegex = new RegExp(`\\[sound:${src}\\]`, 'g');
+            doc.body.innerHTML = doc.body.innerHTML.replace(soundRegex, `[sound:${res.result}]`);
+          } else {
+            console.warn('Unsupported media type for replacement:', element.tagName);
+            errors.push({ error: i18next.t('error:media.unsupportedSrcFormatError.statusText'), src });
           }
-        } else if (res.error) {
-          console.error('Error storing media file:', res.error);
-          return { result: 'error', error: res.error };
         }
-        console.log('storeMediaResult:', res);
         return res;
-      })
+      }))
       .catch((err) => {
         console.error('Failed to store media file:', err);
-        return { result: 'error', error: err.message };
+        errors.push({ error: i18next.t('error:media.storeMediaError') + `: ${err}`, src });
       });
-    if (res.result === 'error') {
-      alert(i18next.t('error:common.storeMediaError') + `: ${res.error}`);
-      return { result: 'error', error: res.error, data: '' };
-    }
   }
-  // const soundFiles = extractAnkiSoundFiles(html);
-  return { result: 'ok', error: null, data: doc.body.innerHTML };
+  return { result: 'ok', errors, data: doc.body.innerHTML };
 };
 
 export const fileToBase64 = (file: File): Promise<string> =>
@@ -371,33 +483,45 @@ export const fileToBase64 = (file: File): Promise<string> =>
     r.readAsDataURL(file);
   });
 
-export const convertQuillToAnkiPureHtml = (quillHtml: string, outerTag = 'p') => {
-  let cleaned = quillHtml.trim();
+export function convertQuillToAnkiPureHtml(quillInstance: Quill): string {
+  const delta = quillInstance.getContents();
+  let resultHtml = "";
 
-  const startTag = `<${outerTag}>`;
-  const endTag = `</${outerTag}>`;
+  delta.ops.forEach((op, index) => {
+    // [Case 1] 순수 텍스트 조각인 경우
+    if (typeof op.insert === 'string') {
+      let text = op.insert;
 
-  const closeTagRegex = new RegExp(endTag, 'g');
-  const closeTagCount = (cleaned.match(closeTagRegex) || []).length;
+      // 💥 [핵심 수정] Quill Delta의 가장 마지막 오퍼레이션의 맨 마지막 글자가 '\n'이라면,
+      // 그것은 사용자가 입력한 엔터가 아니라 Quill의 구조적 마감 엔터입니다.
+      // 따라서 사용자가 입력한 연속 엔터는 보존하고, 마지막 마감 엔터 1개만 싹 지워줍니다.
+      const isLastOp = index === delta.ops.length - 1;
+      if (isLastOp && text.endsWith('\n')) {
+        text = text.slice(0, -1); // 맨 끝 \n 하나만 정확히 제거
+      }
 
-  if (cleaned.startsWith(startTag) && cleaned.endsWith(endTag) && closeTagCount === 1) {
-    cleaned = cleaned.substring(startTag.length, cleaned.length - endTag.length);
-  } else {
-    const middleTagRegex = new RegExp(`${endTag}${startTag}`, 'g');
-    const startTagRegex = new RegExp(`^${startTag}`);
-    const endTagRegex = new RegExp(`${endTag}$`);
+      // 남은 모든 \n은 사용자가 의도한 줄바꿈이므로 안전하게 <br>로 치환
+      resultHtml += text.replace(/\n/g, '<br>');
+      return;
+    }
 
-    cleaned = cleaned
-      .replace(middleTagRegex, '<br>')
-      .replace(startTagRegex, '')
-      .replace(endTagRegex, '');
-  }
+    // [Case 2] 임베드 객체 처리 (이전과 동일)
+    if (op.insert && typeof op.insert === 'object') {
+      if ('anki-image' in op.insert) {
+        const imgData = op.insert['anki-image'] as { src?: string; mediaId?: string } | string;
+        const mediaId = typeof imgData === 'object' ? imgData.mediaId : '';
+        if (mediaId) resultHtml += `<img src="${mediaId}">`;
+      } 
+      else if ('anki-sound' in op.insert) {
+        const mediaId = op.insert['anki-sound'] as string;
+        if (mediaId) resultHtml += `[sound:${mediaId}]`;
+      }
+    }
+  });
 
-  const emptyLineRegex = new RegExp(`${startTag}<br>${endTag}`, 'g');
-  cleaned = cleaned.replace(emptyLineRegex, '<br>');
-
-  return cleaned;
-};
+  // 💥 이전에 있던 위험한 전체 .replace(/(<br>)+$/, '') 구문은 완전히 제거했습니다.
+  return resultHtml;
+}
 
 export async function restoreMediaPreviews(quillInstance: Quill) {
   const currentDelta = quillInstance.getContents();

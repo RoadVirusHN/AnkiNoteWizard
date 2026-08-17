@@ -46,7 +46,8 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
   const dirtyRef = useRef(false);
   useImperativeHandle(ref, () => ({
       getContent() {
-          return convertQuillToAnkiPureHtml(quillRef.current!.root.innerHTML);
+        if (quillRef.current === null)  return "";
+          return convertQuillToAnkiPureHtml(quillRef.current);
       },
 
       reset(content: string) {

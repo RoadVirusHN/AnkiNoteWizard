@@ -162,8 +162,12 @@ const DetectPage: React.FC = () => {
         let content = updatedNote.fields[fieldName].content;
         let res = await processMediaInHtml(content);
         if (res.result==='error'){
-          alert(tError('addNote.addNoteFail.statusText') + ' ' + res.error);
+          alert(tError('addNote.addNoteFail.statusText') + ' ' + res.errors);
           return;
+        } else if (res.errors.length>0){
+          if (!confirm(tError('addNote.confirmAddAnyway') + '\n' + res.errors.join('\n'))){
+            return;
+          }
         }
         updatedNote.fields[fieldName].content = res.data;
       }

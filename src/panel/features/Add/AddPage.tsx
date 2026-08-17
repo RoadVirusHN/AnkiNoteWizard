@@ -38,7 +38,7 @@ const AddPage = ({}) => {
   const {scanRules} = useScanRule();
   const {t} = useTranslation('page',{keyPrefix: 'addPage'});
   const {t:tCommon} = useTranslation('common');
-  const {t:tError} = useTranslation('error', {keyPrefix: 'addNote'});
+  const {t:tError} = useTranslation('error');
   const {cancleInspectionMode,isInspectionMode} = useInspection();
 
   return <div className={addPageStyle.container}>
@@ -127,11 +127,11 @@ const AddPage = ({}) => {
             for (const code of res.error){
               if(code === 'modelNotFoundError.code'){
               } else if (code === 'emptyModelError.code'){
-                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('emptyModelError.statusText')]});
+                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('addNote.emptyModelError.statusText')]});
               } else if (code === 'emptyDeckError.code'){
-                setErrorMessages({...errorMessages, deck: [...errorMessages.deck, tError('emptyDeckError.statusText')]});
+                setErrorMessages({...errorMessages, deck: [...errorMessages.deck, tError('addNote.emptyDeckError.statusText')]});
               } else if (code === 'fieldModelMismatchError.code'){
-                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('fieldModelMismatchError.statusText')]});
+                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('addNote.fieldModelMismatchError.statusText')]});
               } else{
                 alert(tCommon('error')+`: ${res.error}`);
               }            
@@ -147,8 +147,12 @@ const AddPage = ({}) => {
             let content = updatedFields[fieldName].content;
             let res = await processMediaInHtml(content);
             if (res.result==='error'){
-              alert(tError('addNoteFail.statusText') + ' ' + res.error);
+              alert(tError('addNote.addNoteFail.statusText') + ' ' + res.errors);
               return;
+            } else if (res.errors.length>0){
+              if (!confirm(tError('addNote.confirmAddAnyway')) + ' ' + res.errors.join('\n')){
+                return;
+              }
             }
             updatedFields[fieldName] = {
               ...updatedFields[fieldName],

@@ -64,7 +64,16 @@ export default {
     },
   },
   common: {
-    storeMediaError: 'Failed to store media file',
+    noContentErrorSolution: 'No Receiving end founded, Refresh your web page and retry it.',
+    ankiNotConnected: 'Anki is not connected. Please check your Anki connection.',
+    popupBlocked: 'Popup blocked. Please allow popups for this app and try again.',
+  },
+  media: {
+    storeMediaError: 'Failed to store media file', 
+    mediaFileNotFound: 'Media file not found. Please re-register the media file.', 
+    playMediaFail: 'Failed to play media file. Please check the media file and try again.',
+    fetchMediaError: 'Failed to fetch media file. Please check the src and try again.',
+    contentHeaderError: 'Failed to fetch content header. Please check the src and try again.',
     base64Error: {
       code: 'base64Error',
       statusText: 'base64 Conversion Error',
@@ -77,11 +86,6 @@ export default {
       description: 'The src format is unsupported.',
       solutions: ['Please check the src format and try again.'],
     },
-    noContentErrorSolution: 'No Receiving end founded, Refresh your web page and retry it.',
-    ankiNotConnected: 'Anki is not connected. Please check your Anki connection.',
-    mediaFileNotFound: 'Media file not found. Please re-register the media file.', 
-    popupBlocked: 'Popup blocked. Please allow popups for this app and try again.',
-    playMediaFail: 'Failed to play media file. Please check the media file and try again.',
   },
   addNote: {
     modelNotFoundError: {
@@ -125,7 +129,8 @@ export default {
       statusText: 'File Too Large',
       description: 'The file size exceeds the allowed limit :',
       solutions: ['Please reduce the file size and try again.'],
-    }
+    },
+    confirmAddAnyway: 'Some Errors Occurred. Do you want to add the note anyway?',
   },
   scanRule:{
     invallidScanRuleName: {
@@ -151,7 +156,7 @@ export default {
       statusText: 'Invalid Root Tag',
       description: 'The root tag is invalid.',
       solutions: ['Please enter a valid root tag.'],
-    }
+    },
   },
   detectPage:{
     selectDeckFirst: {
