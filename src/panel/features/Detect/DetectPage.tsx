@@ -45,6 +45,7 @@ const DetectPage: React.FC = () => {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   
   const [curDrafts, setCurDrafts] = useState(drafts);
+  const [draftErrors, setDraftErrors] = useState<{[key:string]:string[]}>({});
   const curDraftsKeys = Object.keys(curDrafts);
   useEffect(()=>{
     // TODO : drafts가 변경되도 화면 업데이트가 안되는 문제를 -> 이 코드가 drafts가 바뀔 때 list를 재랜더링해줘서 해결한 원리 연구하기
@@ -158,6 +159,7 @@ const DetectPage: React.FC = () => {
         alert(tError('addNote.addNoteFail.statusText') + ' ' +tError('addNote.modelNotFoundError.statusText'));
         return;
       }
+      let newDraftErrors = {} as typeof draftErrors;
       for (const fieldName in updatedNote.fields){
         let content = updatedNote.fields[fieldName].content;
         let res = await processMediaInHtml(content);
@@ -165,13 +167,13 @@ const DetectPage: React.FC = () => {
           alert(tError('addNote.addNoteFail.statusText') + ' ' + res.errors);
           return;
         } else if (res.errors.length>0){
-          if (!confirm(tError('addNote.confirmAddAnyway') + '\n' + res.errors.join('\n'))){
-            return;
-          }
+          let mediaErrorMessage= tError('media.storeMediaError') +' : '+ res.errors.join('\n');
+          newDraftErrors[key].push(mediaErrorMessage);
         }
         updatedNote.fields[fieldName].content = res.data;
       }
       notes.push(updatedNote);
+      setDraftErrors(newDraftErrors);
     }
 
     await fetchAnki({action: "addNotes",params: { notes : notes.map((note)=>({
@@ -234,6 +236,7 @@ const DetectPage: React.FC = () => {
                 scanRuleId={note.scanRuleId} 
                 checkAdd={checkAdd(key)}
                 isChecked={selected.has(key)}
+                errors={draftErrors[key]}
               />
             );
           })

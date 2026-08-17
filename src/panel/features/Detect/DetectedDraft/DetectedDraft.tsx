@@ -1,13 +1,13 @@
 import useScanRule from "@/panel/stores/useScanRule";
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
-import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
-import { Draft, FieldData, ScanRule } from "@/types/scanRule.types";
+import { Draft } from "@/types/scanRule.types";
 import FieldScanInput, { FieldScanInputHandle } from "./FieldScanInput";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
 import ResetIcon from "@/public/Icon/Icon-Reset.svg";
 import DelIcon from "@/public/Icon/Icon-Dump.svg";
+import ErrorIcon from "@/public/Icon/Icon_Error.svg";
 import { useTranslation } from "react-i18next";
 import useInspection from "@/panel/hooks/useInspection";
 import Tags from "@/panel/components/Tags/Tags";
@@ -19,9 +19,10 @@ interface DetectedDraftProps {
   scanRuleId: string;
   checkAdd: (val:boolean)=>void;
   isChecked: boolean;
+  errors: string[];
 };
 
-const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraftProps) => {
+const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:DetectedDraftProps) => {
   const {removeDraft,updateDraft, drafts} = useScanRule(
     useShallow((state)=>({
       drafts: state.drafts,
@@ -33,9 +34,9 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
   const {t:tDraft} = useTranslation('components', {keyPrefix: 'detectedDraft'});
   const [currentDraft, setCurrentDraft] = useState(note);
   const fieldRefs = useRef<FieldScanInputHandle[]>([]);
-  // TODO: file drag over 시 editing & focus 모드 전환시키기 
   const [isEditing, setIsEditing] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
+  const [currentErrors, setCurrentErrors] = useState(errors);
   const {enterInspectionMode,isInspectionMode} = useInspection();
   const checkRef = useRef<HTMLInputElement>(null);
   if (checkRef.current){
@@ -70,6 +71,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
       }
     );
     setIsChanged(false);
+    setCurrentErrors([]);
   };
   useEffect(() => {
     setCurrentDraft(note);
@@ -103,6 +105,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked}:DetectedDraf
           </div>
       </div>
         <div className={detectedDraftStyles.buttons}>
+        {currentErrors && <img title={currentErrors.join('\n')} src={ErrorIcon} style={{backgroundColor: 'var(--color-warning)'}}/>}
         {
           isEditing ? 
           <>
