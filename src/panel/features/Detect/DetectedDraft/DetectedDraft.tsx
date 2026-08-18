@@ -105,7 +105,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:Dete
           </div>
       </div>
         <div className={detectedDraftStyles.buttons}>
-        {currentErrors && <img title={currentErrors.join('\n')} src={ErrorIcon} style={{backgroundColor: 'var(--color-warning)'}}/>}
+        {currentErrors&&currentErrors.length> 0 && <img title={currentErrors.join('\n')} src={ErrorIcon}/>}
         {
           isEditing ? 
           <>

@@ -7,6 +7,8 @@ import Image from 'quill/formats/image';
 import { createRoot } from 'react-dom/client';
 import VidPlayer from "@/panel/components/VidPlayer/VidPlayer";
 
+const ANKI_IMAGE_BLOT_NAME = 'anki-image';
+const ANKI_SOUND_BLOT_NAME = 'anki-sound';
 export const initQuill = () => {
   class AnkiSoundBlot extends Embed {
     static create(mediaId: string) {
@@ -123,8 +125,7 @@ export const initQuill = () => {
     }
   }
 
-  // 중요: 델타가 'anki-sound' 키를 바인딩하도록 설정
-  AnkiSoundBlot.blotName = 'anki-sound';
+  AnkiSoundBlot.blotName = ANKI_SOUND_BLOT_NAME;
   AnkiSoundBlot.tagName = 'SPAN';
   Quill.register(AnkiSoundBlot, true);
 
@@ -149,9 +150,10 @@ export const initQuill = () => {
   }
 
   // 오버라이딩 등록
-  AnkiImageBlot.blotName = 'anki-image';
+  AnkiImageBlot.blotName = ANKI_IMAGE_BLOT_NAME;
   AnkiImageBlot.tagName = 'IMG';
   Quill.register(AnkiImageBlot, true);
+
 };
 
 const imageExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'svg+xml', 'bmp', 'tiff', 'avif'];
@@ -177,7 +179,7 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
             if (file.type.startsWith('image/')) {
               const tempUrl = URL.createObjectURL(file);
               console.log("process image in", editorQuill, file, mediaId, tempUrl);
-              editorQuill.insertEmbed(currentIndex, 'anki-image', {
+              editorQuill.insertEmbed(currentIndex, ANKI_IMAGE_BLOT_NAME, {
                 src: tempUrl,
                 mediaId: mediaId,
               });
@@ -185,7 +187,7 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
               makeDirty();
             } else if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
               // 사운드도 임베드 데이터 형식으로 삽입
-              editorQuill.insertEmbed(currentIndex, 'anki-sound',mediaId);
+              editorQuill.insertEmbed(currentIndex, ANKI_SOUND_BLOT_NAME,mediaId);
               currentIndex += 1;
               makeDirty();
             }
@@ -194,7 +196,41 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
       },
     },
   });
-
+  editorQuill.clipboard.addMatcher('IMG', (node: Node, delta) => {
+    const imgNode = node as HTMLImageElement;
+    const src = imgNode.getAttribute('src') || '';
+    // 주소창이 'anki_media_'로 시작하는 원본 파일명이거나 data-file이 있으면 Blot으로 인지
+    if (src.startsWith('anki_media_') || imgNode.hasAttribute('data-file')) {
+      console.log("founded! img!", imgNode, src);
+      const mediaId = imgNode.getAttribute('data-file') || src;
+      return new Delta().insert({
+        [ANKI_IMAGE_BLOT_NAME]: { src, mediaId }
+      });
+    }
+    return delta;
+  });
+  editorQuill.clipboard.addMatcher(Node.TEXT_NODE, (node: Node, delta) => {
+    const regex = /\[sound:([^\]]+)\]/g;
+    const text = node.textContent || '';
+    if (regex.test(text)) {
+      const newDelta = new Delta();
+      let lastIndex = 0;
+      regex.lastIndex = 0;
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        if (match.index > lastIndex) {
+          newDelta.insert(text.substring(lastIndex, match.index));
+        }
+        newDelta.insert({ [ANKI_SOUND_BLOT_NAME]: { mediaId: match[1].trim() } });
+        lastIndex = regex.lastIndex;
+      }
+      if (lastIndex < text.length) {
+        newDelta.insert(text.substring(lastIndex));
+      }
+      return newDelta;
+    }
+    return delta;
+  });
   return editorQuill;
 };
 
@@ -202,13 +238,13 @@ export const removeDeletedMediaTags = (editorQuill: Quill, oldDelta: Delta) => {
   //TODO : video, audio 삭제시 로직도 완성하기
   const oldMediaIds: string[] = [];
   oldDelta.ops.forEach((op) => {
-    if (op.insert && typeof op.insert === 'object' && 'anki-image' in op.insert) {
+    if (op.insert && typeof op.insert === 'object' && ANKI_IMAGE_BLOT_NAME in op.insert) {
       const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
       if (typeof imgData === 'object' && imgData.mediaId) {
         oldMediaIds.push(imgData.mediaId);
       }
-    } else if (op.insert && typeof op.insert === 'object' && 'anki-sound' in op.insert) {
-      const soundData = op.insert['anki-sound'] as string;
+    } else if (op.insert && typeof op.insert === 'object' && ANKI_SOUND_BLOT_NAME in op.insert) {
+      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as string;
       if (soundData) {
         oldMediaIds.push(soundData);
       }
@@ -219,13 +255,13 @@ export const removeDeletedMediaTags = (editorQuill: Quill, oldDelta: Delta) => {
   const currentMediaIds = new Set<string>();
 
   currentContents.ops.forEach((op) => {
-    if (op.insert && typeof op.insert === 'object' && 'anki-image' in op.insert) {
+    if (op.insert && typeof op.insert === 'object' && ANKI_IMAGE_BLOT_NAME in op.insert) {
       const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
       if (typeof imgData === 'object' && imgData.mediaId) {
         currentMediaIds.add(imgData.mediaId);
       }
-    } else if (op.insert && typeof op.insert === 'object' && 'anki-sound' in op.insert) {
-      const soundData = op.insert['anki-sound'] as string;
+    } else if (op.insert && typeof op.insert === 'object' && ANKI_SOUND_BLOT_NAME in op.insert) {
+      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as string;
       if (soundData) {
         currentMediaIds.add(soundData);
       }
@@ -250,13 +286,13 @@ export function deleteAllMediaTags(editorQuill: Quill) {
   const mediaIdsToDelete: string[] = [];
 
   currentContents.ops.forEach((op) => {
-    if (op.insert && typeof op.insert === 'object' && 'anki-image' in op.insert) {
+    if (op.insert && typeof op.insert === 'object' && ANKI_IMAGE_BLOT_NAME in op.insert) {
       const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
       if (typeof imgData === 'object' && imgData.mediaId) {
         mediaIdsToDelete.push(imgData.mediaId);
       }
-    } else if (op.insert && typeof op.insert === 'object' && 'anki-sound' in op.insert) {
-      const soundData = op.insert['anki-sound'] as string;
+    } else if (op.insert && typeof op.insert === 'object' && ANKI_SOUND_BLOT_NAME in op.insert) {
+      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as string;
       if (soundData) {
         mediaIdsToDelete.push(soundData);
       }
@@ -463,13 +499,13 @@ export function convertQuillToAnkiPureHtml(quillInstance: Quill): string {
 
     // [Case 2] 임베드 객체 처리 (이전과 동일)
     if (op.insert && typeof op.insert === 'object') {
-      if ('anki-image' in op.insert) {
-        const imgData = op.insert['anki-image'] as { src?: string; mediaId?: string } | string;
+      if (ANKI_IMAGE_BLOT_NAME in op.insert) {
+        const imgData = op.insert[ANKI_IMAGE_BLOT_NAME] as { src?: string; mediaId?: string } | string;
         const mediaId = typeof imgData === 'object' ? imgData.mediaId : '';
         if (mediaId) resultHtml += `<img src="${mediaId}">`;
       } 
-      else if ('anki-sound' in op.insert) {
-        const mediaId = op.insert['anki-sound'] as string;
+      else if (ANKI_SOUND_BLOT_NAME in op.insert) {
+        const mediaId = op.insert[ANKI_SOUND_BLOT_NAME] as string;
         if (mediaId) resultHtml += `[sound:${mediaId}]`;
       }
     }
@@ -483,17 +519,16 @@ export async function restoreMediaPreviews(quillInstance: Quill) {
   const currentDelta = quillInstance.getContents();
 
   const newOps = [];
-
+  console.log("restoreMediaPreviews", currentDelta);
   for (const op of currentDelta.ops) {
     if (!op.insert || typeof op.insert !== 'object') {
       newOps.push(op);
       continue;
     }
 
-    if ('image' in op.insert) {
-      const imgData = op.insert.image as { src?: string; mediaId?: string };
+    if (ANKI_IMAGE_BLOT_NAME in op.insert) {
+      const imgData = op.insert[ANKI_IMAGE_BLOT_NAME] as { src?: string; mediaId?: string };
       const mediaId = imgData?.mediaId;
-
       if (mediaId) {
         const fileBlob = await localforage.getItem<Blob>(mediaId);
         if (fileBlob) {
@@ -501,7 +536,7 @@ export async function restoreMediaPreviews(quillInstance: Quill) {
           newOps.push({
             ...op,
             insert: {
-              image: { src: liveTempUrl, mediaId },
+              [ANKI_IMAGE_BLOT_NAME]: { src: liveTempUrl, mediaId },
             },
           });
           continue;
@@ -509,8 +544,8 @@ export async function restoreMediaPreviews(quillInstance: Quill) {
       }
     }
 
-    if ('anki-sound' in op.insert) {
-      const soundData = op.insert['anki-sound'] as { mediaId?: string; src?: string };
+    if (ANKI_SOUND_BLOT_NAME in op.insert) {
+      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as { mediaId?: string; src?: string };
       const mediaId = soundData?.mediaId;
 
       if (mediaId) {
@@ -520,7 +555,7 @@ export async function restoreMediaPreviews(quillInstance: Quill) {
           newOps.push({
             ...op,
             insert: {
-              'anki-sound': { mediaId, src: liveTempUrl },
+              [ANKI_SOUND_BLOT_NAME]: { mediaId, src: liveTempUrl },
             },
           });
           continue;
