@@ -221,7 +221,7 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
         if (match.index > lastIndex) {
           newDelta.insert(text.substring(lastIndex, match.index));
         }
-        newDelta.insert({ [ANKI_SOUND_BLOT_NAME]: { mediaId: match[1].trim() } });
+        newDelta.insert({ [ANKI_SOUND_BLOT_NAME]:  match[1].trim()});
         lastIndex = regex.lastIndex;
       }
       if (lastIndex < text.length) {
@@ -233,7 +233,7 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
   });
   return editorQuill;
 };
-
+//TODO : image 데이터가 localStorage에서 안지워짐->확인
 export const removeDeletedMediaTags = (editorQuill: Quill, oldDelta: Delta) => {
   //TODO : video, audio 삭제시 로직도 완성하기
   const oldMediaIds: string[] = [];
@@ -497,7 +497,6 @@ export function convertQuillToAnkiPureHtml(quillInstance: Quill): string {
       return;
     }
 
-    // [Case 2] 임베드 객체 처리 (이전과 동일)
     if (op.insert && typeof op.insert === 'object') {
       if (ANKI_IMAGE_BLOT_NAME in op.insert) {
         const imgData = op.insert[ANKI_IMAGE_BLOT_NAME] as { src?: string; mediaId?: string } | string;
@@ -511,7 +510,6 @@ export function convertQuillToAnkiPureHtml(quillInstance: Quill): string {
     }
   });
 
-  // 💥 이전에 있던 위험한 전체 .replace(/(<br>)+$/, '') 구문은 완전히 제거했습니다.
   return resultHtml;
 }
 
@@ -519,7 +517,6 @@ export async function restoreMediaPreviews(quillInstance: Quill) {
   const currentDelta = quillInstance.getContents();
 
   const newOps = [];
-  console.log("restoreMediaPreviews", currentDelta);
   for (const op of currentDelta.ops) {
     if (!op.insert || typeof op.insert !== 'object') {
       newOps.push(op);
@@ -547,7 +544,6 @@ export async function restoreMediaPreviews(quillInstance: Quill) {
     if (ANKI_SOUND_BLOT_NAME in op.insert) {
       const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as { mediaId?: string; src?: string };
       const mediaId = soundData?.mediaId;
-
       if (mediaId) {
         const fileBlob = await localforage.getItem<Blob>(mediaId);
         if (fileBlob) {
