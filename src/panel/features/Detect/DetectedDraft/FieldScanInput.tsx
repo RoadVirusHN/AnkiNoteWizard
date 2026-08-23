@@ -2,7 +2,7 @@ import { FieldData } from "@/types/scanRule.types";
 // TODO: separate FieldScanInput style && folder
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import { useTranslation } from "react-i18next";
-import { convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
+import { addNewMediaTags, convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
 import { DragEvent, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
@@ -93,7 +93,8 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
         dirtyRef.current=false;
         const editorQuill = quillRef.current;
         if (editorQuill) {
-          const oldDelta = editorQuill.clipboard.convert({html: field.content});
+          const oldDelta = editorQuill.clipboard.convert({html: field.content});  
+          addNewMediaTags(editorQuill);
           removeDeletedMediaTags(editorQuill, oldDelta);
         }
       },

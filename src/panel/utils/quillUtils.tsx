@@ -11,13 +11,15 @@ const ANKI_IMAGE_BLOT_NAME = 'anki-image';
 const ANKI_SOUND_BLOT_NAME = 'anki-sound';
 export const initQuill = () => {
   class AnkiSoundBlot extends Embed {
-    static create(mediaId: string) {
+    static create(value: { src: string; mediaId: string }) {
       const node = super.create() as HTMLElement;
-
+      const {src, mediaId} = value;
       node.setAttribute('data-file', mediaId);
+      node.setAttribute('src', src);
       node.setAttribute('contenteditable', 'false');
       node.className = 'anki-sound-tag';
       node.innerHTML = `[sound:${mediaId}]<span class="sound-click-zone" style="margin-left: 4px; cursor: pointer;">🔊</span>`;
+      console.log(node);
    
       // // 클릭 시 비디오/오디오 실행
       node.querySelector('.sound-click-zone')?.addEventListener('click', async (e: Event) => {
@@ -25,7 +27,6 @@ export const initQuill = () => {
         e.stopPropagation();
 
         const clickZone = e.currentTarget as HTMLElement;
-        console.log("media clicked!!!");
         try {
           const fileName = node.getAttribute('data-file');
           if (!fileName) {
@@ -34,13 +35,7 @@ export const initQuill = () => {
             console.error('미디어 파일을 찾을 수 없습니다');
             return;
           }
-          const file = await localforage.getItem<File>(fileName);
-          if (!file) {
-            console.error('미디어 파일을 찾을 수 없습니다:', fileName);
-            alert(i18next.t('error:media.mediaFileNotFound'));
-            return;
-          }
-          const playUrl = URL.createObjectURL(file);
+          const playUrl = src;
           const shouldRevoke = true; // 팝업 창이 닫힐 때 Blob URL을 해제할지 여부
 
           // 파일명을 기반으로 확장자 추출 (쿼리 스트링 제거 안전장치 포함)
@@ -83,7 +78,7 @@ export const initQuill = () => {
               alert(i18next.t('error:common.popupBlocked'));
             }
           } else if (extension && audioExtensions.includes(extension)) {
-            // 🎵 1. 오디오 파일 처리 분기S
+            // 🎵 1. 오디오 파일 처리 분기
             // 이미 재생 중인 경우 중복 실행 방지 및 깜빡임 클래스 추가
             console.log("audio processing");
             if (clickZone.classList.contains('anki-playing-blink')) return;
@@ -121,7 +116,7 @@ export const initQuill = () => {
 
     // getContents() 호출 시 Delta 안에 박힐 값 정의
     static value(node: HTMLElement) {
-      return  node.getAttribute('data-file') || '';
+      return  { mediaId: node.getAttribute('data-file') || '', src: node.getAttribute('src') || ''};
     }
   }
 
@@ -170,24 +165,22 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
         mimetypes: [...imageExtensions.map((ext) => `image/${ext}`), ...audioExtensions.map((ext) => `audio/${ext}`), ...videoExtensions.map((ext) => `video/${ext}`)],
         handler: async function (range: { index: number }, files: File[]) {
           let currentIndex = range.index;
-          console.log("Uploader handler called with files:", files);
           for (const file of files) {
             const ext = file.type.split('/')[1] || 'bin';
             const mediaId = `anki_media_${Date.now()}_${Math.random().toString(36).substring(2, 5)}.${ext}`;
-            await localforage.setItem(mediaId, file);
+            //await localforage.setItem(mediaId, file);
+            const tempUrl = URL.createObjectURL(file);
             
             if (file.type.startsWith('image/')) {
-              const tempUrl = URL.createObjectURL(file);
-              console.log("process image in", editorQuill, file, mediaId, tempUrl);
               editorQuill.insertEmbed(currentIndex, ANKI_IMAGE_BLOT_NAME, {
                 src: tempUrl,
-                mediaId: mediaId,
+                mediaId,
               });
               currentIndex += 1;
               makeDirty();
             } else if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
               // 사운드도 임베드 데이터 형식으로 삽입
-              editorQuill.insertEmbed(currentIndex, ANKI_SOUND_BLOT_NAME,mediaId);
+              editorQuill.insertEmbed(currentIndex, ANKI_SOUND_BLOT_NAME, {src: tempUrl, mediaId});
               currentIndex += 1;
               makeDirty();
             }
@@ -201,7 +194,6 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
     const src = imgNode.getAttribute('src') || '';
     // 주소창이 'anki_media_'로 시작하는 원본 파일명이거나 data-file이 있으면 Blot으로 인지
     if (src.startsWith('anki_media_') || imgNode.hasAttribute('data-file')) {
-      console.log("founded! img!", imgNode, src);
       const mediaId = imgNode.getAttribute('data-file') || src;
       return new Delta().insert({
         [ANKI_IMAGE_BLOT_NAME]: { src, mediaId }
@@ -221,7 +213,10 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
         if (match.index > lastIndex) {
           newDelta.insert(text.substring(lastIndex, match.index));
         }
-        newDelta.insert({ [ANKI_SOUND_BLOT_NAME]:  match[1].trim()});
+        const pureMediaId = match[1].trim();
+        newDelta.insert({ 
+          [ANKI_SOUND_BLOT_NAME]: { mediaId: pureMediaId, src: '' } 
+        });
         lastIndex = regex.lastIndex;
       }
       if (lastIndex < text.length) {
@@ -233,20 +228,46 @@ export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLE
   });
   return editorQuill;
 };
-//TODO : image 데이터가 localStorage에서 안지워짐->확인
+
+export const addNewMediaTags = async (editorQuill: Quill) => {
+  const currentContents = editorQuill.getContents();
+  const currentMediaIdNUrls = {} as Record<string, string>;
+
+  currentContents.ops.forEach((op) => {
+    if (op.insert && typeof op.insert === 'object' && ANKI_IMAGE_BLOT_NAME in op.insert) {
+      const imgData = op.insert[ANKI_IMAGE_BLOT_NAME] as { src?: string; mediaId?: string } | string;
+      if (typeof imgData === 'object' && imgData.mediaId) {
+        currentMediaIdNUrls[imgData.mediaId] = imgData.src || '';
+      }
+    } else if (op.insert && typeof op.insert === 'object' && ANKI_SOUND_BLOT_NAME in op.insert) {
+      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as {src: string; mediaId: string;};
+      if (soundData) {
+        currentMediaIdNUrls[soundData.mediaId] = soundData.src; 
+      }
+    }
+  });
+  await Object.keys(currentMediaIdNUrls).forEach(async (mediaId) => {
+    const blobUrl = currentMediaIdNUrls[mediaId];
+    const file = blobUrl.startsWith('blob:') ? await fetch(blobUrl).then((res) => res.blob()) : null;
+    if (!file) return;
+    await localforage.setItem(mediaId, file);
+  });
+  
+};
+
+
 export const removeDeletedMediaTags = (editorQuill: Quill, oldDelta: Delta) => {
-  //TODO : video, audio 삭제시 로직도 완성하기
   const oldMediaIds: string[] = [];
   oldDelta.ops.forEach((op) => {
     if (op.insert && typeof op.insert === 'object' && ANKI_IMAGE_BLOT_NAME in op.insert) {
-      const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
+      const imgData = op.insert[ANKI_IMAGE_BLOT_NAME] as { src?: string; mediaId?: string } | string;
       if (typeof imgData === 'object' && imgData.mediaId) {
         oldMediaIds.push(imgData.mediaId);
       }
     } else if (op.insert && typeof op.insert === 'object' && ANKI_SOUND_BLOT_NAME in op.insert) {
-      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as string;
+      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as {src: string; mediaId: string;};
       if (soundData) {
-        oldMediaIds.push(soundData);
+        oldMediaIds.push(soundData.mediaId);
       }
     }
   });
@@ -256,27 +277,26 @@ export const removeDeletedMediaTags = (editorQuill: Quill, oldDelta: Delta) => {
 
   currentContents.ops.forEach((op) => {
     if (op.insert && typeof op.insert === 'object' && ANKI_IMAGE_BLOT_NAME in op.insert) {
-      const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
+      const imgData = op.insert[ANKI_IMAGE_BLOT_NAME] as { src?: string; mediaId?: string } | string;
       if (typeof imgData === 'object' && imgData.mediaId) {
         currentMediaIds.add(imgData.mediaId);
       }
     } else if (op.insert && typeof op.insert === 'object' && ANKI_SOUND_BLOT_NAME in op.insert) {
-      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as string;
+      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as {src: string; mediaId: string;};
       if (soundData) {
-        currentMediaIds.add(soundData);
+        currentMediaIds.add(soundData.mediaId);
       }
     }
   });
-
   oldMediaIds.forEach((oldId) => {
     if (!currentMediaIds.has(oldId)) {
       localforage
         .removeItem(oldId)
         .then(() => {
-          console.log(`DB 미디어 자원 삭제: ${oldId}`);
+          console.log(`DB Media file deleted: ${oldId}`);
         })
         .catch((err) => {
-          console.error('DB 자원 삭제 실패:', err);
+          console.error('DB Media file failed to delete:', err);
         });
     }
   });
@@ -287,14 +307,14 @@ export function deleteAllMediaTags(editorQuill: Quill) {
 
   currentContents.ops.forEach((op) => {
     if (op.insert && typeof op.insert === 'object' && ANKI_IMAGE_BLOT_NAME in op.insert) {
-      const imgData = op.insert.image as { src?: string; mediaId?: string } | string;
+      const imgData = op.insert.image as { src?: string; mediaId?: string };
       if (typeof imgData === 'object' && imgData.mediaId) {
         mediaIdsToDelete.push(imgData.mediaId);
       }
     } else if (op.insert && typeof op.insert === 'object' && ANKI_SOUND_BLOT_NAME in op.insert) {
-      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as string;
+      const soundData = op.insert[ANKI_SOUND_BLOT_NAME] as {src: string; mediaId: string};
       if (soundData) {
-        mediaIdsToDelete.push(soundData);
+        mediaIdsToDelete.push(soundData.mediaId);
       }
     }
   });
@@ -480,19 +500,13 @@ export function convertQuillToAnkiPureHtml(quillInstance: Quill): string {
   let resultHtml = "";
 
   delta.ops.forEach((op, index) => {
-    // [Case 1] 순수 텍스트 조각인 경우
     if (typeof op.insert === 'string') {
       let text = op.insert;
 
-      // 💥 [핵심 수정] Quill Delta의 가장 마지막 오퍼레이션의 맨 마지막 글자가 '\n'이라면,
-      // 그것은 사용자가 입력한 엔터가 아니라 Quill의 구조적 마감 엔터입니다.
-      // 따라서 사용자가 입력한 연속 엔터는 보존하고, 마지막 마감 엔터 1개만 싹 지워줍니다.
       const isLastOp = index === delta.ops.length - 1;
       if (isLastOp && text.endsWith('\n')) {
         text = text.slice(0, -1); // 맨 끝 \n 하나만 정확히 제거
       }
-
-      // 남은 모든 \n은 사용자가 의도한 줄바꿈이므로 안전하게 <br>로 치환
       resultHtml += text.replace(/\n/g, '<br>');
       return;
     }
@@ -504,7 +518,7 @@ export function convertQuillToAnkiPureHtml(quillInstance: Quill): string {
         if (mediaId) resultHtml += `<img src="${mediaId}">`;
       } 
       else if (ANKI_SOUND_BLOT_NAME in op.insert) {
-        const mediaId = op.insert[ANKI_SOUND_BLOT_NAME] as string;
+        const {mediaId} = op.insert[ANKI_SOUND_BLOT_NAME] as {src: string; mediaId: string;};
         if (mediaId) resultHtml += `[sound:${mediaId}]`;
       }
     }
@@ -515,7 +529,6 @@ export function convertQuillToAnkiPureHtml(quillInstance: Quill): string {
 
 export async function restoreMediaPreviews(quillInstance: Quill) {
   const currentDelta = quillInstance.getContents();
-
   const newOps = [];
   for (const op of currentDelta.ops) {
     if (!op.insert || typeof op.insert !== 'object') {
