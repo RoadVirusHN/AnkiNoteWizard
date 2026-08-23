@@ -176,5 +176,11 @@ export default {
       description: '선택된 초안이 없습니다.',
       solutions: ['노트를 추가하기 전에 초안을 선택하세요.'],
     },
+    deckNotFoundInAnki: {
+      code: 'deckNotFoundInAnki',
+      statusText: '덱 탐지 불가',
+      description: 'Anki에서 해당 덱을 찾을 수 없습니다.',
+      solutions: ['Anki 덱 목록을 확인하고 다시 시도하세요.'],
+    }
   },
 } satisfies typeof error;

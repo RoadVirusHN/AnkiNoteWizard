@@ -172,5 +172,11 @@ export default {
       description: 'No draft was selected for adding notes.',
       solutions: ['Please select at least one draft to add notes.'],
     },    
+    deckNotFoundInAnki: {
+      code: 'deckNotFoundInAnki',
+      statusText: 'No such deck in Anki',
+      description: 'The selected deck could not be found in Anki.',
+      solutions: ['Please ensure the deck exists in Anki and try again.'],
+    } 
   }
 };

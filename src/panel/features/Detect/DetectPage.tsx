@@ -30,7 +30,7 @@ import { useShallow } from 'zustand/react/shallow';
 // SEND_DETECTED_DRAFTS : content script에서 감지된 카드 데이터를 CardPage로 전송
 // - extracteds : 감지된 카드 데이터 배열, url : 현재 페이지 URL
 const DetectPage: React.FC = () => {
-  const {fetchAnki, models, isConnected} = useAnkiConnectionStore();
+  const {fetchAnki, models, isConnected, decks} = useAnkiConnectionStore();
   const {currentDeckId, setCurrentDeckId} = useGlobalVarStore();
   const {drafts,scanRules, setDrafts} = useScanRule(
     useShallow((state)=>({
@@ -136,16 +136,29 @@ const DetectPage: React.FC = () => {
       setDrafts(newDrafts);
     }
   }
-  
+  const checkDeckInput = () => {
+    let errors = [] as string[];
+    if (currentDeckId === null||currentDeckId === ''){
+      console.log('No deck selected');
+      errors.push(tError('detectPage.selectDeckFirst.statusText'));
+    } else if (!isConnected) {
+      console.log('Anki is not connected');
+      errors.push(tError('common.ankiNotConnected'));
+    } else if (currentDeckId && !decks[currentDeckId]) {
+      console.log('Deck not found in Anki');
+      errors.push(tError('detectPage.deckNotFoundInAnki.statusText'));
+    }
+
+    setErrorMessages(errors);
+    return errors.length > 0;
+  }
   const addSelected = async ()=>{   
     if (!confirm(t('add|count|DraftConfirm', {count: selected.size}))) return;
     if (!isConnected) {
       alert(tError('addNote.addNoteFail.statusText') +' ' +tError('common.ankiNotConnected'));
       return;
     }
-    if (currentDeckId === null||currentDeckId === ''){
-      console.log('No deck selected');
-      setErrorMessages([tError('detectPage.selectDeckFirst.statusText')]);
+    if (checkDeckInput()){
       return;
     }
     if (selected.size === 0) {
@@ -206,6 +219,7 @@ const DetectPage: React.FC = () => {
             initDeckId={currentDeckId}
             onChange={(e)=>{
               setCurrentDeckId(e.target.value);
+              checkDeckInput();
             }}
             errorMessages={errorMessages}
           /> 
