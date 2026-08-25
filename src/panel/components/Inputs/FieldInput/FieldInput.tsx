@@ -2,7 +2,7 @@ import useInspection from "@/panel/hooks/useInspection";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import { FieldData } from "@/types/scanRule.types";
 import { useTranslation } from "react-i18next";
-import { convertQuillToAnkiPureHtml, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
+import { convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import fieldInputStyle from "./fieldInput.module.css";
 import Quill from "quill";
@@ -13,14 +13,17 @@ export interface FieldInputHandle {
     getContent(): string;
     reset(content: string): void;
     saved():void;
+    deleted():void;
 }
 
 type Props = {
     field: FieldData;
+    isEditing: boolean;
+    defaultFocus: boolean;
     onDirty: () => void;
 };
 
-const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref) => {
+const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, isEditing, defaultFocus, onDirty }, ref) => {
   //TODO: Implement FieldInput component
   /*
     Features to implement:
@@ -51,7 +54,7 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
   };
   useImperativeHandle(ref, () => ({
       getContent() {
-        if (quillRef.current === null)  return "";
+        if (!quillRef.current)  return "";
           return convertQuillToAnkiPureHtml(quillRef.current);
       },
 
@@ -82,6 +85,13 @@ const FieldInput = forwardRef<FieldInputHandle, Props>(({ field, onDirty }, ref)
         if (editorQuill) {
           const oldDelta = editorQuill.clipboard.convert({html: field.content});
           removeDeletedMediaTags(editorQuill, oldDelta);
+        }
+      },
+      deleted(){
+        dirtyRef.current=false;
+        const editorQuill = quillRef.current;
+        if (editorQuill) {
+          deleteAllMediaTags(editorQuill);
         }
       }
   }));
