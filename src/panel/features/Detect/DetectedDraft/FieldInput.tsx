@@ -8,21 +8,27 @@ import Quill from "quill";
 import 'quill/dist/quill.snow.css';
 import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
 
-export interface FieldScanInputHandle {
-    getContent(): string;
-    reset(content: string): void;
-    saved():void;
-    deleted():void;
+export interface FieldInputHandle {
+  editorRef: React.RefObject<HTMLDivElement|null>;
+  editorQuill: Quill | null;
+  getContent(): string;
+  reset(content: string): void;
+  saved():void;
+  deleted():void;
 }
 
-interface FieldScanInputProps {
+interface FieldInputProps {
   field:FieldData;
-  isEditing: boolean;
-  defaultFocus: boolean;
+  options?: {
+    isEditing?: boolean;
+    defaultFocus?: boolean;
+    alwaysToolbar?: boolean;
+  }
   onDirty: () => void;
 }
 //TODO : Better HTML Preview 
-const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({field, isEditing, defaultFocus, onDirty},ref) => {
+const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, options, onDirty},ref) => {
+  const {isEditing, defaultFocus, alwaysToolbar} = {isEditing: options?.isEditing||false, defaultFocus: options?.defaultFocus||false, alwaysToolbar: options?.alwaysToolbar||false};
   const renderedContent = field.content.replace(/\s+/g, ' ').trim();
   const containedTooManyEmpty = field.content.length - renderedContent.length > 30;
   const {t} = useTranslation('components', {keyPrefix:'fieldScanInput'});
@@ -64,6 +70,8 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
   //TODO: Ctrl + Z 시 이상현상
   const dirtyRef = useRef(false);
   useImperativeHandle(ref, () => ({
+    editorRef: editorRef,
+    editorQuill: quillRef.current,
       getContent() {
           if (!quillRef.current) return "";
           return convertQuillToAnkiPureHtml(quillRef.current);
@@ -148,7 +156,7 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
       >{field.key}</label>
       <div className={detectedDraftStyles.fields}>
         <div className={detectedDraftStyles.field} onClick={(e)=>{e.stopPropagation();}} style={ {margin: 'auto', width: '100%'}} >
-          <EditorToolbar toolbarRef={editorToolbarRef} isFocusing={isFocusing&&isEditing} />
+          <EditorToolbar toolbarRef={editorToolbarRef} isFocusing={alwaysToolbar||(isFocusing&&isEditing)} />
           <div
             id='content'
             ref={editorRef}
@@ -157,4 +165,4 @@ const FieldScanInput = forwardRef<FieldScanInputHandle, FieldScanInputProps>(({f
       </div>
     </div>;
 });
-export default FieldScanInput;
+export default FieldInput;

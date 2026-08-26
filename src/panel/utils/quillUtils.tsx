@@ -6,6 +6,7 @@ import Embed from 'quill/blots/embed';
 import Image from 'quill/formats/image';
 import { createRoot } from 'react-dom/client';
 import VidPlayer from "@/panel/components/VidPlayer/VidPlayer";
+import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 
 const ANKI_IMAGE_BLOT_NAME = 'anki-image';
 const ANKI_SOUND_BLOT_NAME = 'anki-sound';
@@ -20,9 +21,11 @@ export const initQuill = () => {
       node.className = 'anki-sound-tag';
       node.innerHTML = `[sound:${mediaId}]<span class="sound-click-zone" style="margin-left: 4px; cursor: pointer;">🔊</span>`;
       console.log(node);
-   
+      
+      node.querySelector('.sound-click-zone')?.classList.add(detectedDraftStyles.nonClickable);
+      console.log("sound click zone", node.querySelector('.sound-click-zone'));
       // // 클릭 시 비디오/오디오 실행
-      node.querySelector('.sound-click-zone')?.addEventListener('click', async (e: Event) => {
+      node.querySelector('.sound-click-zone')?.addEventListener('mousedown', async (e: Event) => {
         e.preventDefault();
         e.stopPropagation();
 

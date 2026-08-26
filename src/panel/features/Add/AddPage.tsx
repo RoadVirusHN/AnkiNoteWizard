@@ -17,10 +17,10 @@ import { NavLink } from "react-router";
 import { INSPECTION_MODE } from "@/types/app.types";
 import SimpleButton from "@/panel/components/Inputs/SimpleButton/SimpleButton";
 import { useTranslation } from "react-i18next";
-import { processMediaInHtml } from "@/panel/utils/quillUtils";
-import FieldInput, { FieldInputHandle } from "@/panel/components/Inputs/FieldInput/FieldInput";
+import { deleteAllMediaTags, processMediaInHtml, removeDeletedMediaTags } from "@/panel/utils/quillUtils";
 import useScanRule from "@/panel/stores/useScanRule";
 import { isNoteValid } from "@/panel/utils/functions";
+import FieldInput, { FieldInputHandle } from "../Detect/DetectedDraft/FieldInput";
 
 
 const AddPage = ({}) => {
@@ -83,12 +83,21 @@ const AddPage = ({}) => {
         <ScanRuleInput defaultScanRule={curNote.scanRuleId? curNote.scanRuleId : ''} setScanRule={(scanRuleName:string)=>{
           const scanRule = scanRules[scanRuleName];
           if (scanRule&& confirm(t('changeScanRuleWarning'))){
+            curNote.fields.forEach((field, idx) => {
+              if (fieldRefs.current[idx].editorQuill)
+                deleteAllMediaTags(fieldRefs.current[idx].editorQuill);
+            });
             setCurNote({...curNote, scanRuleId: scanRule.scanRuleName, modelId: scanRule.modelId, fields: Object.keys(scanRule.fields).map((fieldName:string)=>({key: fieldName, content: ''})), tagIds: scanRule.tagIds});
+            
           }
           setIsChanged(true);
         }}/>
         <ModelInput defaultModelId={curNote.modelId} setModelId={(newId:string)=>{
-          if (confirm(t('changeModelFieldWarning'))){ 
+          if (confirm(t('changeModelFieldWarning'))){
+            curNote.fields.forEach((field, idx) => {
+              if (fieldRefs.current[idx].editorQuill)
+                deleteAllMediaTags(fieldRefs.current[idx].editorQuill);
+            }); 
             setCurNote({...curNote, modelId:newId, fields: models[newId].fields.map((fieldName:string)=>({key: fieldName, content: ''}))});
             setIsChanged(true);
             return true;
@@ -111,10 +120,14 @@ const AddPage = ({}) => {
         {
           curNote.fields.map((item, idx)=>{
           return (            
-            <FieldInput key={idx} 
-            field={item} 
-            ref={e=>{if (e) fieldRefs.current[idx]= e;}}
-            onDirty={()=>{setIsChanged(true);}}/>)
+            <FieldInput key={idx}
+              field={item}
+              options={{
+                alwaysToolbar: true,
+              }}
+              onDirty={()=>{setIsChanged(true);}}
+              ref={e=>{if (e) fieldRefs.current[idx]= e;}}/>
+            )
           })
         }
       </section> }

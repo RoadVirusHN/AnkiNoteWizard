@@ -165,3 +165,8 @@ input.checkBox{
   background-color: var(--color-primary);
   color: var(--color-light);
 }
+
+.nonClickable {
+  /* for only marking */
+  
+}

@@ -1,7 +1,7 @@
 import useScanRule from "@/panel/stores/useScanRule";
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import { Draft } from "@/types/scanRule.types";
-import FieldScanInput, { FieldScanInputHandle } from "./FieldScanInput";
+import FieldInput, { FieldInputHandle } from "./FieldInput";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
@@ -33,7 +33,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:Dete
   const {t} = useTranslation('common');
   const {t:tDraft} = useTranslation('components', {keyPrefix: 'detectedDraft'});
   const [currentDraft, setCurrentDraft] = useState(note);
-  const fieldRefs = useRef<FieldScanInputHandle[]>([]);
+  const fieldRefs = useRef<FieldInputHandle[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
   const [currentErrors, setCurrentErrors] = useState(errors);
@@ -43,6 +43,9 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:Dete
     checkRef.current.checked = isChecked;
   }
   const onClickDraft = (e:MouseEvent)=>{
+    if (e.currentTarget.classList.contains(detectedDraftStyles.nonClickable)){
+      return;
+    }
     if (isEditing){
       onReset(e);
     }
@@ -109,15 +112,15 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:Dete
         {
           isEditing ? 
           <>
-            <img title={tDraft('extractData')} src={MagicIcon} onClick={(e)=>{
+            <img className={detectedDraftStyles.nonClickable} title={tDraft('extractData')} src={MagicIcon} onClick={(e)=>{
               e.stopPropagation();
               enterInspectionMode();
             }}/> 
             {isChanged && <img src={SaveIcon} onClick={onSave}/>}
             {isChanged &&
-              <img src={ResetIcon} onClick={onReset}/>}
+              <img className={detectedDraftStyles.nonClickable} src={ResetIcon} onClick={onReset}/>}
             </> :
-          <img src={DelIcon} onClick={(e)=>{
+          <img className={detectedDraftStyles.nonClickable} src={DelIcon} onClick={(e)=>{
             e.stopPropagation();
             fieldRefs.current.forEach((fieldRef)=>{
               fieldRef.deleted();
@@ -130,9 +133,8 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:Dete
       <div className={detectedDraftStyles.fieldList} style={{maxHeight:isEditing ? 'fit-content' : '250px'}}> 
         {
           currentDraft.fields.map((item, idx)=>{
-            return <FieldScanInput key={idx} field={item} 
-            isEditing={isEditing} 
-            defaultFocus={idx===0} 
+            return <FieldInput key={idx} field={item} 
+            options={{isEditing:isEditing, defaultFocus: idx===0}}
             onDirty={()=>{setIsChanged(true);}}
             ref={e=>{if (e) fieldRefs.current[idx]=e;}}
             />
