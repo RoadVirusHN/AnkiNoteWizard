@@ -43,12 +43,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:Dete
     checkRef.current.checked = isChecked;
   }
   const onClickDraft = (e:MouseEvent)=>{
-    if (e.currentTarget.classList.contains(detectedDraftStyles.nonClickable)){
-      return;
-    }
-    if (isEditing){
-      onReset(e);
-    }
+    if (isEditing) onReset(e);    
     setIsEditing(!isEditing)
   }
   const onReset = (e:MouseEvent)=>{

@@ -27,9 +27,11 @@
 
 .detectedDraftContainer:not(.editing) input[type="checkbox"],
 .detectedDraftContainer:not(.editing) .buttons,
-.detectedDraftContainer:not(.editing) .buttons * {
-  pointer-events: auto;
-  cursor: pointer;
+.detectedDraftContainer:not(.editing) .buttons *,
+.detectedDraftContainer:not(.editing) .sound-click-zone{
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  user-select: auto !important;
 }
 
 .detectedDraftContainer:not(.editing):hover {
@@ -83,8 +85,9 @@ input.checkBox{
   overflow: hidden;
 }
 .fieldList {
-  width: 100%;
+  width: 95%;
   overflow-y: auto;
+  overflow-x: hidden;
   pointer-events: auto !important;
   padding: 5px;
 }
@@ -164,9 +167,4 @@ input.checkBox{
 .addCardButton:hover {
   background-color: var(--color-primary);
   color: var(--color-light);
-}
-
-.nonClickable {
-  /* for only marking */
-  
 }
