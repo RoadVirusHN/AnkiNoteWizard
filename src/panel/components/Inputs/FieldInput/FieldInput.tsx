@@ -1,6 +1,6 @@
 import { FieldData } from "@/types/scanRule.types";
 // TODO: separate FieldScanInput style && folder
-import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
+import fieldInputStyles from "@/panel/components/Inputs/FieldInput/fieldInput.module.css";
 import { useTranslation } from "react-i18next";
 import { addNewMediaTags, convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
 import { DragEvent, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
@@ -45,13 +45,13 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, option
   const onFieldDragEnter = (e:DragEvent) => {
     e.preventDefault(); 
     setIsFocusing(true);
-    editorRef.current?.classList.add(detectedDraftStyles.dragOver);
+    editorRef.current?.classList.add(fieldInputStyles.dragOver);
   };
   const onFieldDragLeave = (e:DragEvent) => {
     e.preventDefault(); 
     if (fieldRef.current && !fieldRef.current.contains(e.relatedTarget as Node)) {
       setIsFocusing(false);
-      editorRef.current?.classList.remove(detectedDraftStyles.dragOver);
+      editorRef.current?.classList.remove(fieldInputStyles.dragOver);
     }
   };
   const onFieldDragOver = (e:DragEvent) => {
@@ -59,7 +59,7 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, option
   };
   const onFieldDragDrop= (e:DragEvent) => {
     e.preventDefault(); 
-    editorRef.current?.classList.remove(detectedDraftStyles.dragOver);
+    editorRef.current?.classList.remove(fieldInputStyles.dragOver);
   };
   const makeDirty = ()=>{
     if (!dirtyRef.current) {
@@ -136,7 +136,6 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, option
       }
     });
   
-    restoreMediaPreviews(editorQuill);
     editorQuill.root.addEventListener('focus',focus);
     editorQuill.root.addEventListener('blur', blur);
     return ()=>{
@@ -145,22 +144,23 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, option
       editorQuill.root.removeEventListener('blur',blur);
     };
   },[]);
+  if (quillRef.current) restoreMediaPreviews(quillRef.current);
   if (isEditing && editorRef.current && defaultFocus) {
     editorRef.current.focus();
   }
-  return <div className={detectedDraftStyles.fieldInput} ref={fieldRef} onDragEnter={onFieldDragEnter} onDragLeave={onFieldDragLeave} onDragOver={onFieldDragOver} onDrop={onFieldDragDrop}>
+  return <div className={fieldInputStyles.fieldInput} ref={fieldRef} onDragEnter={onFieldDragEnter} onDragLeave={onFieldDragLeave} onDragOver={onFieldDragOver} onDrop={onFieldDragDrop}>
        <label 
-      className={`${detectedDraftStyles.fieldLabel}` + (containedTooManyEmpty ? ` ${detectedDraftStyles.veryEmpty}` : '')}
+      className={`${fieldInputStyles.fieldLabel}` + (containedTooManyEmpty ? ` ${fieldInputStyles.veryEmpty}` : '')}
       htmlFor="content"
       title={containedTooManyEmpty ?t('containedTooManyEmptyWarn'):''}
       >{field.key}</label>
-      <div className={detectedDraftStyles.fields}>
-        <div className={detectedDraftStyles.field} onClick={(e)=>{e.stopPropagation();}} style={ {margin: 'auto', width: '100%'}} >
+      <div className={fieldInputStyles.fields}>
+        <div className={fieldInputStyles.field} onClick={(e)=>{e.stopPropagation();}} style={ {margin: 'auto', width: '100%'}} >
           <EditorToolbar toolbarRef={editorToolbarRef} isFocusing={alwaysToolbar||(isFocusing&&isEditing)} />
           <div
             id='content'
             ref={editorRef}
-            className={detectedDraftStyles.editor}/>
+            className={fieldInputStyles.editor}/>
         </div>
       </div>
     </div>;

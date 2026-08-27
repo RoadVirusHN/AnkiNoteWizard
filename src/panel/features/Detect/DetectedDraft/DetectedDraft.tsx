@@ -1,7 +1,7 @@
 import useScanRule from "@/panel/stores/useScanRule";
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import { Draft } from "@/types/scanRule.types";
-import FieldInput, { FieldInputHandle } from "./FieldInput";
+import FieldInput, { FieldInputHandle } from "../../../components/Inputs/FieldInput/FieldInput";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
