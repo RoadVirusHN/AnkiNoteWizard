@@ -7,7 +7,7 @@ import InspectionOverlay from "@/panel/components/InspectionOverlay/InspectionOv
 import Tags from "@/panel/components/Tags/Tags";
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
 import ModelInput from "@/panel/components/Inputs/ModelInput/ModelInput";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useGlobalVarStore from "@/panel/stores/useGlobalVarStore";
 import ScanRuleInput from "@/panel/components/Inputs/ScanRuleInput/ScanRuleInput";
 import DeckInput from "@/panel/components/Inputs/DeckInput/DeckInput";
@@ -20,21 +20,50 @@ import { useTranslation } from "react-i18next";
 import { deleteAllMediaTags, processMediaInHtml, removeDeletedMediaTags } from "@/panel/utils/quillUtils";
 import useScanRule from "@/panel/stores/useScanRule";
 import { isNoteValid } from "@/panel/utils/functions";
-import FieldInput, { FieldInputHandle } from "../Detect/DetectedDraft/FieldInput";
+import FieldInput, { FieldInputHandle } from "../../components/Inputs/FieldInput/FieldInput";
 
 
 const AddPage = ({}) => {
-  const {fetchAnki} = useAnkiConnectionStore();
-  const {currentAddingDraft, setCurrentAddingDraft} = useGlobalVarStore();
-  const [curNote, setCurNote] = useState(currentAddingDraft);
+  const {fetchAnki, isConnected, decks,models} = useAnkiConnectionStore();
+  const {currentAddingDraft, setCurrentAddingDraft, currentDeckId} = useGlobalVarStore();
+  const [curNote, setCurNote] = useState({
+    ...currentAddingDraft,
+    modelId: currentAddingDraft.modelId || (Object.keys(models).length > 0 ? Object.keys(models)[0] : ''),
+    deckId: currentAddingDraft.deckId || (Object.keys(decks).length > 0 ? Object.keys(decks)[0] : ''),
+  });
+  useEffect(()=>{
+    setCurNote({
+      ...currentAddingDraft,
+      modelId: currentAddingDraft.modelId || (Object.keys(models).length > 0 ? Object.keys(models)[0] : ''),
+      deckId: currentAddingDraft.deckId || (Object.keys(decks).length > 0 ? Object.keys(decks)[0] : ''),
+    });
+    console.log(curNote, currentAddingDraft.modelId, (Object.keys(models).length > 0 ? Object.keys(models)[0] : ''),Object.keys(models).length > 0 );
+  },[currentAddingDraft,decks,models]);
   const fieldRefs = useRef<FieldInputHandle[]>([]);
-  // const reRender = useForceUpdate();
+  
+  // const reRender = useForceUpdate();S
   const [isChanged, setIsChanged] = useState(false);
+
+  const checkDeckInput = () => {
+    let errors = [] as string[];
+    if (currentDeckId === null||currentDeckId === ''){
+      console.log('No deck selected');
+      errors.push(tError('detectPage.selectDeckFirst.statusText'));
+    } else if (!isConnected) {
+      console.log('Anki is not connected');
+      alert(tError('common.ankiNotConnected'));
+    } else if (currentDeckId && !decks[currentDeckId]) {
+      console.log('Deck not found in Anki');
+      errors.push(tError('detectPage.deckNotFoundInAnki.statusText'));
+    }
+
+    setErrorMessages({...errorMessages, deck: errors});
+    return errors.length > 0;
+  }
   const [errorMessages, setErrorMessages] = useState<{[key:string]:string[]}>({
     deck: [],
     model: [],
   });
-  const {models} = useAnkiConnectionStore();  
   const {scanRules} = useScanRule();
   const {t} = useTranslation('page',{keyPrefix: 'addPage'});
   const {t:tCommon} = useTranslation('common');
@@ -76,6 +105,7 @@ const AddPage = ({}) => {
         <div className={addPageStyle.formGroup}>
           <DeckInput label={tCommon('deck')} onChange={(e)=>{
             setCurNote({...curNote, deckId: e.target.value}); 
+            checkDeckInput();
             setIsChanged(true);
           }} initDeckId={curNote.deckId}
             errorMessages={errorMessages.deck}/>
@@ -135,21 +165,28 @@ const AddPage = ({}) => {
       <SimpleButton src={AddIcon} 
         className={addPageStyle.addBtn}
         onClick={async ()=>{
+          if (checkDeckInput()){
+            return;
+          }
           const res = isNoteValid(curNote, models[curNote.modelId], tError);
+          let newErrorMessages = {model: [], deck: []} as typeof errorMessages;
           if (res.result!== 'ok'){
             for (const code of res.error){
               if(code === 'modelNotFoundError.code'){
               } else if (code === 'emptyModelError.code'){
-                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('addNote.emptyModelError.statusText')]});
+                newErrorMessages['model'].push(tError('addNote.emptyModelError.statusText'));
               } else if (code === 'emptyDeckError.code'){
-                setErrorMessages({...errorMessages, deck: [...errorMessages.deck, tError('addNote.emptyDeckError.statusText')]});
+                newErrorMessages['deck'].push(tError('addNote.emptyDeckError.statusText'));
               } else if (code === 'fieldModelMismatchError.code'){
-                setErrorMessages({...errorMessages, model: [...errorMessages.model, tError('addNote.fieldModelMismatchError.statusText')]});
+                newErrorMessages['model'].push(tError('addNote.fieldModelMismatchError.statusText'));
               } else{
                 alert(tCommon('error')+`: ${res.error}`);
               }            
             }
-
+            setErrorMessages(newErrorMessages);
+            if (newErrorMessages.model.length>0 || newErrorMessages.deck.length>0){
+              alert(tError('addNote.addNoteFail.statusText') + ' ' + newErrorMessages.model.concat(newErrorMessages.deck).join('\n') );
+            }
             return;
           }
           const updatedFields = curNote.fields.map((field, idx) => ({
@@ -187,10 +224,12 @@ const AddPage = ({}) => {
               } 
             },
           };
-
+          console.log('AddPage: addNote request', req);
+          //TODO: Store MediaFile!
           await fetchAnki(req).then((res)=>{
             setIsChanged(false);
             setCurrentAddingDraft(curNote);
+            console.log('AddPage: addNote response', res);
             alert(res.error ? tCommon('error')+`: ${res.error}` : t('addNoteSuccess'));
             });
           }}

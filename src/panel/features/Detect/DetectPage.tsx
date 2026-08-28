@@ -143,7 +143,7 @@ const DetectPage: React.FC = () => {
       errors.push(tError('detectPage.selectDeckFirst.statusText'));
     } else if (!isConnected) {
       console.log('Anki is not connected');
-      errors.push(tError('common.ankiNotConnected'));
+      alert(tError('common.ankiNotConnected'));
     } else if (currentDeckId && !decks[currentDeckId]) {
       console.log('Deck not found in Anki');
       errors.push(tError('detectPage.deckNotFoundInAnki.statusText'));

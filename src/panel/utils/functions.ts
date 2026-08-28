@@ -15,6 +15,7 @@ export const getCurrentTabId = async () => {
 };
 
 export const isNoteValid = (draft: Draft, model: Model, t: TFunction<'error', 'addNote'>) => {
+  console.log(draft, model);
   const res = {
     result: 'error',
     error: [] as string[],

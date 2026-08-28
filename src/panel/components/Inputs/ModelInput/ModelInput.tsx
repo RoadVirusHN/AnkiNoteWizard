@@ -1,5 +1,5 @@
 import useAnkiConnectionStore from "@/panel/stores/useAnkiConnectionStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SimpleSelect from "../SimpleSelect/SimpleSelect";
 import { useTranslation } from "react-i18next";
 
@@ -10,12 +10,12 @@ interface ModelInputProps {
 }
 
 const ModelInput = ({setModelId, defaultModelId ,errorMessages}:ModelInputProps) => {
+  // WARN : defaultModelId는 최초에 setModelId를 실행하지 않으며, ModelInput 의존 컴포넌트가 시작부터 알아서 defaultModelId를 적용한 상태여야 한다.
   const {models} = useAnkiConnectionStore();
   const modelKeys = Object.keys(models);
-  const [curVal, setCurVal] = useState(modelKeys.includes(defaultModelId) ? defaultModelId : (modelKeys.length > 0 ? modelKeys[0] : ''));
-  
+  const [curVal, setCurVal] = useState(defaultModelId);
   const onChangeModel = (modelId:string) => {
-    if (!modelId||!models[modelId]||Object.keys(models).length===0) return;
+   if (!modelId||!models[modelId]||Object.keys(models).length===0) return;
     return setModelId(modelId);
   }
   const {t} = useTranslation('common');
@@ -36,9 +36,7 @@ const ModelInput = ({setModelId, defaultModelId ,errorMessages}:ModelInputProps)
         })]
       }
       onChange={(e)=>{
-        if (onChangeModel(e.currentTarget.value)){
-          setCurVal(e.currentTarget.value);
-        } 
+        onChangeModel(e.currentTarget.value);
       }} 
       />
   );
