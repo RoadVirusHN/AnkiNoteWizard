@@ -21,6 +21,7 @@ import { deleteAllMediaTags, processMediaInHtml, removeDeletedMediaTags } from "
 import useScanRule from "@/panel/stores/useScanRule";
 import { isNoteValid } from "@/panel/utils/functions";
 import FieldInput, { FieldInputHandle } from "../../components/Inputs/FieldInput/FieldInput";
+import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
 
 
 const AddPage = ({}) => {
@@ -69,6 +70,7 @@ const AddPage = ({}) => {
   const {t:tCommon} = useTranslation('common');
   const {t:tError} = useTranslation('error');
   const {cancleInspectionMode,isInspectionMode} = useInspection();
+  const toolbarRef = useRef<HTMLDivElement>(null);
 
   return <div className={addPageStyle.container}>
     <div className={addPageStyle.header}>     
@@ -147,11 +149,13 @@ const AddPage = ({}) => {
           setCurNote({...curNote, tagIds: curNote.tagIds.filter(t=>t !== tag.name)});
         }}/>
         <div className={addPageStyle.fakeLabel}>{t('fieldsLabel')}</div>
+        <EditorToolbar toolbarRef={toolbarRef} show={true}/>
         {
           curNote.fields.map((item, idx)=>{
           return (            
             <FieldInput key={idx}
               field={item}
+              editorToolbarRef={toolbarRef}
               options={{
                 alwaysToolbar: true,
               }}

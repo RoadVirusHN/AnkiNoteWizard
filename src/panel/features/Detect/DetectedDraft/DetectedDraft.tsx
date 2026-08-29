@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import useInspection from "@/panel/hooks/useInspection";
 import Tags from "@/panel/components/Tags/Tags";
 import { useShallow } from "zustand/react/shallow";
+import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
 
 interface DetectedDraftProps {
   idx: string;
@@ -39,6 +40,7 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:Dete
   const [currentErrors, setCurrentErrors] = useState(errors);
   const {enterInspectionMode,isInspectionMode} = useInspection();
   const checkRef = useRef<HTMLInputElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
   if (checkRef.current){
     checkRef.current.checked = isChecked;
   }
@@ -126,9 +128,11 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:Dete
         </div>
       </div>
       <div className={detectedDraftStyles.fieldList} style={{maxHeight:isEditing ? 'fit-content' : '250px'}}> 
+        <EditorToolbar toolbarRef={toolbarRef} show={isEditing} />
         {
           currentDraft.fields.map((item, idx)=>{
             return <FieldInput key={idx} field={item} 
+            editorToolbarRef={toolbarRef}
             options={{isEditing:isEditing, defaultFocus: idx===0}}
             onDirty={()=>{setIsChanged(true);}}
             ref={e=>{if (e) fieldRefs.current[idx]=e;}}

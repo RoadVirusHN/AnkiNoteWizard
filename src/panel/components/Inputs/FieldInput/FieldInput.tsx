@@ -3,7 +3,7 @@ import { FieldData } from "@/types/scanRule.types";
 import fieldInputStyles from "@/panel/components/Inputs/FieldInput/fieldInput.module.css";
 import { useTranslation } from "react-i18next";
 import { addNewMediaTags, convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
-import { DragEvent, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { DragEvent, forwardRef, RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
 import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
@@ -19,6 +19,7 @@ export interface FieldInputHandle {
 
 interface FieldInputProps {
   field:FieldData;
+  editorToolbarRef?:RefObject<HTMLElement|null>;
   options?: {
     isEditing?: boolean;
     defaultFocus?: boolean;
@@ -27,17 +28,16 @@ interface FieldInputProps {
   onDirty: () => void;
 }
 //TODO : Better HTML Preview 
-const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, options, onDirty},ref) => {
+const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editorToolbarRef,options, onDirty},ref) => {
   const {isEditing, defaultFocus, alwaysToolbar} = {isEditing: options?.isEditing||false, defaultFocus: options?.defaultFocus||false, alwaysToolbar: options?.alwaysToolbar||false};
   const renderedContent = field.content.replace(/\s+/g, ' ').trim();
   const containedTooManyEmpty = field.content.length - renderedContent.length > 30;
   const {t} = useTranslation('components', {keyPrefix:'fieldScanInput'});
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill>(null);
-  const editorToolbarRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLDivElement>(null);
   const isMounted = useRef(false);
-
+  const individualToolbarRef = useRef<HTMLDivElement>(null);
   const [isFocusing, setIsFocusing] = useState(false);
   const focus = () => setIsFocusing(true);
   const blur = () => setIsFocusing(false);
@@ -116,14 +116,15 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, option
   }));
 
   useEffect(()=>{
-    if (!editorRef.current||!editorToolbarRef.current) return;
+    const toolbarRef = editorToolbarRef || individualToolbarRef;
+    if (!editorRef.current||!toolbarRef.current) return;
     if (!isMounted.current) {
       // prevent double toolbar by strict mode
       isMounted.current = true;
       return;
     }
 
-    const editorQuill = getEditorQuill(editorRef.current, editorToolbarRef.current, makeDirty);
+    const editorQuill = getEditorQuill(editorRef.current, toolbarRef.current, makeDirty);
     editorQuill.clipboard.dangerouslyPasteHTML(field.content);
     if (editorQuill.history) {
       // reset history(Ctrl+z) to prevent deleting the previous content.
@@ -148,6 +149,7 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, option
   if (isEditing && editorRef.current && defaultFocus) {
     editorRef.current.focus();
   }
+  console.log(editorToolbarRef);
   return <div className={fieldInputStyles.fieldInput} ref={fieldRef} onDragEnter={onFieldDragEnter} onDragLeave={onFieldDragLeave} onDragOver={onFieldDragOver} onDrop={onFieldDragDrop}>
        <label 
       className={`${fieldInputStyles.fieldLabel}` + (containedTooManyEmpty ? ` ${fieldInputStyles.veryEmpty}` : '')}
@@ -156,7 +158,7 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, option
       >{field.key}</label>
       <div className={fieldInputStyles.fields}>
         <div className={fieldInputStyles.field} onClick={(e)=>{e.stopPropagation();}} style={ {margin: 'auto', width: '100%'}} >
-          <EditorToolbar toolbarRef={editorToolbarRef} isFocusing={alwaysToolbar||(isFocusing&&isEditing)} />
+          {editorToolbarRef===undefined&&<EditorToolbar toolbarRef={individualToolbarRef} show={alwaysToolbar||(isFocusing&&isEditing)} />}
           <div
             id='content'
             ref={editorRef}
