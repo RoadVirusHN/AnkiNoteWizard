@@ -363,7 +363,6 @@ export const processMediaInHtml = async (html: string) => {
   });
 
   let errors = [] as { error: string; src: string }[];
-
   for (const element of mediaElements) {
     const src = element['src'];
     if (!src) continue;
@@ -417,6 +416,7 @@ export const processMediaInHtml = async (html: string) => {
       if (tagName === 'img') {
         imageExtensions.forEach((ext) => { if (src.endsWith(`.${ext}`)) extension = ext; });
       } else if (tagName === 'video' || tagName === 'sound') {
+        audioExtensions.forEach((ext) => { if (src.endsWith(`.${ext}`)) extension = ext; });
         videoExtensions.forEach((ext) => { if (src.endsWith(`.${ext}`)) extension = ext; });
       } else if (tagName === 'audio') {
         audioExtensions.forEach((ext) => { if (src.endsWith(`.${ext}`)) extension = ext; });
@@ -424,8 +424,10 @@ export const processMediaInHtml = async (html: string) => {
 
       try {
         const file = await localforage.getItem<File>(src);
-        if (!file) continue; 
-        
+        if (!file) {
+          errors.push({ error: i18next.t('error:media.mediaFileNotFound'), src });
+          continue; 
+        }
         params.data = await fileToBase64(file);
       } catch (err) {
         console.error('Failed to read from localforage:', err);
