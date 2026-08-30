@@ -149,7 +149,6 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editor
   if (isEditing && editorRef.current && defaultFocus) {
     editorRef.current.focus();
   }
-  console.log(editorToolbarRef);
   return <div className={fieldInputStyles.fieldInput} ref={fieldRef} onDragEnter={onFieldDragEnter} onDragLeave={onFieldDragLeave} onDragOver={onFieldDragOver} onDrop={onFieldDragDrop}>
        <label 
       className={`${fieldInputStyles.fieldLabel}` + (containedTooManyEmpty ? ` ${fieldInputStyles.veryEmpty}` : '')}

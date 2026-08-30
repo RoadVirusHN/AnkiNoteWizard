@@ -24,9 +24,21 @@ export default {
   preview: {
     removedCodeWarning: 'Some elements(scripts,tags) were removed for security reasons.',
   },
-  fieldInput: {
-    fieldContentPlaceholder:
-      'Enter content for this field. You can also paste or drag media files (images, audio, video) directly into this area.',
+  editorToolbar: {
+    tooltipBold: 'Bold text (Ctrl+B)',
+    tooltipItalic: 'Italic text (Ctrl+I)',
+    tooltipUnderline: 'Underline text (Ctrl+U)',
+    tooltipSuper: 'Superscript (Ctrl+=)',
+    tooltipSub: 'Subscript (Ctrl+Shift+=)',
+    tooltipColor: 'Text Color (F7)',
+    tooltipBgColor: 'Text Highlight Color (F8)',
+    tooltipClean: 'Remove Formatting (Ctrl + R)',
+    tooltipBullet: 'Unordered list (Ctrl + ,)',
+    tooltipOrdered: 'Ordered list (Ctrl + .)',
+    tooltipAlignment: 'Alignment',
+    tooltipFile: 'Attach Picture/Audio/Video (F3)',
+    tooltipVoice: 'Recording Voice (F5)',
+    tooltipFormula: 'Equations (F6)',
   },
   fieldScanInput: {
     containedTooManyEmptyWarn:

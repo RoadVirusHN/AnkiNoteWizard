@@ -26,8 +26,21 @@ export default {
   preview: {
     removedCodeWarning: '보안상의 이유로 일부 요소(스크립트, 태그)가 제거되었습니다.',
   },
-  fieldInput: {
-    fieldContentPlaceholder: '이 필드에 대한 내용을 입력하세요. 또한 미디어 파일(이미지, 오디오, 비디오)을 이 영역에 직접 붙여넣거나 드래그할 수도 있습니다.',
+  editorToolbar: {
+    tooltipBold: '굵은 텍스트 (Ctrl+B)',
+    tooltipItalic: '기울임 텍스트 (Ctrl+I)',
+    tooltipUnderline: '밑줄 텍스트 (Ctrl+U)',
+    tooltipSuper: '위 첨자 (Ctrl+=)',
+    tooltipSub: '아래 첨자 (Ctrl+Shift+=)',
+    tooltipColor: '텍스트 색상 (F7)',
+    tooltipBgColor: '텍스트 강조 색상 (F8)',
+    tooltipClean: '서식 제거 (Ctrl + R)',
+    tooltipBullet: '글머리 기호 목록 (Ctrl + ,)',
+    tooltipOrdered: '번호 매기기 목록 (Ctrl + .)',
+    tooltipAlignment: '정렬',
+    tooltipFile: '사진/오디오/비디오 첨부 (F3)',
+    tooltipVoice: '음성 녹음 (F5)',
+    tooltipFormula: '수식 (F6)',
   },
   fieldScanInput: {
     containedTooManyEmptyWarn: '이 요소는 빈 문자가 많아 생성 결과가 다르게 보일 수 있습니다.'

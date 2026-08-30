@@ -38,7 +38,6 @@ const AddPage = ({}) => {
       modelId: currentAddingDraft.modelId || (Object.keys(models).length > 0 ? Object.keys(models)[0] : ''),
       deckId: currentAddingDraft.deckId || (Object.keys(decks).length > 0 ? Object.keys(decks)[0] : ''),
     });
-    console.log(curNote, currentAddingDraft.modelId, (Object.keys(models).length > 0 ? Object.keys(models)[0] : ''),Object.keys(models).length > 0 );
   },[currentAddingDraft,decks,models]);
   const fieldRefs = useRef<FieldInputHandle[]>([]);
   
