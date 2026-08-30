@@ -18,8 +18,9 @@ export default function EditorToolbar({ toolbarRef, show }: EditorToolbarProps) 
   return (
       <div 
         ref={toolbarRef} 
-        className={editorStyles.ankiToolbar}
+        className={`${editorStyles.ankiToolbar} ${editorStyles.deactive}`}
         onMouseOver={handleToolbarMouseOver}
+        onClick={(e)=>{e.stopPropagation();e.preventDefault();}}
         style={{display: show? "flex":"none"}}
       >
         {/* 그룹 1: Anki 제어 버튼 (Fields, Cards, 설정) */}

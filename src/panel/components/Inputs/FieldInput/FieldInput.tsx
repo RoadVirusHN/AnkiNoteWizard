@@ -1,12 +1,14 @@
 import { FieldData } from "@/types/scanRule.types";
 // TODO: separate FieldScanInput style && folder
 import fieldInputStyles from "@/panel/components/Inputs/FieldInput/fieldInput.module.css";
+import editorStyles from "@/panel/components/Editor/editor.module.css";
 import { useTranslation } from "react-i18next";
 import { addNewMediaTags, convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
 import { DragEvent, forwardRef, RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
 import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
+import Toolbar from "quill/modules/toolbar";
 
 export interface FieldInputHandle {
   editorRef: React.RefObject<HTMLDivElement|null>;
@@ -136,11 +138,22 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editor
         makeDirty();
       }
     });
-  
+    editorQuill.on('selection-change', function(range){
+      if (range){
+        editorToolbarRef?.current?.classList.remove(editorStyles.deactive);
+        const toolbarModule = editorQuill.getModule('toolbar') as Toolbar;
+        toolbarModule.attach(editorQuill.root);
+      } else {
+        if (!document.activeElement?.closest('.ql-editor')) {
+            editorToolbarRef?.current?.classList.add(editorStyles.deactive);
+          }
+      }
+    });
     editorQuill.root.addEventListener('focus',focus);
     editorQuill.root.addEventListener('blur', blur);
     return ()=>{
       editorQuill.off('text-change');
+      editorQuill.off('selection-change');
       editorQuill.root.removeEventListener('focus',focus);
       editorQuill.root.removeEventListener('blur',blur);
     };
