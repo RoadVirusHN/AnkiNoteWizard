@@ -7,6 +7,30 @@ import Image from 'quill/formats/image';
 import { createRoot } from 'react-dom/client';
 import VidPlayer from "@/panel/components/VidPlayer/VidPlayer";
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
+import Toolbar from 'quill/modules/toolbar';
+
+
+// export class ToolbarAlt extends Toolbar {
+//   resetToolbar () {
+//     this.container?.childNodes.forEach(el => {
+//       const clone = el.cloneNode(true);
+//       el.parentNode?.replaceChild(clone, el);
+//     });
+//     this.container?.childNodes.forEach((input) => {
+//       this.attach(input as HTMLElement);
+//     }, this);
+//   }
+    //   if (!this.container) return;
+    // const controls = this.container.querySelectorAll('button, select, input, .ql-picker');
+    // controls.forEach((el) => {
+    //   const clone = el.cloneNode(true);
+    //   el.parentNode?.replaceChild(clone, el);
+    // });
+    // const renewedControls = this.container.querySelectorAll('button, select, input');
+    // renewedControls.forEach((control) => {
+    //   this.attach(control as HTMLElement);
+    // });
+// }
 
 const ANKI_IMAGE_BLOT_NAME = 'anki-image';
 const ANKI_SOUND_BLOT_NAME = 'anki-sound';
@@ -62,6 +86,9 @@ export const initQuill = () => {
   AnkiImageBlot.tagName = 'IMG';
   Quill.register(AnkiImageBlot, true);
 
+
+
+    //  Quill.register('modules/toolbar', ToolbarAlt, true);
 };
 const clickSoundHandler = (node: HTMLElement, src: string, mediaId: string) => async (e: Event) => {
   e.preventDefault();

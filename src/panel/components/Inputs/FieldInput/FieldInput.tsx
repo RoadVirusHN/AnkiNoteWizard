@@ -1,9 +1,8 @@
 import { FieldData } from "@/types/scanRule.types";
-// TODO: separate FieldScanInput style && folder
 import fieldInputStyles from "@/panel/components/Inputs/FieldInput/fieldInput.module.css";
 import editorStyles from "@/panel/components/Editor/editor.module.css";
 import { useTranslation } from "react-i18next";
-import { addNewMediaTags, convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, onWebMediaDrop, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
+import { addNewMediaTags, convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
 import { DragEvent, forwardRef, RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
@@ -30,6 +29,7 @@ interface FieldInputProps {
   onDirty: () => void;
 }
 //TODO : Better HTML Preview 
+//TODO : share toolbar using this https://stackoverflow.com/questions/33441303/share-quill-toolbar-across-multiple-editors
 const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editorToolbarRef,options, onDirty},ref) => {
   const {isEditing, defaultFocus, alwaysToolbar} = {isEditing: options?.isEditing||false, defaultFocus: options?.defaultFocus||false, alwaysToolbar: options?.alwaysToolbar||false};
   const renderedContent = field.content.replace(/\s+/g, ' ').trim();
@@ -138,22 +138,38 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editor
         makeDirty();
       }
     });
-    editorQuill.on('selection-change', function(range){
-      if (range){
-        editorToolbarRef?.current?.classList.remove(editorStyles.deactive);
+    if (editorToolbarRef)
+      editorQuill.on('selection-change', function(range){
+        //TODO : 정렬 버튼 사라짐 문제
         const toolbarModule = editorQuill.getModule('toolbar') as Toolbar;
-        toolbarModule.attach(editorQuill.root);
-      } else {
-        if (!document.activeElement?.closest('.ql-editor')) {
+        if (range){
+          editorToolbarRef?.current?.classList.remove(editorStyles.deactive);
+          toolbarModule.attach(editorQuill.container);
+          toolbarModule.handlers = {
+            ...toolbarModule.handlers,
+            align: function(value: string) {
+              console.log(isFocusing,editorQuill.root.innerHTML);
+              editorQuill.format('align', value);
+            }
+          };
+        } else {
+          if (!document.activeElement?.closest('.ql-editor')) {
             editorToolbarRef?.current?.classList.add(editorStyles.deactive);
           }
-      }
-    });
+          // toolbarModule.resetToolbar();
+          toolbarModule.handlers = {
+            ...toolbarModule.handlers,
+            align: function(value: string) {
+              console.log(isFocusing,editorQuill.root.innerHTML);
+            }
+          };
+        }
+      });
     editorQuill.root.addEventListener('focus',focus);
     editorQuill.root.addEventListener('blur', blur);
     return ()=>{
       editorQuill.off('text-change');
-      editorQuill.off('selection-change');
+      if (editorToolbarRef) editorQuill.off('selection-change');
       editorQuill.root.removeEventListener('focus',focus);
       editorQuill.root.removeEventListener('blur',blur);
     };
