@@ -1,14 +1,11 @@
-import { FieldData } from "@/types/scanRule.types";
-import fieldInputStyles from "@/panel/components/Inputs/FieldInput/fieldInput.module.css";
-import editorStyles from "@/panel/components/Editor/editor.module.css";
-import { useTranslation } from "react-i18next";
-import { addNewMediaTags, convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
-import { DragEvent, forwardRef, RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
-import Quill from "quill";
-import 'quill/dist/quill.snow.css';
-import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
-
-export interface FieldInputHandle {
+import { DragEvent, forwardRef, RefObject, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import sharedToolbarEditorStyles from './sharedToolbarEditor.module.css';
+import { FieldData } from '@/types/scanRule.types';
+import Quill from 'quill';
+import { useTranslation } from 'react-i18next';
+import { addNewMediaTags, convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, removeDeletedMediaTags, restoreMediaPreviews } from '@/panel/utils/quillUtils';
+import EditorToolbar from '../../Editor/EditorToolbar';
+export interface RefAttributes {
   editorRef: React.RefObject<HTMLDivElement|null>;
   editorQuill: Quill | null;
   getContent(): string;
@@ -17,7 +14,7 @@ export interface FieldInputHandle {
   deleted():void;
 }
 
-interface FieldInputProps {
+interface Props {
   field:FieldData;
   editorToolbarRef?:RefObject<HTMLElement|null>;
   options?: {
@@ -28,10 +25,7 @@ interface FieldInputProps {
   onDirty: () => void;
 }
 
-// Editor for single usage.
-//TODO : Better HTML Preview 
-//TODO : share toolbar using this https://stackoverflow.com/questions/33441303/share-quill-toolbar-across-multiple-editors
-const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editorToolbarRef,options, onDirty},ref) => {
+const SharedToolbarEditor = forwardRef<RefAttributes, Props>(({field, editorToolbarRef,options, onDirty},ref) => {
   const {isEditing, defaultFocus, alwaysToolbar} = {isEditing: options?.isEditing||false, defaultFocus: options?.defaultFocus||false, alwaysToolbar: options?.alwaysToolbar||false};
   const renderedContent = field.content.replace(/\s+/g, ' ').trim();
   const containedTooManyEmpty = field.content.length - renderedContent.length > 30;
@@ -48,13 +42,13 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editor
   const onFieldDragEnter = (e:DragEvent) => {
     e.preventDefault(); 
     setIsFocusing(true);
-    editorRef.current?.classList.add(fieldInputStyles.dragOver);
+    editorRef.current?.classList.add(sharedToolbarEditorStyles.dragOver);
   };
   const onFieldDragLeave = (e:DragEvent) => {
     e.preventDefault(); 
     if (fieldRef.current && !fieldRef.current.contains(e.relatedTarget as Node)) {
       setIsFocusing(false);
-      editorRef.current?.classList.remove(fieldInputStyles.dragOver);
+      editorRef.current?.classList.remove(sharedToolbarEditorStyles.dragOver);
     }
   };
   const onFieldDragOver = (e:DragEvent) => {
@@ -62,7 +56,7 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editor
   };
   const onFieldDragDrop= (e:DragEvent) => {
     e.preventDefault(); 
-    editorRef.current?.classList.remove(fieldInputStyles.dragOver);
+    editorRef.current?.classList.remove(sharedToolbarEditorStyles.dragOver);
   };
   const makeDirty = ()=>{
     if (!dirtyRef.current) {
@@ -150,21 +144,21 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editor
   if (isEditing && editorRef.current && defaultFocus) {
     editorRef.current.focus();
   }
-  return <div className={fieldInputStyles.fieldInput} ref={fieldRef} onDragEnter={onFieldDragEnter} onDragLeave={onFieldDragLeave} onDragOver={onFieldDragOver} onDrop={onFieldDragDrop}>
-       <label 
-      className={`${fieldInputStyles.fieldLabel}` + (containedTooManyEmpty ? ` ${fieldInputStyles.veryEmpty}` : '')}
-      htmlFor="content"
-      title={containedTooManyEmpty ?t('containedTooManyEmptyWarn'):''}
-      >{field.key}</label>
-      <div className={fieldInputStyles.fields}>
-        <div className={fieldInputStyles.field} onClick={(e)=>{e.stopPropagation();}} style={ {margin: 'auto', width: '100%'}} >
-          {editorToolbarRef===undefined&&<EditorToolbar toolbarRef={attachedToolbarRef} show={alwaysToolbar||(isFocusing&&isEditing)} />}
-          <div
-            id='content'
-            ref={editorRef}
-            className={fieldInputStyles.editor}/>
-        </div>
-      </div>
-    </div>;
+return <div className={sharedToolbarEditorStyles.fieldInput} ref={fieldRef} onDragEnter={onFieldDragEnter} onDragLeave={onFieldDragLeave} onDragOver={onFieldDragOver} onDrop={onFieldDragDrop}>
+  <label 
+ className={`${sharedToolbarEditorStyles.fieldLabel}` + (containedTooManyEmpty ? ` ${sharedToolbarEditorStyles.veryEmpty}` : '')}
+ htmlFor="content"
+ title={containedTooManyEmpty ?t('containedTooManyEmptyWarn'):''}
+ >{field.key}</label>
+ <div className={sharedToolbarEditorStyles.fields}>
+   <div className={sharedToolbarEditorStyles.field} onClick={(e)=>{e.stopPropagation();}} style={ {margin: 'auto', width: '100%'}} >
+     {editorToolbarRef===undefined&&<EditorToolbar toolbarRef={attachedToolbarRef} show={alwaysToolbar||(isFocusing&&isEditing)} />}
+     <div
+       id='content'
+       ref={editorRef}
+       className={sharedToolbarEditorStyles.editor}/>
+   </div>
+ </div>
+</div>;
 });
-export default FieldInput;
+export default SharedToolbarEditor;
