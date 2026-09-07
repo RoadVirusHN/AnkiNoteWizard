@@ -182,10 +182,11 @@ const imageExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'svg+xml', 'bmp', 
 const audioExtensions = ['mpeg', 'ogg', 'wav', 'webm', 'aac', 'flac', 'm4a', 'mp4', 'x-m4a'];
 const videoExtensions = ['mp4', 'webm', 'ogg', 'quicktime', 'x-msvideo', 'mpeg'];
 
-export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLElement, makeDirty:()=>void) => {
+export const getEditorQuill = (editorElement: HTMLElement, toolbarElement: HTMLElement, makeDirty:()=>void, readOnly=false) => {
   const editorQuill = new Quill(editorElement, {
     debug: 'warn',
     theme: 'snow',
+    readOnly: readOnly,
     modules: {
       toolbar: toolbarElement,
       uploader: {

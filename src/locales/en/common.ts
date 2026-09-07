@@ -22,5 +22,6 @@ export default {
   'extract|word|': 'Extract {{word}}',
   'select|word|': 'Select {{word}}',
   'no|word|Selected': 'No {{word}} Selected',
-  delete: 'Delete'
+  delete: 'Delete',
+  fields: 'Fields'
 };

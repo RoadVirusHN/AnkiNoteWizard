@@ -1,0 +1,19 @@
+.fieldInputListContainer{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+.fakeLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  width: 100%;
+}
+.editor:not(.dragOver){
+  border: 1px solid var(--color-primary) !important;
+  width: 100%;  
+}
+.editor {
+  display: none;
+}

@@ -24,5 +24,6 @@ export default {
   'extract|word|': '{{word}} 추출',
   'select|word|': '{{word}} 선택',
   'no|word|Selected': '{{word}} 선택되지 않음',
-  delete: '삭제'
+  delete: '삭제',
+  fields: '필드'
 } satisfies typeof common;
