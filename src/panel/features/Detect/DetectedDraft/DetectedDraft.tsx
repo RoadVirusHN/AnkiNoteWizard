@@ -1,7 +1,7 @@
 import useScanRule from "@/panel/stores/useScanRule";
 import detectedDraftStyles from "@/panel/features/Detect/DetectedDraft/detectedDraft.module.css";
 import { Draft } from "@/types/scanRule.types";
-import FieldInput, { FieldInputHandle } from "../../../components/Inputs/FieldInput/FieldInput";
+import FieldInput, { FieldInputHandle } from "../../../components/Inputs/FieldInput/_FieldInput";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import MagicIcon from "@/public/Icon/Icon-Magic.svg";
 import SaveIcon from "@/public/Icon/Icon-Save.svg";
@@ -13,6 +13,7 @@ import useInspection from "@/panel/hooks/useInspection";
 import Tags from "@/panel/components/Tags/Tags";
 import { useShallow } from "zustand/react/shallow";
 import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
+import FieldInputList from "@/panel/components/Inputs/FieldInputList/FieldInputList";
 
 interface DetectedDraftProps {
   idx: string;
@@ -128,17 +129,13 @@ const DetectedDraft = ({idx, note, scanRuleId, checkAdd, isChecked, errors}:Dete
         </div>
       </div>
       <div className={detectedDraftStyles.fieldList} style={{maxHeight:isEditing ? 'fit-content' : '250px'}}> 
-        <EditorToolbar toolbarRef={toolbarRef} show={isEditing} />
-        {
-          currentDraft.fields.map((item, idx)=>{
-            return <FieldInput key={idx} field={item} 
-            editorToolbarRef={toolbarRef}
-            options={{isEditing:isEditing, defaultFocus: idx===0}}
-            onDirty={()=>{setIsChanged(true);}}
-            ref={e=>{if (e) fieldRefs.current[idx]=e;}}
-            />
-          })
-        }
+        <FieldInputList 
+        fields={currentDraft.fields} 
+        onDirty={()=>{
+          setIsChanged(true);
+        }}
+        isEditing={isEditing}
+        />
       </div>
     </div>
   </article>);

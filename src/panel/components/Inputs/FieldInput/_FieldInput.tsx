@@ -158,7 +158,7 @@ const FieldInput = forwardRef<FieldInputHandle, FieldInputProps>(({field, editor
       >{field.key}</label>
       <div className={fieldInputStyles.fields}>
         <div className={fieldInputStyles.field} onClick={(e)=>{e.stopPropagation();}} style={ {margin: 'auto', width: '100%'}} >
-          {editorToolbarRef===undefined&&<EditorToolbar toolbarRef={attachedToolbarRef} show={alwaysToolbar||(isFocusing&&isEditing)} />}
+          {editorToolbarRef===undefined&&<EditorToolbar toolbarRef={attachedToolbarRef}  />}
           <div
             id='content'
             ref={editorRef}

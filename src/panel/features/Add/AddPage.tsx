@@ -20,8 +20,9 @@ import { useTranslation } from "react-i18next";
 import { deleteAllMediaTags, processMediaInHtml, removeDeletedMediaTags } from "@/panel/utils/quillUtils";
 import useScanRule from "@/panel/stores/useScanRule";
 import { isNoteValid } from "@/panel/utils/functions";
-import FieldInput, { FieldInputHandle } from "../../components/Inputs/FieldInput/FieldInput";
+import FieldInput, { FieldInputHandle } from "../../components/Inputs/FieldInput/_FieldInput";
 import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
+import FieldInputList from "@/panel/components/Inputs/FieldInputList/FieldInputList";
 
 
 const AddPage = ({}) => {
@@ -148,21 +149,9 @@ const AddPage = ({}) => {
           setCurNote({...curNote, tagIds: curNote.tagIds.filter(t=>t !== tag.name)});
         }}/>
         <div className={addPageStyle.fakeLabel}>{t('fieldsLabel')}</div>
-        <EditorToolbar toolbarRef={toolbarRef} show={true}/>
-        {
-          curNote.fields.map((item, idx)=>{
-          return (            
-            <FieldInput key={idx}
-              field={item}
-              editorToolbarRef={toolbarRef}
-              options={{
-                alwaysToolbar: true,
-              }}
-              onDirty={()=>{setIsChanged(true);}}
-              ref={e=>{if (e) fieldRefs.current[idx]= e;}}/>
-            )
-          })
-        }
+        <FieldInputList fields={curNote.fields} isEditing={true} onDirty={()=>{
+          setIsChanged(true);
+        }} />
       </section> }
       <div style={{height:'45px'}}/> {/* for button space */} 
       <SimpleButton src={AddIcon} 

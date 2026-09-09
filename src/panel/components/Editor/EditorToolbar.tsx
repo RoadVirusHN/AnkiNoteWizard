@@ -4,10 +4,9 @@ import { RefObject } from "react";
 
 interface EditorToolbarProps {
   toolbarRef: RefObject<HTMLDivElement|null>;
-  show: boolean
 }
 
-export default function EditorToolbar({ toolbarRef, show }: EditorToolbarProps) {
+export default function EditorToolbar({ toolbarRef }: EditorToolbarProps) {
   const { t } = useTranslation('components', { keyPrefix: 'editorToolbar' });
 
   // 부모 title 툴팁 유출 억까 방지
@@ -21,7 +20,6 @@ export default function EditorToolbar({ toolbarRef, show }: EditorToolbarProps) 
         className={`${editorStyles.ankiToolbar} ${editorStyles.deactive}`}
         onMouseOver={handleToolbarMouseOver}
         onClick={(e)=>{e.stopPropagation();e.preventDefault();}}
-        style={{display: show? "flex":"none"}}
       >
         {/* 그룹 1: Anki 제어 버튼 (Fields, Cards, 설정) */}
         {/* <div className={editorStyles.toolGroup}>

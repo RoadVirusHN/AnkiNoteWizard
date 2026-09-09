@@ -16,12 +16,13 @@ export interface FieldInputHandle {
 interface FieldInputProps {
   field:FieldData;
   toolbarRef:RefObject<HTMLElement|null>;
-  isEditing: boolean;
   onDirty: () => void;
+  changeFocus: ()=>void;
 }
 
 
-const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarRef,isEditing,onDirty}, ref) => {
+const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarRef,onDirty,changeFocus}, ref) => {
+  console.log(field, toolbarRef)
   const dirtyRef = useRef(false);
   const makeDirty = ()=>{
     if (!dirtyRef.current) {
@@ -68,10 +69,18 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
         makeDirty();
       }
     });
+    editorQuill.on('selection-change', function(range, oldRange, source) { 
+      if (range && source === 'user') {
+        setIsFocusing(true);
+      }  else {
+        setIsFocusing(false);
+      }
+    });
     editorQuill.root.addEventListener('focus',focus);
     editorQuill.root.addEventListener('blur', blur);
     return ()=>{
       editorQuill.off('text-change');
+      editorQuill.off('selection-change');
       editorQuill.root.removeEventListener('focus',focus);
       editorQuill.root.removeEventListener('blur',blur);
     };
@@ -121,6 +130,9 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
   }));
 
   if (quillRef.current) restoreMediaPreviews(quillRef.current);
+  if (isFocusing) {
+    changeFocus();
+  }
   return <div
     ref={editorRef}
     className={fieldInputStyles.editor}
