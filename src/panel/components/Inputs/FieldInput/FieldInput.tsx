@@ -3,6 +3,7 @@ import { FieldData } from "@/types/scanRule.types";
 import Quill from "quill";
 import { RefObject, useEffect, useRef, useState, DragEvent, useImperativeHandle, forwardRef } from "react";
 import fieldInputStyles from "@/panel/components/Inputs/FieldInput/fieldInput.module.css";
+import 'quill/dist/quill.snow.css';
 
 export interface FieldInputHandle {
   editorRef: React.RefObject<HTMLDivElement|null>;
@@ -22,7 +23,6 @@ interface FieldInputProps {
 
 
 const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarRef,onDirty,changeFocus}, ref) => {
-  console.log(field, toolbarRef)
   const dirtyRef = useRef(false);
   const makeDirty = ()=>{
     if (!dirtyRef.current) {
@@ -31,7 +31,11 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     }        
   }
   const [isFocusing, setIsFocusing] = useState(false);
-  const focus = () => setIsFocusing(true);
+  const focus = () => {
+    console.log("change focusing to :" , field.key);
+    setIsFocusing(true);
+    changeFocus();
+  };
   const blur = () => setIsFocusing(false);
 
   const onFieldDragEnter = (e:DragEvent) => {
@@ -57,7 +61,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
   const quillRef = useRef<Quill>(null);
   useEffect(()=>{
     if (!editorRef.current||!toolbarRef.current) return;
-
+    console.log(editorRef.current, toolbarRef.current,field);
     const editorQuill = getEditorQuill(editorRef.current, toolbarRef.current, makeDirty);
     editorQuill.clipboard.dangerouslyPasteHTML(field.content);
     if (editorQuill.history) {

@@ -20,10 +20,7 @@ import { useTranslation } from "react-i18next";
 import { deleteAllMediaTags, processMediaInHtml, removeDeletedMediaTags } from "@/panel/utils/quillUtils";
 import useScanRule from "@/panel/stores/useScanRule";
 import { isNoteValid } from "@/panel/utils/functions";
-import FieldInput, { FieldInputHandle } from "../../components/Inputs/FieldInput/_FieldInput";
-import EditorToolbar from "@/panel/components/Editor/EditorToolbar";
-import FieldInputList from "@/panel/components/Inputs/FieldInputList/FieldInputList";
-
+import FieldInputList, { FieldInputListHandle } from "@/panel/components/Inputs/FieldInputList/FieldInputList";
 
 const AddPage = ({}) => {
   const {fetchAnki, isConnected, decks,models} = useAnkiConnectionStore();
@@ -39,12 +36,9 @@ const AddPage = ({}) => {
       modelId: currentAddingDraft.modelId || (Object.keys(models).length > 0 ? Object.keys(models)[0] : ''),
       deckId: currentAddingDraft.deckId || (Object.keys(decks).length > 0 ? Object.keys(decks)[0] : ''),
     });
-  },[currentAddingDraft,decks,models]);
-  const fieldRefs = useRef<FieldInputHandle[]>([]);
-  
-  // const reRender = useForceUpdate();S
+  },[currentAddingDraft,decks,models]);  
   const [isChanged, setIsChanged] = useState(false);
-
+  const fieldInputListRefs = useRef<FieldInputListHandle>(null);
   const checkDeckInput = () => {
     let errors = [] as string[];
     if (currentDeckId === null||currentDeckId === ''){
@@ -70,7 +64,6 @@ const AddPage = ({}) => {
   const {t:tCommon} = useTranslation('common');
   const {t:tError} = useTranslation('error');
   const {cancleInspectionMode,isInspectionMode} = useInspection();
-  const toolbarRef = useRef<HTMLDivElement>(null);
 
   return <div className={addPageStyle.container}>
     <div className={addPageStyle.header}>     
@@ -79,24 +72,23 @@ const AddPage = ({}) => {
         <div className={addPageStyle.modBtns} style={{visibility: isChanged ? "visible" : "hidden"}}>
           <Icon url={CancleIcon} handleClick={()=>{
             setCurNote(currentAddingDraft);
-            currentAddingDraft.fields.forEach((field, idx) => {
-                fieldRefs.current[idx]?.reset(field.content);
-            });
+            fieldInputListRefs.current?.reset();
             setIsChanged(false);
           }} style={{'cursor': 'pointer', margin: '5px'}}/>
           <Icon url={SaveIcon} handleClick={()=>{
             setIsChanged(false);
+            const fieldData = fieldInputListRefs.current?.getFields() || [];
             const newNote = {
               ...curNote,
               fields: curNote.fields.map((field, idx) => ({
                   ...field,
-                  content: fieldRefs.current[idx].getContent()
+                  content: fieldData[idx]?.content || ''
               }))
             };
         
             setCurNote(newNote);
             setCurrentAddingDraft(newNote);
-            fieldRefs.current.forEach(f=>f.saved());
+            fieldInputListRefs.current?.saved();
           }} style={{'cursor': 'pointer', margin: '5px'}}/>
         </div>
       </div>
@@ -116,8 +108,10 @@ const AddPage = ({}) => {
           const scanRule = scanRules[scanRuleName];
           if (scanRule&& confirm(t('changeScanRuleWarning'))){
             curNote.fields.forEach((field, idx) => {
-              if (fieldRefs.current[idx].editorQuill)
-                deleteAllMediaTags(fieldRefs.current[idx].editorQuill);
+              const editorQuill = fieldInputListRefs.current?.getQuill(idx);
+              if (editorQuill){
+                deleteAllMediaTags(editorQuill); 
+              }
             });
             setCurNote({...curNote, scanRuleId: scanRule.scanRuleName, modelId: scanRule.modelId, fields: Object.keys(scanRule.fields).map((fieldName:string)=>({key: fieldName, content: ''})), tagIds: scanRule.tagIds});
             
@@ -127,8 +121,10 @@ const AddPage = ({}) => {
         <ModelInput defaultModelId={curNote.modelId} setModelId={(newId:string)=>{
           if (confirm(t('changeModelFieldWarning'))){
             curNote.fields.forEach((field, idx) => {
-              if (fieldRefs.current[idx].editorQuill)
-                deleteAllMediaTags(fieldRefs.current[idx].editorQuill);
+              const editorQuill = fieldInputListRefs.current?.getQuill(idx);
+              if (editorQuill){
+                deleteAllMediaTags(editorQuill); 
+              }
             }); 
             setCurNote({...curNote, modelId:newId, fields: models[newId].fields.map((fieldName:string)=>({key: fieldName, content: ''}))});
             setIsChanged(true);
@@ -148,10 +144,7 @@ const AddPage = ({}) => {
           setIsChanged(true);
           setCurNote({...curNote, tagIds: curNote.tagIds.filter(t=>t !== tag.name)});
         }}/>
-        <div className={addPageStyle.fakeLabel}>{t('fieldsLabel')}</div>
-        <FieldInputList fields={curNote.fields} isEditing={true} onDirty={()=>{
-          setIsChanged(true);
-        }} />
+        <FieldInputList fields={curNote.fields} isEditing={true} onDirty={()=>{setIsChanged(true);}} />
       </section> }
       <div style={{height:'45px'}}/> {/* for button space */} 
       <SimpleButton src={AddIcon} 
@@ -181,9 +174,10 @@ const AddPage = ({}) => {
             }
             return;
           }
+          const fieldData = fieldInputListRefs.current?.getFields() || [];
           const updatedFields = curNote.fields.map((field, idx) => ({
             ...field,
-            content: fieldRefs.current[idx].getContent()
+            content: fieldData[idx]?.content || ''
           }));
           for (const fieldName in updatedFields){
             let content = updatedFields[fieldName].content;
