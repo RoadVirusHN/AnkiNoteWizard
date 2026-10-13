@@ -13,7 +13,10 @@ export default function EditorToolbar({ toolbarRef }: EditorToolbarProps) {
   const handleToolbarMouseOver = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
-
+// disable 글씨 색깔 연함
+// clicked 바탕 파란색
+// hover 버튼 위아래 조명
+// disable + hover pointer 금지
   return (
       <div 
         ref={toolbarRef} 

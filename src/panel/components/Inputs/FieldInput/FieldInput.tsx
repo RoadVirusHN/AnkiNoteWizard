@@ -4,7 +4,10 @@ import Quill from "quill";
 import { RefObject, useEffect, useRef, useState, DragEvent, useImperativeHandle, forwardRef } from "react";
 import fieldInputStyles from "@/panel/components/Inputs/FieldInput/fieldInput.module.css";
 import 'quill/dist/quill.snow.css';
-
+import Icon from "../../Icon/Icon";
+import CollapseIcon from "@/public/Icon/Icon-Down.svg";
+import CodeIcon from "@/public/Icon/Icon-Code.svg";
+import PinIcon from "@/public/Icon/Icon-Pin.svg";
 export interface FieldInputHandle {
   editorRef: React.RefObject<HTMLDivElement|null>;
   editorQuill: Quill | null;
@@ -23,6 +26,7 @@ interface FieldInputProps {
 
 
 const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarRef,onDirty,changeFocus}, ref) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const dirtyRef = useRef(false);
   const makeDirty = ()=>{
     if (!dirtyRef.current) {
@@ -137,13 +141,26 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
   if (isFocusing) {
     changeFocus();
   }
-  return <div
+  // TODO : field collapse, html <=> markdown toggle, toggle sticky?
+  return <>
+    <div className={fieldInputStyles.fieldHeader}>
+      <div>        
+        <Icon url={CollapseIcon} className={`${fieldInputStyles.expand} ${fieldInputStyles.button} ${fieldInputStyles.off}`} style={{}}/>
+        <div className={fieldInputStyles.fieldLabel}>{field.key}</div>
+      </div>
+      <div>
+        <Icon url={CodeIcon} className={`${fieldInputStyles.codeToggle} ${fieldInputStyles.button}`} style={{}}/>
+        <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button}`} style={{}}/>
+      </div>
+    </div>
+    <div 
     ref={editorRef}
     className={fieldInputStyles.editor}
     onDragEnter={onFieldDragEnter} 
     onDragLeave={onFieldDragLeave}
     onDragOver={onFieldDragOver} 
     onDrop={onFieldDragDrop}
-  />;
+    />
+  </>;
 });
 export default FieldInput;

@@ -41,3 +41,21 @@
   border: 1px solid var(--color-primary) !important;
   width: 100%;  
 }
+
+.fieldHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.fieldHeader > div {
+  display: flex;
+  gap : 5px;
+}
+
+.fieldHeader .button {
+  cursor: pointer;
+}
+
+.fieldHeader .expand.off {
+  transform: rotate(-90deg);
+}
