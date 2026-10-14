@@ -17,3 +17,9 @@
 .editor {
   display: none;
 }
+
+.toolbarContainer{
+  position: sticky;
+  z-index: 1;
+  top: 0;
+}

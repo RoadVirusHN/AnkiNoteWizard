@@ -59,11 +59,13 @@ const FieldInputList = forwardRef<FieldInputListHandle,Props>(({fields, onDirty,
 
   return <div className={fieldInputListStyles.fieldInputListContainer}>
     <div className={fieldInputListStyles.fakeLabel}>{tCommon('fields')}</div>
-    {
-      isEditing&&fields.map((field, index)=>{
-        return <EditorToolbar key={index} toolbarRef={toolbarRefs[index]}/>
-      })
-    }
+      <div className={fieldInputListStyles.toolbarContainer}>
+        {
+          isEditing&&fields.map((field, index)=>{
+            return <EditorToolbar key={index} toolbarRef={toolbarRefs[index]}/>
+          })
+        }
+      </div>
     {
       // TODO: scrollable field lists
      isEditing&&fields.map((field, index) => {
