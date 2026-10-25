@@ -1,7 +1,8 @@
 import i18next from 'i18next';
 import useAnkiConnectionStore from '../stores/useAnkiConnectionStore';
 import localforage from 'localforage';
-import Quill, { Delta } from 'quill';
+import Quill from 'quill';
+import { Delta } from 'quill/core';
 import Embed from 'quill/blots/embed';
 import Image from 'quill/formats/image';
 import { createRoot } from 'react-dom/client';

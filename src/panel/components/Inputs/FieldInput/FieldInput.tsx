@@ -141,16 +141,21 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
   if (isFocusing) {
     changeFocus();
   }
-  // TODO : field collapse, html <=> markdown toggle, toggle sticky?
+  // TODO :html <=> markdown toggle, toggle sticky?
   return <>
     <div className={fieldInputStyles.fieldHeader}>
       <div>        
-        <Icon url={CollapseIcon} className={`${fieldInputStyles.expand} ${fieldInputStyles.button} ${fieldInputStyles.off}`} style={{}}/>
+        <Icon url={CollapseIcon} className={`${fieldInputStyles.expand} ${fieldInputStyles.button} ${fieldInputStyles.off}`} style={{}}
+        onClick={(e)=>{
+          e.currentTarget.classList.toggle(fieldInputStyles.off);
+          editorRef.current?.style.setProperty('display', editorRef.current?.style.display === 'none' ? 'block' : 'none' );
+          quillRef.current?.blur();
+        }}/>
         <div className={fieldInputStyles.fieldLabel}>{field.key}</div>
       </div>
       <div>
-        <Icon url={CodeIcon} className={`${fieldInputStyles.codeToggle} ${fieldInputStyles.button}`} style={{}}/>
-        <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button}`} style={{}}/>
+        <Icon url={CodeIcon} className={`${fieldInputStyles.codeToggle} ${fieldInputStyles.button}`} title="Coming soon!" style={{}}/>
+        <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button}`} title="Coming soon!" style={{}}/>
       </div>
     </div>
     <div 
