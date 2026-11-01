@@ -52,10 +52,23 @@
   gap : 5px;
 }
 
-.fieldHeader .button {
+.button {
   cursor: pointer;
+  background-color: var(--color-IconOff);
 }
 
-.fieldHeader .expand.off {
+.button:hover{
+  background-color: var(--color-IconHover)!important;
+}
+
+.button.off {
+  background-color: var(--color-IconOff);
+}
+
+.button:not(.off){
+  background-color: var(--color-IconOn);
+}
+
+.expandToggle.off {
   transform: rotate(-90deg);
 }

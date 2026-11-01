@@ -1,3 +1,4 @@
+import IconStyles from './Icon.module.css';
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   url: string;
   handleClick?: () => void;
@@ -8,17 +9,10 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 const Icon = ({url, handleClick, className, style, ...props}:Props) => {
   return <div
-    className={className}
+    className={IconStyles.icon +' '+ className}
     style={{
-      width: '21px',
-      height: '21px',
-      backgroundColor: 'var(--color-primary)',
       WebkitMaskImage: `url(${url})`,
       maskImage: `url(${url})`,
-      WebkitMaskRepeat: 'no-repeat',
-      maskRepeat: 'no-repeat',
-      WebkitMaskSize: 'contain',
-      maskSize: 'contain',
       ...style
     }}
     onClick={handleClick}

@@ -8,7 +8,7 @@ interface EditorToolbarProps {
 
 export default function EditorToolbar({ toolbarRef }: EditorToolbarProps) {
   const { t } = useTranslation('components', { keyPrefix: 'editorToolbar' });
-
+  // WARN : position : sticky는 오직 scroll 부모와 이 요소 사이의 모든 조상 태그의 overflow가 모두 visible일 때만 작동함.
   // 부모 title 툴팁 유출 억까 방지
   const handleToolbarMouseOver = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -1,0 +1,9 @@
+.icon {
+  width: 21px;
+  height: 21px;
+  background-color: var(--color-primary);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}

@@ -67,7 +67,6 @@ const FieldInputList = forwardRef<FieldInputListHandle,Props>(({fields, onDirty,
         }
       </div>
     {
-      // TODO: scrollable field lists
      isEditing&&fields.map((field, index) => {
         return <FieldInput 
           key={index}

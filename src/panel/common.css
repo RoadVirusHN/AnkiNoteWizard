@@ -6,28 +6,34 @@ html.font-very-large { font-size: 125%; }
 /* TODO Change padding px to rem for responsive design */
 
 :root {
-  --color-primary: #2d4053;
-  --color-secondary: #61758a;
-  --color-dark: #e2e6ec;
-  --color-light: #ffffff;
-  --color-danger: #dc5757;
+  --color-primary: #020202;
+  --color-secondary: #c2b4af;
+  --color-dark: #ffffff;
+  --color-light: #f5f5f5;
+  --color-danger: #dc2626;
   --color-warning: #efff74;
-  --color-on: #68d952;
+  --color-on: #16a34a;
   --color-off: #61758a;
-  --color-hyperlink: #81b1e1;
+  --color-hyperlink: #3b82f6;
+  --color-IconOff: #B8B8B8;
+  --color-IconHover: #737373;
+  --color-IconOn:#020202;
   --font-size-base: 100%; /* 16px : 1rem */
 }
 
 [data-theme="dark"] {
-  --color-primary: #cbd1d7;
+  --color-primary: #fcfcfc;
   --color-secondary: #a4abb4;
-  --color-dark: #3e3e3f;
-  --color-light: #575454;
-  --color-danger: #e96767;
+  --color-dark: #363636;
+  --color-light: #2c2c2c;
+  --color-danger: #f87159;
   --color-warning: #f0fd88;
-  --color-on: #7ae065;
+  --color-on: #22c55e;
   --color-off: #8599ae;
-  --color-hyperlink: #9cc7f1;
+  --color-hyperlink: #257eda;
+  --color-IconOff: #7F7F7F;
+  --color-IconHover: #bdbdbd;
+  --color-IconOn:#fcfcfc;
 }
 option {
   background-color: var(--color-dark);

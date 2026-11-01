@@ -145,17 +145,31 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
   return <>
     <div className={fieldInputStyles.fieldHeader}>
       <div>        
-        <Icon url={CollapseIcon} className={`${fieldInputStyles.expand} ${fieldInputStyles.button} ${fieldInputStyles.off}`} style={{}}
+        <Icon url={CollapseIcon} className={`${fieldInputStyles.expandToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}
         onClick={(e)=>{
           e.currentTarget.classList.toggle(fieldInputStyles.off);
+          
           editorRef.current?.style.setProperty('display', editorRef.current?.style.display === 'none' ? 'block' : 'none' );
           quillRef.current?.blur();
         }}/>
         <div className={fieldInputStyles.fieldLabel}>{field.key}</div>
       </div>
       <div>
-        <Icon url={CodeIcon} className={`${fieldInputStyles.codeToggle} ${fieldInputStyles.button}`} title="Coming soon!" style={{}}/>
-        <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button}`} title="Coming soon!" style={{}}/>
+        <Icon url={CodeIcon} className={`${fieldInputStyles.codeToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}
+        onClick={(e)=>{
+          const classList = e.currentTarget.classList;
+          if (classList.contains(fieldInputStyles.off)) {
+            classList.remove(fieldInputStyles.off);
+
+          } else {
+            classList.add(fieldInputStyles.off);
+          }
+        }}
+        onMouseEnter={(e)=>{
+          console.log("Mouse enter code toggle");
+        }}
+        />
+        <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`} title="Coming soon!" style={{}}/>
       </div>
     </div>
     <div 
