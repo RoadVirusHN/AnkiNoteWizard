@@ -40,7 +40,15 @@ module.exports = {
       // },
       {
         test: /\.css$/,
-         use: ['style-loader','css-loader' ],
+         use: ['style-loader',{
+          loader: 'css-loader',
+          options: {
+            modules: {
+              auto: true,
+              localIdentName: '[name]_[local]__[hash:base64:5]',
+            },
+          },
+         }],
       },
       // {
       //   test: /\.svg$/,

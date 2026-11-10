@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   background-color: var(--color-light);
   color: var(--color-primary);
@@ -72,6 +72,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 100%;
 }
 .req {
   color: var(--color-danger);
@@ -80,6 +81,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  height: 100%;
 }
 
 .formGroup label {
@@ -96,13 +98,13 @@
 .row > div { flex: 1; }
 
 .input, .select, .textarea {
-  width: 100%;
-  padding: 8px;
+  width: 96%;
+  padding: 5px;
   border: 1px solid var(--color-dark);
   border-radius: 6px;
   font-size: 0.7rem;
   background: var(--color-dark);
-  box-sizing: border-box;
+  box-sizing: content-box;
 }
 
 .textarea { resize: vertical; }

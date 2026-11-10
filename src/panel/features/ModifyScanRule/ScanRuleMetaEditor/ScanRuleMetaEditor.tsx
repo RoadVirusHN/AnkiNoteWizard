@@ -39,13 +39,20 @@ const ScanRuleMetaEditor = ({data, setData}:Props) => {
   </div>
     
   
+  {/* TODO : Quill js */}
   <div className={modifyScanRuleStyle.formGroup}>
-    <label>{t("description")}</label>
+    <label htmlFor="description">{t("description")}</label>
+
     <textarea
       className={modifyScanRuleStyle.textarea}
+      name="description"
+      style={{height:'100%'}}
       value={data.meta.description || ""}
       onChange={(e) => updateMeta("description", e.target.value)}
-      rows={3}
+      autoComplete="on"
+      autoCorrect="on"
+      maxLength={4096}
+
     />
   </div>
 </div>);
