@@ -39,7 +39,6 @@ const ScanRuleMetaEditor = ({data, setData}:Props) => {
   </div>
     
   
-  {/* TODO : Quill js */}
   <div className={modifyScanRuleStyle.formGroup}>
     <label htmlFor="description">{t("description")}</label>
 

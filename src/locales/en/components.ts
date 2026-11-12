@@ -62,5 +62,10 @@ export default {
     clickToEdit: 'Click to edit',
     clickToStopEditingAndRevert: 'Click to stop editing and revert changes',
     extractData: 'Extract Data',
+  },
+  fieldInput: {
+    toggleSticky: 'Toggle sticky(F9)',
+    toggleHTMLEditor: 'Toggle HTML editor(Ctrl+Shift+X)',
+    collapseExpandField: 'Collapse/Expand Field',
   }
 };

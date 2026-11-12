@@ -8,6 +8,8 @@ import Icon from "../../Icon/Icon";
 import CollapseIcon from "@/public/Icon/Icon-Down.svg";
 import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import PinIcon from "@/public/Icon/Icon-Pin.svg";
+import { useTranslation } from "react-i18next";
+
 export interface FieldInputHandle {
   editorRef: React.RefObject<HTMLDivElement|null>;
   editorQuill: Quill | null;
@@ -26,7 +28,7 @@ interface FieldInputProps {
 
 
 const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarRef,onDirty,changeFocus}, ref) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const {t} = useTranslation("components",{keyPrefix:"fieldInput"});
   const dirtyRef = useRef(false);
   const makeDirty = ()=>{
     if (!dirtyRef.current) {
@@ -146,6 +148,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     <div className={fieldInputStyles.fieldHeader}>
       <div>        
         <Icon url={CollapseIcon} className={`${fieldInputStyles.expandToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}
+        title={t("collapseExpandField")}
         onClick={(e)=>{
           e.currentTarget.classList.toggle(fieldInputStyles.off);
           
@@ -156,6 +159,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
       </div>
       <div>
         <Icon url={CodeIcon} className={`${fieldInputStyles.codeToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}
+        title={t("toggleHTMLEditor")}
         onClick={(e)=>{
           const classList = e.currentTarget.classList;
           if (classList.contains(fieldInputStyles.off)) {
@@ -169,7 +173,20 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
           console.log("Mouse enter code toggle");
         }}
         />
-        <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`} title="Coming soon!" style={{}}/>
+        <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}  
+          title={t("toggleSticky")}
+          onClick={(e)=>{
+            const classList = e.currentTarget.classList;
+            if (classList.contains(fieldInputStyles.off)) {
+              classList.remove(fieldInputStyles.off);
+
+            } else {
+              classList.add(fieldInputStyles.off);
+            }
+          }}
+          onMouseEnter={(e)=>{
+            console.log("Mouse enter code toggle");
+        }}/>
       </div>
     </div>
     <div 

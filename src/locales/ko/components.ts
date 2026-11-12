@@ -63,5 +63,10 @@ export default {
     clickToEdit: '클릭하여 편집',
     clickToStopEditingAndRevert: '클릭하여 편집 중지 및 변경 사항 되돌리기',
     extractData: '데이터 추출',
+  },
+  fieldInput: {
+    toggleSticky: '고정 전환(F9)',
+    toggleHTMLEditor: 'HTML 편집기 전환(Ctrl+Shift+X)',
+    collapseExpandField: '필드 접기/펼치기',
   }
 } satisfies typeof components;
