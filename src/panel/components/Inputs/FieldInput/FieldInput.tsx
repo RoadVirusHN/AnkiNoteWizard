@@ -9,6 +9,7 @@ import CollapseIcon from "@/public/Icon/Icon-Down.svg";
 import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import PinIcon from "@/public/Icon/Icon-Pin.svg";
 import { useTranslation } from "react-i18next";
+import { html } from "webpack";
 
 export interface FieldInputHandle {
   editorRef: React.RefObject<HTMLDivElement|null>;
@@ -25,7 +26,8 @@ interface FieldInputProps {
   onDirty: () => void;
   changeFocus: ()=>void;
 }
-
+// TODO :
+// 1. html <=> markdown toggle : cursor resestted when toggle, need to restore cursor position.
 
 const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarRef,onDirty,changeFocus}, ref) => {
   const {t} = useTranslation("components",{keyPrefix:"fieldInput"});
@@ -37,8 +39,9 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     }        
   }
   const [isFocusing, setIsFocusing] = useState(false);
+  const htmlRef = useRef<HTMLTextAreaElement>(null);
+
   const focus = () => {
-    console.log("change focusing to :" , field.key);
     setIsFocusing(true);
     changeFocus();
   };
@@ -67,9 +70,11 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
   const quillRef = useRef<Quill>(null);
   useEffect(()=>{
     if (!editorRef.current||!toolbarRef.current) return;
-    console.log(editorRef.current, toolbarRef.current,field);
     const editorQuill = getEditorQuill(editorRef.current, toolbarRef.current, makeDirty);
     editorQuill.clipboard.dangerouslyPasteHTML(field.content);
+    if (htmlRef.current){
+      htmlRef.current.value = convertQuillToAnkiPureHtml(editorQuill);
+    }
     if (editorQuill.history) {
       // reset history(Ctrl+z) to prevent deleting the previous content.
       editorQuill.history.clear();
@@ -77,6 +82,9 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     editorQuill.on('text-change', function(delta, oldDelta, source) {
       if (source === 'user') {
         makeDirty();
+        if (htmlRef.current&&!htmlRef.current.classList.contains(fieldInputStyles.off)) {
+          htmlRef.current.value = convertQuillToAnkiPureHtml(editorQuill);
+        }
       }
     });
     editorQuill.on('selection-change', function(range, oldRange, source) { 
@@ -88,6 +96,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     });
     editorQuill.root.addEventListener('focus',focus);
     editorQuill.root.addEventListener('blur', blur);
+    quillRef.current = editorQuill;
     return ()=>{
       editorQuill.off('text-change');
       editorQuill.off('selection-change');
@@ -109,7 +118,10 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
         const range = editor.getSelection();
         
         editor.clipboard.dangerouslyPasteHTML(content);
-        
+        if (htmlRef.current) {
+          htmlRef.current.value = convertQuillToAnkiPureHtml(editor);
+          htmlRef.current.classList.add(fieldInputStyles.off);
+        }
         if (editor.history) {
           // reset history(Ctrl+z) to prevent deleting the previous content.
           editor.history.clear();
@@ -164,17 +176,23 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
           const classList = e.currentTarget.classList;
           if (classList.contains(fieldInputStyles.off)) {
             classList.remove(fieldInputStyles.off);
-
+            if (htmlRef.current) {
+              htmlRef.current.classList.remove(fieldInputStyles.off);
+              htmlRef.current.value = convertQuillToAnkiPureHtml(quillRef.current!);
+              console.log("html editor content updated:", htmlRef.current.value, quillRef.current!.root.innerHTML);
+            }
           } else {
             classList.add(fieldInputStyles.off);
+            htmlRef.current?.classList.add(fieldInputStyles.off);
           }
         }}
         onMouseEnter={(e)=>{
           console.log("Mouse enter code toggle");
         }}
         />
-        <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}  
-          title={t("toggleSticky")}
+        {/* <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}  
+          title={t("toggleSticky") + " Comming Soon!"}
+          style={{cursor: 'not-allowed', backgroundColor: 'salmon'}}
           onClick={(e)=>{
             const classList = e.currentTarget.classList;
             if (classList.contains(fieldInputStyles.off)) {
@@ -186,7 +204,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
           }}
           onMouseEnter={(e)=>{
             console.log("Mouse enter code toggle");
-        }}/>
+        }}/> */}
       </div>
     </div>
     <div 
@@ -196,6 +214,12 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     onDragLeave={onFieldDragLeave}
     onDragOver={onFieldDragOver} 
     onDrop={onFieldDragDrop}
+    />
+    <textarea
+      ref={htmlRef}
+      className={`${fieldInputStyles.htmlEditor} ${fieldInputStyles.off}`}
+      readOnly
+      style={{width: '100%', minHeight: '2rem', margin: '3px', fieldSizing: 'content', resize: 'none', overflow: 'hidden'}} 
     />
   </>;
 });

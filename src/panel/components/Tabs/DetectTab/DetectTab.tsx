@@ -18,6 +18,7 @@ const DetectTab = ({}) => {
   useEffect(()=>{
       if (isConnected) return;
       checkConnection();
+      console.log("connecting...");
       const id = setInterval(()=> checkConnection(), 5000);
       return ()=> clearInterval(id); // cleanup on unmount
     }, [isConnected,checkConnection]);

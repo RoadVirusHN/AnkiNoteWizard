@@ -72,3 +72,6 @@
 .expandToggle.off {
   transform: rotate(-90deg);
 }
+textarea.htmlEditor.off {
+  display: none;
+}
