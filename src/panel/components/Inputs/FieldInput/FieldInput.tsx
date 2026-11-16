@@ -10,10 +10,10 @@ import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import PinIcon from "@/public/Icon/Icon-Pin.svg";
 import { useTranslation } from "react-i18next";
 import { html } from "webpack";
+import { Delta, EmitterSource } from "quill/core";
 
 export interface FieldInputHandle {
   editorRef: React.RefObject<HTMLDivElement|null>;
-  editorQuill: Quill | null;
   getContent(): string;
   reset(content: string): void;
   saved():void;
@@ -26,8 +26,6 @@ interface FieldInputProps {
   onDirty: () => void;
   changeFocus: ()=>void;
 }
-// TODO :
-// 1. html <=> markdown toggle : cursor resestted when toggle, need to restore cursor position.
 
 const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarRef,onDirty,changeFocus}, ref) => {
   const {t} = useTranslation("components",{keyPrefix:"fieldInput"});
@@ -38,24 +36,24 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
       onDirty();
     }        
   }
-  const [isFocusing, setIsFocusing] = useState(false);
+  const isFocusingRef = useRef(false);
   const htmlRef = useRef<HTMLTextAreaElement>(null);
 
   const focus = () => {
-    setIsFocusing(true);
+    isFocusingRef.current = true;
     changeFocus();
   };
-  const blur = () => setIsFocusing(false);
+  const blur = () => isFocusingRef.current = false;
 
   const onFieldDragEnter = (e:DragEvent) => {
     e.preventDefault(); 
-    setIsFocusing(true);
+    focus();
     editorRef.current?.classList.add(fieldInputStyles.dragOver);
   };
   const onFieldDragLeave = (e:DragEvent) => {
     e.preventDefault(); 
     if (editorRef.current && !editorRef.current.contains(e.relatedTarget as Node)) {
-      setIsFocusing(false);
+      blur();
       editorRef.current?.classList.remove(fieldInputStyles.dragOver);
     }
   };
@@ -70,6 +68,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
   const quillRef = useRef<Quill>(null);
   useEffect(()=>{
     if (!editorRef.current||!toolbarRef.current) return;
+
     const editorQuill = getEditorQuill(editorRef.current, toolbarRef.current, makeDirty);
     editorQuill.clipboard.dangerouslyPasteHTML(field.content);
     if (htmlRef.current){
@@ -79,83 +78,90 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
       // reset history(Ctrl+z) to prevent deleting the previous content.
       editorQuill.history.clear();
     }
-    editorQuill.on('text-change', function(delta, oldDelta, source) {
+
+    const handleTextChange = (delta:Delta, oldDelta:Delta, source:EmitterSource) => {
       if (source === 'user') {
         makeDirty();
         if (htmlRef.current&&!htmlRef.current.classList.contains(fieldInputStyles.off)) {
           htmlRef.current.value = convertQuillToAnkiPureHtml(editorQuill);
         }
       }
-    });
-    editorQuill.on('selection-change', function(range, oldRange, source) { 
+    }
+    editorQuill.on('text-change',handleTextChange);
+    const handleSelectionChange = (range:Delta, oldRange:Delta, source:EmitterSource) => { 
       if (range && source === 'user') {
-        setIsFocusing(true);
+        focus();
       }  else {
-        setIsFocusing(false);
+        blur();
       }
-    });
+    }
+    editorQuill.on('selection-change', handleSelectionChange);
     editorQuill.root.addEventListener('focus',focus);
     editorQuill.root.addEventListener('blur', blur);
     quillRef.current = editorQuill;
+
+    restoreMediaPreviews(quillRef.current);
+    if (isFocusingRef.current) {
+      changeFocus();
+    }
+    
     return ()=>{
-      editorQuill.off('text-change');
-      editorQuill.off('selection-change');
+      editorQuill.off('text-change', handleTextChange);
+      editorQuill.off('selection-change', handleSelectionChange);
       editorQuill.root.removeEventListener('focus',focus);
       editorQuill.root.removeEventListener('blur',blur);
     };
   },[]);
-  useImperativeHandle(ref, () => ({
-    editorRef: editorRef,
-    editorQuill: quillRef.current,
-      getContent() {
-        if (!quillRef.current) return "";
-        return convertQuillToAnkiPureHtml(quillRef.current);
-      },
-      reset(content: string) {
-        dirtyRef.current = false;
-        const editor = quillRef.current;
-        if (!editor) return;
-        const range = editor.getSelection();
-        
-        editor.clipboard.dangerouslyPasteHTML(content);
-        if (htmlRef.current) {
-          htmlRef.current.value = convertQuillToAnkiPureHtml(editor);
-          htmlRef.current.classList.add(fieldInputStyles.off);
-        }
-        if (editor.history) {
-          // reset history(Ctrl+z) to prevent deleting the previous content.
-          editor.history.clear();
-        }
 
-        if (range) {// 이거 안하면 quill.js가 멋대로 렌더링할 때마다 focus를 뺏어감.
-            editor.setSelection(range);
-        } else {
-            editor.blur();
-        }
-      },
-      saved(){
-        dirtyRef.current=false;
-        const editorQuill = quillRef.current;
-        if (editorQuill) {
-          const oldDelta = editorQuill.clipboard.convert({html: field.content});  
-          addNewMediaTags(editorQuill);
-          removeDeletedMediaTags(editorQuill, oldDelta);
-        }
-      },
-      deleted(){
-        dirtyRef.current=false;
-        const editorQuill = quillRef.current;
-        if (editorQuill) {
-          deleteAllMediaTags(editorQuill);
-        }
+  // TODO: onDirty, changeFocus 함수를 callback으로 ref 관리?
+  useImperativeHandle(ref, () => ({
+    editorRef,
+    getContent() {
+      const editor = quillRef.current;
+      if (!editor) return "";
+      return convertQuillToAnkiPureHtml(editor);
+    },
+    reset(content: string) {
+      dirtyRef.current = false;
+      const editor = quillRef.current;
+      if (!editor) return;
+      const range = editor.getSelection();
+      
+      editor.clipboard.dangerouslyPasteHTML(content);
+      if (htmlRef.current) {
+        htmlRef.current.value = convertQuillToAnkiPureHtml(editor);
+        htmlRef.current.classList.add(fieldInputStyles.off);
       }
+      if (editor.history) {
+        // reset history(Ctrl+z) to prevent deleting the previous content.
+        editor.history.clear();
+      }
+
+      if (range) {// 이거 안하면 quill.js가 멋대로 렌더링할 때마다 focus를 뺏어감.
+          editor.setSelection(range);
+      } else {
+          editor.blur();
+      }
+    },
+    saved(){
+      dirtyRef.current=false;
+      const editorQuill = quillRef.current;
+      if (editorQuill) {
+        const oldDelta = editorQuill.clipboard.convert({html: field.content});  
+        addNewMediaTags(editorQuill);
+        removeDeletedMediaTags(editorQuill, oldDelta);
+      }
+    },
+    deleted(){
+      dirtyRef.current=false;
+      const editor = quillRef.current;
+      if (editor) {
+        deleteAllMediaTags(editor);
+      }
+    }
   }));
 
-  if (quillRef.current) restoreMediaPreviews(quillRef.current);
-  if (isFocusing) {
-    changeFocus();
-  }
-  // TODO :html <=> markdown toggle, toggle sticky?
+  // TODO : toggle sticky?
   return <>
     <div className={fieldInputStyles.fieldHeader}>
       <div>        
