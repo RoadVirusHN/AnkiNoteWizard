@@ -171,6 +171,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
           e.currentTarget.classList.toggle(fieldInputStyles.off);
           
           editorRef.current?.style.setProperty('display', editorRef.current?.style.display === 'none' ? 'block' : 'none' );
+          htmlRef.current?.style.setProperty('display', htmlRef.current?.style.display === 'none' ? 'block' : 'none' );
           quillRef.current?.blur();
         }}/>
         <div className={fieldInputStyles.fieldLabel}>{field.key}</div>
@@ -223,9 +224,10 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     />
     <textarea
       ref={htmlRef}
+      id={field.key + "-html-editor"}
       className={`${fieldInputStyles.htmlEditor} ${fieldInputStyles.off}`}
       readOnly
-      style={{width: '100%', minHeight: '2rem', margin: '3px', fieldSizing: 'content', resize: 'none', overflow: 'hidden'}} 
+      style={{width: 'calc(100% - 4px)', minHeight: '2rem', fieldSizing: 'content', resize: 'none', overflow: 'hidden'}} 
     />
   </>;
 });
