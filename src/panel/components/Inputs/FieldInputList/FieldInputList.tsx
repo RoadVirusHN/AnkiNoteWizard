@@ -62,7 +62,7 @@ const FieldInputList = forwardRef<FieldInputListHandle,Props>(({fields, onDirty,
       <div className={fieldInputListStyles.toolbarContainer}>
         {
           isEditing&&fields.map((field, index)=>{
-            return <EditorToolbar key={index} toolbarRef={toolbarRefs[index]}/>
+            return <EditorToolbar key={index} keyName={field.key} toolbarRef={toolbarRefs[index]}/>
           })
         }
       </div>

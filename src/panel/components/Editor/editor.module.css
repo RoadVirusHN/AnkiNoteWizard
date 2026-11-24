@@ -60,6 +60,7 @@
 }
 
 
+
 /* 2. 일반 정사각형 아이콘 버튼 스타일 (B, I, U, 📎 등) */
 .ankiToolbar :global(.ql-stroke) {
   stroke: var(--color-secondary) !important; /* Quill 자체 SVG 아이콘 탑재 시 흰색으로 채움 */
@@ -112,8 +113,8 @@
   align-items: center;
 }
 .ankiToolbar :global(.ql-picker-label) {
-  padding-left: 6px !important;
-  padding-right: 18px !important;
+  padding-left: 2px !important;
+  padding-right: 2px !important;
   display: flex;
   align-items: center;
   height: 100% !important;

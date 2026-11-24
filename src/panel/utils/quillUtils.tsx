@@ -530,6 +530,7 @@ export function convertQuillToAnkiPureHtml(quillInstance: Quill): string {
   const delta = quillInstance.getContents();
   let resultHtml = "";
 
+  //TODO: delta의 attribute를 조사해서 일일이 html 태그로 감싸는 로직 필요
   delta.ops.forEach((op, index) => {
     if (typeof op.insert === 'string') {
       let text = op.insert;
@@ -538,7 +539,7 @@ export function convertQuillToAnkiPureHtml(quillInstance: Quill): string {
       if (isLastOp && text.endsWith('\n')) {
         text = text.slice(0, -1); // 맨 끝 \n 하나만 정확히 제거
       }
-      resultHtml += text.replace(/\n/g, '<br>');
+      resultHtml += text.replace(/\n/g, '<br>'); // 원본은 <strong>asdf</strong>이나 asdf만 나옴
       return;
     }
 

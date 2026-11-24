@@ -104,7 +104,6 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     if (isFocusingRef.current) {
       changeFocus();
     }
-    
     return ()=>{
       editorQuill.off('text-change', handleTextChange);
       editorQuill.off('selection-change', handleSelectionChange);
@@ -185,6 +184,9 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
             classList.remove(fieldInputStyles.off);
             if (htmlRef.current) {
               htmlRef.current.classList.remove(fieldInputStyles.off);
+              console.log("html editor on : origin: ",quillRef.current!);
+              console.log("html editor on : html : ",convertQuillToAnkiPureHtml(quillRef.current!));
+
               htmlRef.current.value = convertQuillToAnkiPureHtml(quillRef.current!);
               console.log("html editor content updated:", htmlRef.current.value, quillRef.current!.root.innerHTML);
             }
