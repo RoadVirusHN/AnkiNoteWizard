@@ -1,7 +1,7 @@
 import { addNewMediaTags, convertQuillToAnkiPureHtml, deleteAllMediaTags, getEditorQuill, removeDeletedMediaTags, restoreMediaPreviews } from "@/panel/utils/quillUtils";
 import { FieldData } from "@/types/scanRule.types";
 import Quill from "quill";
-import { RefObject, useEffect, useRef, useState, DragEvent, useImperativeHandle, forwardRef } from "react";
+import { RefObject, useEffect, useRef, useState, DragEvent, useImperativeHandle, forwardRef, MouseEvent, MouseEventHandler } from "react";
 import fieldInputStyles from "@/panel/components/Inputs/FieldInput/fieldInput.module.css";
 import 'quill/dist/quill.snow.css';
 import Icon from "../../Icon/Icon";
@@ -9,7 +9,6 @@ import CollapseIcon from "@/public/Icon/Icon-Down.svg";
 import CodeIcon from "@/public/Icon/Icon-Code.svg";
 import PinIcon from "@/public/Icon/Icon-Pin.svg";
 import { useTranslation } from "react-i18next";
-import { html } from "webpack";
 import { Delta, EmitterSource } from "quill/core";
 
 export interface FieldInputHandle {
@@ -38,6 +37,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
   }
   const isFocusingRef = useRef(false);
   const htmlRef = useRef<HTMLTextAreaElement>(null);
+  const toggleHtmlRef = useRef<HTMLDivElement>(null);
 
   const focus = () => {
     isFocusingRef.current = true;
@@ -64,6 +64,34 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     e.preventDefault(); 
     editorRef.current?.classList.remove(fieldInputStyles.dragOver);
   };
+
+  const toggleHtml = () => {    
+    const classList = toggleHtmlRef.current?.classList;
+    if (!classList) return;
+    if (classList.contains(fieldInputStyles.off)) {
+      htmlOn();
+    } else {
+      htmlOff();
+    }
+  }
+
+  const htmlOn = () => {  
+    const classList = toggleHtmlRef.current?.classList;
+    if (!classList) return;
+    classList.remove(fieldInputStyles.off);
+    if (htmlRef.current) {
+      htmlRef.current.classList.remove(fieldInputStyles.off);
+      htmlRef.current.value = convertQuillToAnkiPureHtml(quillRef.current!);
+    }
+  }
+
+  const htmlOff = () => {
+    const classList = toggleHtmlRef.current?.classList;
+    if (!classList) return;
+    classList.add(fieldInputStyles.off);
+    htmlRef.current?.classList.add(fieldInputStyles.off);
+  }
+
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill>(null);
   useEffect(()=>{
@@ -168,9 +196,16 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
         title={t("collapseExpandField")}
         onClick={(e)=>{
           e.currentTarget.classList.toggle(fieldInputStyles.off);
-          
-          editorRef.current?.style.setProperty('display', editorRef.current?.style.display === 'none' ? 'block' : 'none' );
-          htmlRef.current?.style.setProperty('display', htmlRef.current?.style.display === 'none' ? 'block' : 'none' );
+          const display = editorRef.current?.style.display === 'none' ? 'block' : 'none';
+          editorRef.current?.style.setProperty('display',  display);
+          const htmlEditor = htmlRef.current;
+          if (htmlEditor) {
+            if (display==='block'&&!htmlEditor.classList.contains(fieldInputStyles.off)) {
+              htmlOn();
+            } else {
+              htmlOff();
+            }            
+          }
           quillRef.current?.blur();
         }}/>
         <div className={fieldInputStyles.fieldLabel}>{field.key}</div>
@@ -178,27 +213,8 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
       <div>
         <Icon url={CodeIcon} className={`${fieldInputStyles.codeToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}
         title={t("toggleHTMLEditor")}
-        onClick={(e)=>{
-          const classList = e.currentTarget.classList;
-          if (classList.contains(fieldInputStyles.off)) {
-            classList.remove(fieldInputStyles.off);
-            if (htmlRef.current) {
-              htmlRef.current.classList.remove(fieldInputStyles.off);
-              console.log("html editor on : origin: ",quillRef.current!);
-              console.log("html editor on : html : ",convertQuillToAnkiPureHtml(quillRef.current!));
-
-              htmlRef.current.value = convertQuillToAnkiPureHtml(quillRef.current!);
-              console.log("html editor content updated:", htmlRef.current.value, quillRef.current!.root.innerHTML);
-            }
-          } else {
-            classList.add(fieldInputStyles.off);
-            htmlRef.current?.classList.add(fieldInputStyles.off);
-          }
-        }}
-        onMouseEnter={(e)=>{
-          console.log("Mouse enter code toggle");
-        }}
-        />
+        ref={toggleHtmlRef}
+        onClick={()=>toggleHtml()}/>
         {/* <Icon url={PinIcon} className={`${fieldInputStyles.pinToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}  
           title={t("toggleSticky") + " Comming Soon!"}
           style={{cursor: 'not-allowed', backgroundColor: 'salmon'}}
@@ -231,6 +247,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
       readOnly
       style={{width: 'calc(100% - 4px)', minHeight: '2rem', fieldSizing: 'content', resize: 'none', overflow: 'hidden'}} 
     />
+    {/* TODO : html과 editor를 아예 붙여버리기 */}
   </>;
 });
 export default FieldInput;

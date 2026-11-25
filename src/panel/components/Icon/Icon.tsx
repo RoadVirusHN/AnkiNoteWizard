@@ -1,4 +1,6 @@
 import IconStyles from './Icon.module.css';
+import {forwardRef} from 'react';
+
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   url: string;
   handleClick?: () => void;
@@ -7,8 +9,9 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 
-const Icon = ({url, handleClick, className, style, ...props}:Props) => {
+const Icon = forwardRef<HTMLDivElement,Props>(({url, handleClick, className, style, ...props}:Props, ref) => {
   return <div
+    ref={ref}
     className={IconStyles.icon +' '+ className}
     style={{
       WebkitMaskImage: `url(${url})`,
@@ -18,5 +21,5 @@ const Icon = ({url, handleClick, className, style, ...props}:Props) => {
     onClick={handleClick}
     {...props}
   />;
-};
+});
 export default Icon;
