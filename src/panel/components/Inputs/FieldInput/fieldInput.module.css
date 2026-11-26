@@ -69,8 +69,16 @@
   background-color: var(--color-IconOn);
 }
 
-.expandToggle.off {
+.expandToggle {
+  transition: transform 0.3s ease;
   transform: rotate(-90deg);
+  background-color: var(--color-IconOff)!important;
+  cursor: pointer;
+}
+
+.expandToggle.off {
+  transition: transform 0.3s ease;
+  transform: rotate(0deg);
 }
 textarea.htmlEditor.off {
   display: none;

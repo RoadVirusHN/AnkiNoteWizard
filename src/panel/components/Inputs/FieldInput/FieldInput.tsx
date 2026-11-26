@@ -64,11 +64,10 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
     e.preventDefault(); 
     editorRef.current?.classList.remove(fieldInputStyles.dragOver);
   };
-
   const toggleHtml = () => {    
     const classList = toggleHtmlRef.current?.classList;
     if (!classList) return;
-    if (classList.contains(fieldInputStyles.off)) {
+    if (!isFieldCollapsed()&&classList.contains(fieldInputStyles.off)) {
       htmlOn();
     } else {
       htmlOff();
@@ -94,6 +93,7 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
 
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill>(null);
+  const isFieldCollapsed = ()=>editorRef.current?.style.display === 'none'
   useEffect(()=>{
     if (!editorRef.current||!toolbarRef.current) return;
 
@@ -192,11 +192,11 @@ const FieldInput = forwardRef<FieldInputHandle,FieldInputProps>(({field,toolbarR
   return <>
     <div className={fieldInputStyles.fieldHeader}>
       <div>        
-        <Icon url={CollapseIcon} className={`${fieldInputStyles.expandToggle} ${fieldInputStyles.button} ${fieldInputStyles.off}`}
+        <Icon url={CollapseIcon} className={`${fieldInputStyles.expandToggle} ${fieldInputStyles.off}`}
         title={t("collapseExpandField")}
         onClick={(e)=>{
           e.currentTarget.classList.toggle(fieldInputStyles.off);
-          const display = editorRef.current?.style.display === 'none' ? 'block' : 'none';
+          const display = isFieldCollapsed() ? 'block' : 'none';
           editorRef.current?.style.setProperty('display',  display);
           const htmlEditor = htmlRef.current;
           if (htmlEditor) {
